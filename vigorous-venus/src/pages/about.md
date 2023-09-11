@@ -6,36 +6,36 @@ title: "About"
   <img src="/assets/steven-hoang.jpeg" class="sm:w-1/4 mx-auto" alt="Steven (Hoang Bao Duy)">
 </div>
 
-Steven Hoang is a passionate professional with over 15 years of experience leading development teams to deliver end-to-end solutions.
+**Steven** (Hoang Bao Duy) is a passionate professional with over 15 years of experience leading development teams to deliver end-to-end solutions.
 
-He has the ability to create a software development life-cycle using Agile Processes, covering development, testing, security scanning, and production deployment. This ensures that his projects are of high quality and scalability.
+He has the ability to delivery **end-to-end software development life-cycle** covering development, testing, security scanning, and production deployment. This ensures that his projects are of high quality and scalability.
 
-By utilised DevOps, CloudOps, and Infra as code He has automated the infra components provision on the cloud and manage cloud infrastructure efficiently.This approach also ensured proper version control, change tracking across regions, and simplified disaster recovery for cloud environments.
+By utilised **DevOps, CloudOps, and Infra as code** He has automated the infra components provision on the cloud and manage cloud infrastructure efficiently.This approach also ensured proper version control, change tracking across regions, and simplified disaster recovery for cloud environments.
 
 ## Cloud Stack
 
-- Experience with AWS/Azure cloud infrastructure design and implementation.
-- Experienced in utilising Kubernetes to manage high-availability environments..
-- Experience with serverless computing and containerisation technologies like Azure Function, AWS Lambda and Docker.
-- Understanding cloud security best practices, such as network security, encryption, and access control.
-- Experience with cloud monitoring and logging tools, such as CloudWatch and Azure Monitor.
-- Knowledge of cloud databases, such as AWS Aurora and Azure Cosmos DB.
-- Familiarity with hybrid cloud architectures and cloud migration strategies.
-- Strong problem-solving skills and ability to troubleshoot issues in complex cloud environments.
+- Experience with **AWS/Azure** cloud infrastructure design and implementation.
+- Experienced in utilising **Kubernetes** to manage high-availability environments..
+- Experience with **serverless** computing and containerisation technologies like Azure Function, AWS Lambda and Docker.
+- Understanding cloud **security best practices**, such as network security, encryption, and access control.
+- Experience with cloud **monitoring** and logging tools, such as CloudWatch and Azure Monitor.
+- Knowledge of cloud **databases**, such as AWS Aurora and Azure Cosmos DB.
+- Familiarity with **hybrid cloud** architectures and **cloud migration** strategies.
+- Strong problem-solving skills and ability to troubleshoot issues in **complex environments**.
 
 ## Tech Stack
 
-- Micro-services: independently deployable software services.
-- Event-driven services: loosely coupled systems communicate through events.
-- DDD Design: software development prioritising business domain understanding.
-- Rest API implementation: API using REST architecture.
-- Entity Framework: .NET ORM framework.
-- Microsoft SQL Server: Microsoft's relational database management system.
-- Swagger/OpenAPI: API building specification for easy documentation and interaction.
-- AutoMapper: .NET tool for object mapping.
-- Testing: Unit, Integration, and End-to-End using Playwright
-- ReactJs: popular JavaScript UI library.
-- NextJs: framework for server-side rendered React applications.
+- **Micro-services**: independently deployable software services.
+- **Event-driven services**: loosely coupled systems communicate through events.
+- **DDD Design**: software development prioritising business domain understanding.
+- **Rest API** implementation: API using REST architecture.
+- **Entity Framework (ORM)**: .NET ORM framework.
+- **Microsoft SQL Server**: Microsoft's relational database management system.
+- **Swagger/OpenAPI**: API building specification for easy documentation and interaction.
+- **AutoMapper**: .NET tool for object mapping.
+- **Testing**: Unit, Integration, and End-to-End using Playwright
+- **ReactJs**: popular JavaScript UI library.
+- **NextJs**: framework for server-side rendered React applications.
 
 ## Open Stacks
 
