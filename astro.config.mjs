@@ -4,11 +4,13 @@ import react from "@astrojs/react";
 import remarkToc from "remark-toc";
 import remarkCollapse from "remark-collapse";
 import sitemap from "@astrojs/sitemap";
+import { astroImageTools } from "astro-imagetools";
 
 // https://astro.build/config
 export default defineConfig({
   site: "https://drunkcoding.net/", // replace this with your deployed domain
   integrations: [
+    astroImageTools,
     tailwind({
       config: {
         applyBaseStyles: false,

@@ -46,7 +46,7 @@ ENTRYPOINT ["dotnet", "SampleApi.dll"]
 ```
 
 We can build and run your application in Docker faultlessly with this docker file.
-![sample-api.png](Optimising_NET_Core_with_Multi-Platform_Docker%2Fsample-api.png)
+![sample-api.png](/assets/OptimisingDockerNET/sample-api.png)
 
 ### What is the issue?
 
@@ -83,7 +83,7 @@ COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "SampleApi.dll"]
 ```
 
-![alpine-debian-sdk-image-size.png](Optimising_NET_Core_with_Multi-Platform_Docker%2Falpine-debian-sdk-image-size.png)
+![alpine-debian-sdk-image-size.png](/assets/OptimisingDockerNET/alpine-debian-sdk-image-size.png)
 
 ### With Self contained .NET app (**experimental**)
 
@@ -234,10 +234,10 @@ docker buildx build --platform="linux/amd64,inux/arm64" -f Dockerfile -t samplea
 ```
 
 Here are some sample results of Docker images on my Intel workstation.
-![multi-platform-docker-image.png](Optimising_NET_Core_with_Multi-Platform_Docker%2Fmulti-platform-docker-image.png)
+![multi-platform-docker-image.png](/assets/OptimisingDockerNET/multi-platform-docker-image.png)
 
 Test to ensure both images work correctly without any issues on my workstation.
-![Running-instance-docker.png](Optimising_NET_Core_with_Multi-Platform_Docker%2FRunning-instance-docker.png)
+![Running-instance-docker.png](/assets/OptimisingDockerNET/Running-instance-docker.png)
 
 ## Altogether with GitAction.
 
@@ -367,7 +367,7 @@ jobs:
 ```
 
 That's it! After the Git action runs successfully, you should be able to find the image on Docker Hub with multi-platform tagging.
-![Docker-hub-results.png](Optimising_NET_Core_with_Multi-Platform_Docker%2FDocker-hub-results.png)
+![Docker-hub-results.png](/assets/OptimisingDockerNET/Docker-hub-results.png)
 
 _Just to confirm these both image had been tested on my IMAC running Intel chip and MacMini running M1 chip._
 
