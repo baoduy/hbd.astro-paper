@@ -1,4 +1,6 @@
-FROM node:lts AS build
+FROM --platform=$BUILDPLATFORM node:lts AS build
+ARG BUILDPLATFORM
+
 WORKDIR /app
 
 COPY . .
@@ -6,9 +8,12 @@ COPY . .
 RUN npm ci
 RUN npm run build
 
-FROM httpd:alpine AS runtime
+FROM --platform=$TARGETARCH joseluisq/static-web-server:latest AS runtime
+ARG TARGETARCH
+
+ENV SERVER_ROOT=/app
+ENV SERVER_FALLBACK_PAGE=/app/index.html
+
 WORKDIR /app
 
-COPY --from=build /app/dist /usr/local/apache2/htdocs/
-USER node
-EXPOSE 80
+COPY --from=build /app/dist .
