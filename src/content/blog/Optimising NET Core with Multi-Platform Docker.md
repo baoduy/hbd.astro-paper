@@ -22,7 +22,7 @@ When creating a .NET application with Docker support, a Dockerfile will be autom
 
 Let's begin with a simple API and the following Dockerfile.
 
-```Docker
+```ps
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
 EXPOSE 80
@@ -58,7 +58,7 @@ Let's optimise this docker file to reduce its size.
 
 Using the same Dockerfile as before, let's change the .NET image to `alpine` and build the Docker image again. The image size shrank to around **110 MB**, which is half the previous size. 😎
 
-```Docker
+```ps
 # 1. Changes this image from 'aspnet:7.0' to 'aspnet:7.0-alpine'
 FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS base
 WORKDIR /app
@@ -91,7 +91,7 @@ Furthermore, an option allows for optimising "dotnet push" to a self-contained, 
 That allows building applications without depending on the .NET runtime and trimming away all unused methods in the library to make the application smaller.
 Let's check out the Dockerfile below.
 
-```Docker
+```ps
 FROM mcr.microsoft.com/dotnet/runtime-deps:7.0-alpine AS base
 WORKDIR /app
 EXPOSE 80
@@ -129,8 +129,7 @@ In a production environment, it is recommended to avoid using root user privileg
 If your application does not require special permissions, you can create a non-root user during the Docker build process.
 Doing so will improve the security of your image, but no size reduced. 🙂
 
-```Docker
-# *All the changes highlighted with read color.*
+```ps
 FROM mcr.microsoft.com/dotnet/runtime-deps:7.0-alpine AS base
 WORKDIR /app
 EXPOSE 80
@@ -172,7 +171,7 @@ Despite the above steps, the Docker image is still built for the x64 platform.
 If you want to run your Docker on an ARM processor, you need to update the Docker image to make it compatible with the "docker buildx" feature.
 Let's take a look at the Dockerfile below.
 
-```Docker
+```ps
 FROM mcr.microsoft.com/dotnet/runtime-deps:7.0-alpine AS base
 WORKDIR /app
 EXPOSE 80
@@ -207,12 +206,10 @@ FROM --platform=$BUILDPLATFORM base AS final
 ARG TARGETARCH
 ARG BUILDPLATFORM
 
-# create a new user and change directory ownership
 RUN adduser --disabled-password \
   --home /app \
   --gecos '' dotnetuser && chown -R dotnetuser /app
 
-# impersonate into the new user
 USER dotnetuser
 WORKDIR /app
 
@@ -245,7 +242,7 @@ So far, we have a Dockerfile that supports multi-platform for .NET 7. Combined w
 
 Before setting up the GitAction, I would like to introduce a useful feature called **[Reusing workflows](https://docs.github.com/en/actions/using-workflows/reusing-workflows)**. This allows us to define a build workflow that can be reused for many projects in the future.
 
-For example, let's consider the following workflow under **[.github/workflows/docker-publish.yaml](https://github.com/baoduy/ShareWorkflows/blob/main/.github/workflows/docker-publish.yaml)** in the [\*\*ShareWorkflows](https://github.com/baoduy/ShareWorkflows)\*\* repository. This workflow builds a Dockerfile for multi-platform and pushes the images to Docker Hub.
+For example, let's consider the following workflow under **[.github/workflows/docker-publish.yaml](https://github.com/baoduy/ShareWorkflows/blob/main/.github/workflows/docker-publish.yaml)** in the **[ShareWorkflows](https://github.com/baoduy/ShareWorkflows)** repository. This workflow builds a Dockerfile for multi-platform and pushes the images to Docker Hub.
 
 ```yaml
 name: Docker-Publish

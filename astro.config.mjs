@@ -29,8 +29,10 @@ export default defineConfig({
         },
       ],
     ],
+    // Can be 'shiki' (default), 'prism' or false to disable highlighting
+    syntaxHighlight: 'shiki',
     shikiConfig: {
-      theme: "one-dark-pro",
+      theme: "Dracula",// Dracula, one-dark-pro
       wrap: true,
     },
     extendDefaultPlugins: true,
