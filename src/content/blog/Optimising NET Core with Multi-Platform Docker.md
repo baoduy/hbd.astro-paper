@@ -11,8 +11,7 @@ tags:
   - multi-platform
   - arm
 ogImage: ""
-description:
-  In this post, sharing about Docker optimisation for the .NET Core framework and build a multi-platform image using the capabilities of Docker buildx, enabling us to create multi-platform images that can seamlessly run on diverse architectures. Moreover, we will discuss the integration of GitAction into the image-building process, empowering us to automate creating and publishing multi-platform Docker images.
+description: In this post, sharing about Docker optimisation for the .NET Core framework and build a multi-platform image using the capabilities of Docker buildx, enabling us to create multi-platform images that can seamlessly run on diverse architectures. Moreover, we will discuss the integration of GitAction into the image-building process, empowering us to automate creating and publishing multi-platform Docker images.
 ---
 
 # Optimising .NET Core with Multi-Platform Docker Images: A Complete Guide
@@ -47,8 +46,7 @@ ENTRYPOINT ["dotnet", "SampleApi.dll"]
 ```
 
 We can build and run your application in Docker faultlessly with this docker file.
-
-![sample-api.png](/public/assets/Optimising_NET_Core_with_Multi-Platform_Docker/sample-api.png)
+![sample-api.png](Optimising_NET_Core_with_Multi-Platform_Docker%2Fsample-api.png)
 
 ### What is the issue?
 
@@ -84,7 +82,8 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "SampleApi.dll"]
 ```
-![alpine-debian-skd-image-size.png](/public/assets/Optimising_NET_Core_with_Multi-Platform_Docker/alpine-debian-skd-image-size.png)
+
+![alpine-debian-sdk-image-size.png](Optimising_NET_Core_with_Multi-Platform_Docker%2Falpine-debian-sdk-image-size.png)
 
 ### With Self contained .NET app (**experimental**)
 
@@ -235,10 +234,10 @@ docker buildx build --platform="linux/amd64,inux/arm64" -f Dockerfile -t samplea
 ```
 
 Here are some sample results of Docker images on my Intel workstation.
-![Docker-hub-results.png](/public/assets/Optimising_NET_Core_with_Multi-Platform_Docker/Docker-hub-results.png)
+![multi-platform-docker-image.png](Optimising_NET_Core_with_Multi-Platform_Docker%2Fmulti-platform-docker-image.png)
 
 Test to ensure both images work correctly without any issues on my workstation.
-![Running-instance-docker.png](/public/assets/Optimising_NET_Core_with_Multi-Platform_Docker/Running-instance-docker.png)
+![Running-instance-docker.png](Optimising_NET_Core_with_Multi-Platform_Docker%2FRunning-instance-docker.png)
 
 ## Altogether with GitAction.
 
@@ -246,7 +245,7 @@ So far, we have a Dockerfile that supports multi-platform for .NET 7. Combined w
 
 Before setting up the GitAction, I would like to introduce a useful feature called **[Reusing workflows](https://docs.github.com/en/actions/using-workflows/reusing-workflows)**. This allows us to define a build workflow that can be reused for many projects in the future.
 
-For example, let's consider the following workflow under **[.github/workflows/docker-publish.yaml](https://github.com/baoduy/ShareWorkflows/blob/main/.github/workflows/docker-publish.yaml)** in the [**ShareWorkflows](https://github.com/baoduy/ShareWorkflows)** repository. This workflow builds a Dockerfile for multi-platform and pushes the images to Docker Hub.
+For example, let's consider the following workflow under **[.github/workflows/docker-publish.yaml](https://github.com/baoduy/ShareWorkflows/blob/main/.github/workflows/docker-publish.yaml)** in the [\*\*ShareWorkflows](https://github.com/baoduy/ShareWorkflows)\*\* repository. This workflow builds a Dockerfile for multi-platform and pushes the images to Docker Hub.
 
 ```yaml
 name: Docker-Publish
@@ -254,24 +253,24 @@ name: Docker-Publish
 on:
   workflow_call:
     inputs:
-          # The location of the Dockerfile parameter.
+      # The location of the Dockerfile parameter.
       dockerFile:
         required: true
         type: string
         description: The location of the Dockerfile.
-      
+
       # The context path of the project parameter.
       context:
         default: .
         type: string
         description: The context path of the project.
-      
+
       # The docker platforms parameter with default value is "linux/arm64 and linux/amd64"
       platforms:
         default: linux/arm64,linux/amd64
         type: string
         description: The docker platforms parameter with default value is "linux/arm64 and linux/amd64".
-      
+
       # The name of the docker image parameter.
       imageName:
         required: true
@@ -305,7 +304,7 @@ jobs:
         uses: docker/setup-buildx-action@v2.9.1
         with:
           platforms: ${{ inputs.platforms }}
-          
+
       # Login to docker hub
       - name: Docker Login
         uses: docker/login-action@v2.0.0
@@ -314,7 +313,7 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
           ecr: auto
           logout: true
-      
+
       # Pull previous image from docker hub to use it as cache to improve the image build time.
       - name: docker pull cache image
         continue-on-error: true
@@ -338,7 +337,7 @@ jobs:
 
 I have committed my SampleAPI to my GitHub repository under the **[HBD.Samples](https://github.com/baoduy/HBD.Samples)** repository. The following is the git action for the SampleAPI, which essentially calls the shared workflow while providing proper parameters.
 
-*Note: Before running the action, ensure that you add DOCKER_USERNAME and DOCKER_TOKEN as secrets to your repository.*
+_Note: Before running the action, ensure that you add DOCKER_USERNAME and DOCKER_TOKEN as secrets to your repository._
 
 ```yaml
 name: Docker-Buildx
@@ -346,18 +345,18 @@ name: Docker-Buildx
 on:
   push:
     branches:
-      - 'main'
+      - "main"
 
 jobs:
   dotnet_release_job:
     uses: baoduy/ShareWorkflows/.github/workflows/docker-publish.yaml@main
     with:
       # The location of the Dockerfile parameter.
-      dockerFile: '01_Multi_platform_docker_image_for_NET/SampleApi/Dockerfile'
+      dockerFile: "01_Multi_platform_docker_image_for_NET/SampleApi/Dockerfile"
       # The context path of the project parameter.
       context: '"./01_Multi_platform_docker_image_for_NET"'
       # The name of the docker image parameter.
-      imageName: 'baoduy2412/sample-01-api'
+      imageName: "baoduy2412/sample-01-api"
       # The docker platforms parameter.
       platforms: linux/arm64,linux/amd64
     secrets:
@@ -368,11 +367,11 @@ jobs:
 ```
 
 That's it! After the Git action runs successfully, you should be able to find the image on Docker Hub with multi-platform tagging.
-![Docker-hub-results.png](/public/assets/Optimising_NET_Core_with_Multi-Platform_Docker/Docker-hub-results.png)
+![Docker-hub-results.png](Optimising_NET_Core_with_Multi-Platform_Docker%2FDocker-hub-results.png)
 
-*Just to confirm these both image had been tested on my IMAC running Intel chip and MacMini running M1 chip.*
+_Just to confirm these both image had been tested on my IMAC running Intel chip and MacMini running M1 chip._
 
 Thanks for reading
 
 Steven
-[Github]([https://github.com/baoduy](https://github.com/baoduy))
+[Github](<[https://github.com/baoduy](https://github.com/baoduy)>)
