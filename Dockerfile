@@ -1,4 +1,4 @@
-FROM node:latest AS build
+FROM node:tls AS build
 WORKDIR /app
 
 COPY . .
