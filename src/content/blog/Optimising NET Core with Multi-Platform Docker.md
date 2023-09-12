@@ -104,6 +104,7 @@ consequently yielding a more compact application.
 Let's evaluate the Dockerfile delineated below, _The comments have been added on top of all changed lines_:
 
 ```ps
+# 1. Changes this image from 'aspnet:7.0-alpine' to 'runtime-deps:7.0-alpine'
 FROM mcr.microsoft.com/dotnet/runtime-deps:7.0-alpine AS base
 WORKDIR /app
 EXPOSE 80
@@ -119,7 +120,7 @@ RUN dotnet build "SampleApi.csproj" -c Release -o /app/build
 
 FROM build AS publish
 
-# 1. updated 'dotnet publish' options
+# 2. updated 'dotnet publish' options
 RUN dotnet publish "SampleApi.csproj" -c Release -o /app/publish \
   --runtime alpine-x64 \
   --self-contained true \
