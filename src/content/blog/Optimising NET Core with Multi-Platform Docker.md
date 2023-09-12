@@ -20,6 +20,7 @@ description: In this post, sharing about Docker optimisation for the .NET Core f
 
 Let's start with a simple API for a .NET application with Docker support.
 Once begun, a Dockerfile will automatically be generated for the project.
+
 Here's how a basic Dockerfile might look.
 
 ```ps
@@ -59,7 +60,8 @@ Our next step involves optimizing this Dockerfile to minimize its footprint.
 
 ## Dockerfile optimisation
 
-Let's proceed by transitioning the .NET image to the `alpine` image by adding `-alpine` at the end of the image version.
+Let's proceed by transitioning the .NET image to the alpine image by adding `-alpine` at the end of the image version.
+
 Remarkably, the updated image size has contracted substantially to approximately **110 MB**,
 signifying a reduction of almost half from its original dimensions.
 
@@ -94,6 +96,7 @@ ENTRYPOINT ["dotnet", "SampleApi.dll"]
 
 Additionally, a feature is presented that enhances the "dotnet push" operation,
 enabling it to create self-contained, singular executable files and reduced library applications.
+
 This facilitates the construction of applications that are not reliant on the .NET runtime,
 as well as the removal of all unused methods present within the library,
 consequently yielding a more compact application.
@@ -129,20 +132,20 @@ COPY --from=publish /app/publish .
 ENTRYPOINT ["./SampleApi"]
 ```
 
-The executed application currently occupies a relatively light footprint of approximately **47MB**.
-It has been rigorously tested to ensure optimal performance with no encountered issues.
-The compact size ensures smooth operation even on low-specification platforms.
+Good news! Our application is impressively lean and only uses about **47MB**.
+That's pretty light, right? So, we can count on it to run smoothly even on low-specs environments.
 
 Nonetheless, it is prudently advisable to subject your application to a comprehensive compatibility test with the Alpine image,
 ensuring seamless real-world performance without compromising on any usage scenarios.
 
 ### Docker Image without root user.
 
-In a production environment, it is prudent to restrict the utilization of root user privileges for the majority of applications.
-In the event that your application doesn't necessitate elevated permissions,
-you are advised to instantiate a non-root user during the Docker build process.
-I would like to bring up this practice to enhance the security of your image
-even this would not result in a reduction of the image size.
+In a production environment, it is recommended to restrict the utilization of root user privileges for the majority of applications.
+In the event that your application doesn't necessitate elevated permissions, you are advised to instantiate a non-root user during the Docker build process.
+
+I'd like to share a quick best practice tip with you to boost the security level of your images. Keep in mind, this might not necessarily decrease the image size, but it's an essential step nonetheless.
+
+Implementing this practice could potentially prevent any flags by our InfoSec's security scanning system during the vetting process for Production deployment. It's always better to be safe and secure as we progress!
 
 ```ps
 FROM mcr.microsoft.com/dotnet/runtime-deps:7.0-alpine AS base
@@ -354,7 +357,8 @@ jobs:
 I've pushed my SampleAPI to my GitHub. You can find it in the **[HBD.Samples](https://github.com/baoduy/HBD.Samples)** repository.
 Following with the SampleAPI of GitAction that calls the shared workflow, making sure to give it the right parameters.
 
-_Remember, before you get this action running, it's important to first add your DOCKER_USERNAME and DOCKER_TOKEN into your repository's secrets._
+_Remember, before you get this action running, it's important to first update the workflow location accrding to your Git repository
+and add your **DOCKER_USERNAME** and **DOCKER_TOKEN** into your repository's secrets._
 
 ```yaml
 name: Docker-Buildx
@@ -366,6 +370,7 @@ on:
 
 jobs:
   dotnet_release_job:
+    # TODO: Update this path according to your git repository.
     uses: baoduy/ShareWorkflows/.github/workflows/docker-publish.yaml@main
     with:
       # The location of the Dockerfile parameter.
