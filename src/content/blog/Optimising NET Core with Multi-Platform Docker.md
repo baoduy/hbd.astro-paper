@@ -18,9 +18,9 @@ description: In this post, sharing about Docker optimisation for the .NET Core f
 
 ## Built-in template
 
-When creating a .NET application with Docker support, a Dockerfile will be automatically generated for the project.
-
-Let's begin with a simple API and the following Dockerfile.
+Let's start with a simple API for a .NET application with Docker support.
+Once begun, a Dockerfile will automatically be generated for the project.
+Here's how a basic Dockerfile might look.
 
 ```ps
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
@@ -45,18 +45,23 @@ COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "SampleApi.dll"]
 ```
 
-We can build and run your application in Docker faultlessly with this docker file.
+Utilizing the provided Dockerfile, we can seamlessly build and execute the application in a Docker environment successfully.
 ![sample-api.png](/assets/OptimisingDockerNET/sample-api.png)
 
 ### What is the issue?
 
-The image built from the docker file above is over **215 MB** in size. This is not a problem when running on a platform with plenty of hard drive space, but it can quickly use up the SD card space on a low-spec resource platform or an IOT device like a Raspberry K3s cluster.
+The resulting image generated from the Dockerfile previously illustrated exceeds **215 MB** in size.
+Although this might not prove troublesome when executing on systems abundant in storage capacity,
+it can lead to rapid depletion of SD card storage space on platforms with lower specifications or IOT devices,
+such as a Raspberry K3s cluster.
 
-Let's optimise this docker file to reduce its size.
+Our next step involves optimizing this Dockerfile to minimize its footprint.
 
-## Docker file optimisation
+## Dockerfile optimisation
 
-Using the same Dockerfile as before, let's change the .NET image to `alpine` and build the Docker image again. The image size shrank to around **110 MB**, which is half the previous size. 😎
+Let's proceed by transitioning the .NET image to the `alpine` image by adding `-alpine` at the end of the image version.
+Remarkably, the updated image size has contracted substantially to approximately **110 MB**,
+signifying a reduction of almost half from its original dimensions.
 
 ```ps
 # 1. Changes this image from 'aspnet:7.0' to 'aspnet:7.0-alpine'
@@ -87,9 +92,13 @@ ENTRYPOINT ["dotnet", "SampleApi.dll"]
 
 ### With Self contained .NET app (**experimental**)
 
-Furthermore, an option allows for optimising "dotnet push" to a self-contained, single execution file and trimmed library application.
-That allows building applications without depending on the .NET runtime and trimming away all unused methods in the library to make the application smaller.
-Let's check out the Dockerfile below.
+Additionally, a feature is presented that enhances the "dotnet push" operation,
+enabling it to create self-contained, singular executable files and reduced library applications.
+This facilitates the construction of applications that are not reliant on the .NET runtime,
+as well as the removal of all unused methods present within the library,
+consequently yielding a more compact application.
+
+Let's evaluate the Dockerfile delineated below, _The comments have been added on top of all changed lines_:
 
 ```ps
 FROM mcr.microsoft.com/dotnet/runtime-deps:7.0-alpine AS base
@@ -120,14 +129,20 @@ COPY --from=publish /app/publish .
 ENTRYPOINT ["./SampleApi"]
 ```
 
-The image now is just around **47MB** and the application is working fine without any issue. This size is good enough for even a low-spec platform.
-However, I recommend testing your application to ensure it is compatible with the alpine image.
+The executed application currently occupies a relatively light footprint of approximately **47MB**.
+It has been rigorously tested to ensure optimal performance with no encountered issues.
+The compact size ensures smooth operation even on low-specification platforms.
+
+Nonetheless, it is prudently advisable to subject your application to a comprehensive compatibility test with the Alpine image,
+ensuring seamless real-world performance without compromising on any usage scenarios.
 
 ### Docker Image without root user.
 
-In a production environment, it is recommended to avoid using root user privileges for most applications.
-If your application does not require special permissions, you can create a non-root user during the Docker build process.
-Doing so will improve the security of your image, but no size reduced. 🙂
+In a production environment, it is prudent to restrict the utilization of root user privileges for the majority of applications.
+In the event that your application doesn't necessitate elevated permissions,
+you are advised to instantiate a non-root user during the Docker build process.
+I would like to bring up this practice to enhance the security of your image
+even this would not result in a reduction of the image size.
 
 ```ps
 FROM mcr.microsoft.com/dotnet/runtime-deps:7.0-alpine AS base
@@ -167,9 +182,9 @@ ENTRYPOINT ["./SampleApi"]
 
 ## Multi-platform docker image.
 
-Despite the above steps, the Docker image is still built for the x64 platform.
-If you want to run your Docker on an ARM processor, you need to update the Docker image to make it compatible with the "docker buildx" feature.
-Let's take a look at the Dockerfile below.
+Even after performing the aforementioned steps, the Docker image remains built for the x64 platform.
+To add support for the Docker on an ARM processor, it is essential to revise your Docker image and leverage the "docker buildx" feature for cross-compatibility.
+Consider the changes of the following Dockerfile for reference.
 
 ```ps
 FROM mcr.microsoft.com/dotnet/runtime-deps:7.0-alpine AS base
@@ -217,7 +232,7 @@ COPY --from=publish /app/publish .
 ENTRYPOINT ["./SampleApi"]
 ```
 
-Here is the command to build a image for multi-platform.
+This is the command to construct a multi-platform compatible image.
 
 ```bash
 # Build Docker for x64 processor
@@ -238,11 +253,15 @@ Test to ensure both images work correctly without any issues on my workstation.
 
 ## Altogether with GitAction.
 
-So far, we have a Dockerfile that supports multi-platform for .NET 7. Combined with GitAction, we can build and push the image to a container registry, specifically Docker Hub in this case.
+We have successfully established a Dockerfile that facilitates multi-platform support for .NET 7.
+In coordination with GitHub Actions, this allows us to construct and propel the respective image to a container registry
+Docker Hub being our prime focus in this situation.
 
-Before setting up the GitAction, I would like to introduce a useful feature called **[Reusing workflows](https://docs.github.com/en/actions/using-workflows/reusing-workflows)**. This allows us to define a build workflow that can be reused for many projects in the future.
+Prior to engaging with the GitHub Action setup, I want to highlight a valuable feature known as **[Reusing workflows](https://docs.github.com/en/actions/using-workflows/reusing-workflows)**.
+This sophisticated feature grants us the capability to outline a build workflow, which can be employed repetitively across multiple projects down the line.
 
-For example, let's consider the following workflow under **[.github/workflows/docker-publish.yaml](https://github.com/baoduy/ShareWorkflows/blob/main/.github/workflows/docker-publish.yaml)** in the **[ShareWorkflows](https://github.com/baoduy/ShareWorkflows)** repository. This workflow builds a Dockerfile for multi-platform and pushes the images to Docker Hub.
+To provide an illustrative example, please consider the undermentioned workflow located at **[.github/workflows/docker-publish.yaml](https://github.com/baoduy/ShareWorkflows/blob/main/.github/workflows/docker-publish.yaml)** within the **[ShareWorkflows](https://github.com/baoduy/ShareWorkflows)** repository.
+This workflow effectively develops a Dockerfile for multi-platform usage and subsequently propels the images to Docker Hub.
 
 ```yaml
 name: Docker-Publish
@@ -332,9 +351,10 @@ jobs:
 
 ### How to reuse the Git workflows
 
-I have committed my SampleAPI to my GitHub repository under the **[HBD.Samples](https://github.com/baoduy/HBD.Samples)** repository. The following is the git action for the SampleAPI, which essentially calls the shared workflow while providing proper parameters.
+I've pushed my SampleAPI to my GitHub. You can find it in the **[HBD.Samples](https://github.com/baoduy/HBD.Samples)** repository.
+Following with the SampleAPI of GitAction that calls the shared workflow, making sure to give it the right parameters.
 
-_Note: Before running the action, ensure that you add DOCKER_USERNAME and DOCKER_TOKEN as secrets to your repository._
+_Remember, before you get this action running, it's important to first add your DOCKER_USERNAME and DOCKER_TOKEN into your repository's secrets._
 
 ```yaml
 name: Docker-Buildx
@@ -363,12 +383,14 @@ jobs:
       DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 ```
 
-That's it! After the Git action runs successfully, you should be able to find the image on Docker Hub with multi-platform tagging.
-![Docker-hub-results.png](/assets/OptimisingDockerNET/Docker-hub-results.png)
+Woohoo! Once the Git action has been executed successfully, we can hop over to Docker Hub to see the image neatly tagged across multiple platforms.
 
-_Just to confirm these both image had been tested on my IMAC running Intel chip and MacMini running M1 chip._
+![Image_on_Docker_Hub.png](/assets/OptimisingDockerNET/Docker-hub-results.png)
 
-Thanks for reading
+_To ensure that everything's working as it should,
+both images were put to the test on my iMac (which has an Intel chip) and a K3s Raspberry Pi 4 cluster._
+
+Thank you so much for your time, Really appreciate it!
 
 Steven
 [Github](<[https://github.com/baoduy](https://github.com/baoduy)>)
