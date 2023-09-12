@@ -130,6 +130,8 @@ RUN dotnet publish "SampleApi.csproj" -c Release -o /app/publish \
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# 3. updated the endpoint, the application path no need to mentiond the '.dll' anymore.
 ENTRYPOINT ["./SampleApi"]
 ```
 
