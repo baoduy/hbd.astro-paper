@@ -101,7 +101,11 @@ This facilitates the construction of applications that are not reliant on the .N
 as well as the removal of all unused methods present within the library,
 consequently yielding a more compact application.
 
-Let's evaluate the Dockerfile delineated below, _The comments have been added on top of all changed lines_:
+Let's evaluate the Dockerfile delineated below, _The comments have been added on top of all changed lines_.
+
+Please note that,
+the `PublishTrimmed` and `PublishSingleFile` are experimental feature and may not compatible with all applications.
+So verify the applications carefully before moving to the Production environment.
 
 ```ps
 # 1. Changes this image from 'aspnet:7.0-alpine' to 'runtime-deps:7.0-alpine'
