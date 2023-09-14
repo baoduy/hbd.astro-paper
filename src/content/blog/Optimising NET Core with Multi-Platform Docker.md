@@ -11,7 +11,11 @@ tags:
   - multi-platform
   - arm
 ogImage: ""
-description: In this post, sharing about Docker optimisation for the .NET Core framework and build a multi-platform image using the capabilities of Docker buildx, enabling us to create multi-platform images that can seamlessly run on diverse architectures. Moreover, we will discuss the integration of GitAction into the image-building process, empowering us to automate creating and publishing multi-platform Docker images.
+description:
+  In this post, sharing about Docker optimisation for the .NET Core framework
+  and build a multi-platform image using the capabilities of Docker buildx,
+  enabling us to create multi-platform images that can seamlessly run on diverse architectures.
+  Moreover, we will discuss the integration of GitAction into the image-building process, empowering us to automate creating and publishing multi-platform Docker images.
 ---
 
 # Optimising .NET Core with Multi-Platform Docker Images: A Complete Guide
