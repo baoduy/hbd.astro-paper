@@ -147,7 +147,8 @@ To install the worker nodes, we first need to obtain the `K3S_TOKEN` from the ma
 # get node-token from master node
 sudo cat /var/lib/rancher/k3s/server/node-token
 
-# The result is something likes this `THIS19937008cbde678aeaf200517f07c0ccd67dc80bdf4df6f746IS4780e15ebcd::server:40fc2cc2fnode81cdacc0b9bb1231token`
+# The result is something likes this
+  `THIS19937008cbde678aeaf200517f07c0ccd67dc80bdf4df6f746IS4780e15ebcd::server:40fc2cc2fnode81cdacc0b9bb1231token`
 ```
 
 Upon retrieval of the node token, it is necessary to inject it into the script shown below. This script should be executed on all the Pi nodes specified previously. Please ensure to update the IP address associated with K3S_URL, as required.
