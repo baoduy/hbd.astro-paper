@@ -85,7 +85,7 @@ you may encounter the following issue when clicking the submit button:
 ## Why did this issue happen?
 
 Consider a setup where the environment consists of two servers performing load balancing as illustrated in the given diagram:
-![Request-Diagram.png](/assets/anti-forgery-token-and-machine-key-aspnet-mvc-iis/Request-Diagram.png)
+![Request-Diagram.png](/assets/donet-mvc-anti-forgery-token-and-machine-key/Request-Diagram.png)
 
 In this setup, the ASP.NET application utilizes two unique keys (decryptionKey and validationKey) for token encryption/decryption and token validation.
 By default, these keys are randomly generated each time the website starts.
@@ -120,7 +120,7 @@ For an AspNet MVC website hosted on IIS, a set of keys can be generated followin
 2. Double-click on "Machine Key".
 3. De-select all checkboxes, click on the "Generate" button on the right side, and then hit "Apply".
 
-![IIS-machine-key-settings](/assets/anti-forgery-token-and-machine-key-aspnet-mvc-iis/IIS-machine-key.png)
+![IIS-machine-key-settings](/assets/donet-mvc-anti-forgery-token-and-machine-key/IIS-machine-key.png)
 
 Once generated, the keys are saved in the "web.config" file of the website.
 You can distribute these keys to all website instances on all the servers in the farm as follows:
@@ -136,3 +136,8 @@ You can distribute these keys to all website instances on all the servers in the
 ```
 
 After accomplishing this, try submitting your website again. The initial issue should be resolved by these measures.
+
+Thank you so much for your time, Really appreciate it!
+
+Steven
+[Github](<[https://github.com/baoduy](https://github.com/baoduy)>)
