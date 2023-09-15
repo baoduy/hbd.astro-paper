@@ -61,3 +61,8 @@ the account owner must reset their password since the application generates a ra
 
 The source code is accessible at this Github repository: https://github.com/baoduy/Azure.ADDS.UserWriteBack.
 Please adjust the steps and instructions to match your actual tool's requirements and behavior.
+
+Thank you so much for your time, Really appreciate it!
+
+Steven
+[Github](<[https://github.com/baoduy](https://github.com/baoduy)>)
