@@ -51,7 +51,7 @@ ENTRYPOINT ["dotnet", "SampleApi.dll"]
 ```
 
 Utilizing the provided Dockerfile, we can seamlessly build and execute the application in a Docker environment successfully.
-![sample-api.png](/assets/OptimisingDockerNET/sample-api.png)
+![sample-api.png](/assets/dotnet-multi-platform-dockerfile/sample-api.png)
 
 ### What is the issue?
 
@@ -94,7 +94,7 @@ COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "SampleApi.dll"]
 ```
 
-![alpine-debian-sdk-image-size.png](/assets/OptimisingDockerNET/alpine-debian-sdk-image-size.png)
+![alpine-debian-sdk-image-size.png](/assets/dotnet-multi-platform-dockerfile/alpine-debian-sdk-image-size.png)
 
 ### With Self contained .NET app (**experimental**)
 
@@ -260,10 +260,10 @@ docker buildx build --platform="linux/amd64,inux/arm64" -f Dockerfile -t samplea
 ```
 
 Here are some sample results of Docker images on my Intel workstation.
-![multi-platform-docker-image.png](/assets/OptimisingDockerNET/multi-platform-docker-image.png)
+![multi-platform-docker-image.png](/assets/dotnet-multi-platform-dockerfile/multi-platform-docker-image.png)
 
 Test to ensure both images work correctly without any issues on my workstation.
-![Running-instance-docker.png](/assets/OptimisingDockerNET/Running-instance-docker.png)
+![Running-instance-docker.png](/assets/dotnet-multi-platform-dockerfile/Running-instance-docker.png)
 
 ## Altogether with GitAction.
 
@@ -401,7 +401,7 @@ jobs:
 
 Woohoo! Once the Git action has been executed successfully, we can hop over to Docker Hub to see the image neatly tagged across multiple platforms.
 
-![Image_on_Docker_Hub.png](/assets/OptimisingDockerNET/Docker-hub-results.png)
+![Image_on_Docker_Hub.png](/assets/dotnet-multi-platform-dockerfile/Docker-hub-results.png)
 
 _To ensure that everything's working as it should,
 both images were put to the test on my iMac (which has an Intel chip) and a K3s Raspberry Pi 4 cluster._

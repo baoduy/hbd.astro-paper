@@ -1,8 +1,8 @@
 ---
 author: Steven Hoang
-pubDatetime: 2021-09-20T00:00:00Z
+pubDatetime: 2023-09-15T00:00:00Z
 title: "Step-By-Step Guide: Installing K3s on a Raspberry Pi 4 Cluster"
-postSlug: azure-ad-to-adss-users-write-back
+postSlug: ks-install-k3s-on-raspberry-pi-cluster
 featured: true
 draft: false
 tags:
