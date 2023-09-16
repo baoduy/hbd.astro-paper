@@ -59,7 +59,7 @@ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/
 kubectl create namespace cert-manager
 ```
 
-5. Create `value.yaml` file with content below
+5. Create `value.yaml` file with the content below
 
 ```yaml
 ingressShim:
@@ -141,7 +141,7 @@ spec:
                   number: 80
 ```
 
-> The certificate generated from `Let's Encrypt` has a validity of 90 days. However, the `cert-manager` will automatically renew the certificate as it nears its expiration date.
+> The certificate generated from `Let's Encrypt` has validity of 90 days. However, the `cert-manager` will automatically renew the certificate as it nears its expiration date.
 
 ## Verify application
 
@@ -151,10 +151,10 @@ Once the configuration is properly set up and the certificate has been successfu
 The application is also fully functional with SSL for secure communication.
 ![Secure application communication](/assets/ks-install-cert-manager-free-ssl-kubernetes-cluster/cert-drunkcoding-net.png)
 
-Below are the detailed certificate information as seen from the browser.
+Below is the detailed certificate information as seen from the browser.
 ![Browser certificate details](/assets/ks-install-cert-manager-free-ssl-kubernetes-cluster/cert-details.png)
 
 Thank you so much for your time, Really appreciate it!
 
 Steven
-[Github](<[https://github.com/baoduy](https://github.com/baoduy)>)
+[GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)
