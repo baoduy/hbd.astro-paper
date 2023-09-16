@@ -36,7 +36,7 @@ Please note, the configuration interface may vary among different routers. Nonet
 
 <img src="/assets/ks-Install-nginx-on-pi-cluster/pi-cluster-port-forwarding-diagram.png" width="600px">
 
-Here is my current configuration settings.
+Here is my current router settings.
 
 <img src="/assets/ks-Install-nginx-on-pi-cluster/router-port-forwarding-config.png" width="550px"/>
 
@@ -102,6 +102,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: echo-deployment
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -122,6 +123,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: echo-service
+  namespace: default
 spec:
   ports:
     - port: 80
@@ -146,6 +148,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: echo-ingress
+  namespace: default
 spec:
   ingressClassName: nginx
   rules:
