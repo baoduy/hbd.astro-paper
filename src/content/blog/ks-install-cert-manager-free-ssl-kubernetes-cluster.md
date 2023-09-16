@@ -53,13 +53,13 @@ Visit the following link to obtain the latest version: [Cert-Manager Releases](h
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.crds.yaml
 ```
 
-3. **Create cert-manager Namespace** - It's a good practice to install cert-manager in its own namespace. Use this command:
+4. **Create cert-manager Namespace** - It's a good practice to install cert-manager in its own namespace. Use this command:
 
 ```shell
 kubectl create namespace cert-manager
 ```
 
-4. Create `value.yaml` file with content below
+5. Create `value.yaml` file with content below
 
 ```yaml
 ingressShim:
@@ -67,7 +67,7 @@ ingressShim:
   defaultIssuerKind: "ClusterIssuer"
 ```
 
-5. **Install cert-manager** Helm chart - This will install cert-manager along with its components:
+6. **Install cert-manager** Helm chart - This will install cert-manager along with its components:
 
 ```shell
 helm install cert-manager jetstack/cert-manager --values values.yaml -n cert-manager
