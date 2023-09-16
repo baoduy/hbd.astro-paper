@@ -21,7 +21,7 @@ description:
 
 In our [previous article](/posts/ks-install-k3s-on-raspberry-pi-cluster), we successfully set up a k3s Pi cluster. We will now build upon that foundation. Let's dive in!
 
-![Cluster Diagram](/assets/ks-Install-k3s-on-pi-cluster/pi-cluster-diagram.svg)
+<img src="/assets/ks-Install-k3s-on-pi-cluster/pi-cluster-diagram.png" width="600px">
 
 - **pi-master**: 192.168.1.85 (Running Pi OS Lite 64Bit)
 - **pi-node-1**: 192.168.1.86 (Running Pi OS Lite 64Bit)
@@ -34,7 +34,7 @@ This routing process will redirect internet requests coming to ports 80 and 443 
 
 Please note, the configuration interface may vary among different routers. Nonetheless, most broadband routers should offer the same functionality pertaining to port forwarding.
 
-![pi-cluster-port-forwarding-diagram.svg](/assets/ks-Install-nginx-on-pi-cluster/pi-cluster-port-forwarding-diagram.svg)
+<img src="/assets/ks-Install-nginx-on-pi-cluster/pi-cluster-port-forwarding-diagram.png" width="600px">
 
 Here is my current configuration settings.
 
@@ -45,7 +45,7 @@ Here is my current configuration settings.
 We're going to start by installing Nginx on our cluster. In the following guide, we will illustrate how to set up and run Nginx on K3s.
 At its core, Nginx will listen to inbound requests on the master node's IP address and subsequently forward these requests to the services operating within our cluster.
 
-![pi-cluster-nginx-diagram.svg](/assets/ks-Install-nginx-on-pi-cluster/pi-cluster-nginx-diagram.svg)
+<img src="/assets/ks-Install-nginx-on-pi-cluster/pi-cluster-nginx-diagram.png" width="600px">
 
 **1. Config Ip address**
 
@@ -77,7 +77,7 @@ kubectl create namespace nginx-ingress
 
 **4. Install the Helm chart:**
 
-Now you can install the Helm chart, using your custom values.yaml file to override the default configuration values. Run the following command:
+Now you can install the Helm chart using your custom values.yaml file to override the default configuration values. Run the following command:
 
 ```shell
 helm install nginx nginx-stable/nginx-ingress --values values.yaml -n nginx-ingress
@@ -85,7 +85,7 @@ helm install nginx nginx-stable/nginx-ingress --values values.yaml -n nginx-ingr
 
 **5. Verify nginx pod:**
 
-After installed successfully we should be able to find a pod running there:
+After installed successfully, we should be able to find a pod running there:
 ![nginx-installed-successfully.png](/assets/ks-Install-nginx-on-pi-cluster/nginx-installed-successfully.png)
 
 ### Nginx Verification
@@ -164,13 +164,13 @@ spec:
 
 **3. Update your domain DNS**
 
-To ensure you able to access from the internet you need to point an domain to your public up address.
+To ensure you can access from the internet, you need to point a domain to your public up address.
 
-Here is my `drunkcoding.net` DNS configuration on cloudflare for reference purposes.
+Here is my `drunkcoding.net` DNS configuration on Cloudflare for reference purposes.
 ![drunkcoding-cloudflare-dns.png](/assets/ks-Install-nginx-on-pi-cluster/drunkcoding-cloudflare-dns.png)
 
-After all these configuration now we should be able to access your application hosting on our k3s cluster from the internet.
-when accessing to `http://echo.drunkcoding.net` you able to see the JSON response from echo pod as below.
+After all these configurations now we should be able to access your application hosting on our k3s cluster from the internet.
+when accessing to `http://echo.drunkcoding.net` you able to see the JSON response from the echo pod as below.
 
 ![echo-app-response.png](/assets/ks-Install-nginx-on-pi-cluster/echo-app-response.png)
 
