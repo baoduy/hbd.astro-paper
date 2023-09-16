@@ -8,7 +8,7 @@ draft: false
 tags:
   - dotnet
   - MVC
-  - webfarm
+  - web-farm
   - iis
 ogImage: ""
 description:
@@ -74,7 +74,7 @@ The generated token structure resembles:
 ## What is the issue?
 
 While deploying your website in an environment comprising multiple load-balanced servers (aka a web farm),
-you may encounter the following issue when clicking the submit button:
+you may encounter the following issue when clicking the `submit` button:
 
 > The anti-forgery token could not be decrypted.
 > If this application is hosted by a Web Farm or cluster,
@@ -95,13 +95,13 @@ When the website starts on both servers, two different sets of keys are independ
 
 Let's say a user, denoted here as user A, sends a request that is redirected to server 1 by the load balancer.
 The website responds by providing a view along with an encrypted AntiForgeryToken.
-Later, user A submits the form back to the load balancer, expecting the form to be processed by server 1.
+Later user A submits the form back to the load balancer, expecting the form to be processed by server 1.
 
 However, if the load balancer redirects the request to server 2, there’s a problem.
 The token encrypted by Server 1 cannot be decrypted on Server 2 as the decryptionKey on Server 2 differs from the one on Server 1.
 This mismatch of keys results in an error.
 
-To prevent such issues, ensure consistency in keys - every instance of the website inside a single web farm
+To prevent such issues, ensure consistency in keys for every instance of the website inside a single web farm
 needs to use the same set of keys for token encryption/decryption and validation.
 
 However, when dealing with multiple websites hosted on the same server,
@@ -117,8 +117,8 @@ This will ensure successful encryption and decryption regardless of the server p
 For an AspNet MVC website hosted on IIS, a set of keys can be generated following these steps:
 
 1. Select the website on IIS.
-2. Double-click on "Machine Key".
-3. De-select all checkboxes, click on the "Generate" button on the right side, and then hit "Apply".
+2. Double-click on "Machine Key."
+3. De-select all checkboxes, click on the "Generate" button on the right side, and then hit "Apply."
 
 ![IIS-machine-key-settings](/assets/donet-mvc-anti-forgery-token-and-machine-key/IIS-machine-key.png)
 
@@ -135,9 +135,9 @@ You can distribute these keys to all website instances on all the servers in the
  </system.web>
 ```
 
-After accomplishing this, try submitting your website again. The initial issue should be resolved by these measures.
+After accomplishing this, try submitting your website again. These measures should resolve the initial issue.
 
 Thank you so much for your time, Really appreciate it!
 
 Steven
-[Github](<[https://github.com/baoduy](https://github.com/baoduy)>)
+[GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)

@@ -1,22 +1,23 @@
 ---
 author: Steven Hoang
 pubDatetime: 2021-10-13T00:00:00Z
-title: "Small tool for Azure AD to ADSS User Write back"
+title: "Small tool for Azure AD to AD User Write back"
 postSlug: azure-ad-to-adss-users-write-back
 featured: false
 draft: false
 tags:
   - dotnet
-  - MVC
-  - webfarm
-  - iis
+  - tools
+  - azureAD
+  - sync
 ogImage: ""
-description: Sharing a small tool-self developed to syncup the users from AzureAD to on=premise Active Directory Service.
+description: Sharing a small tool-self developed to sync the users from AzureAD to on=premise Active Directory Service.
 ---
 
-# Azure AD Sync Enhancement Tool: User Writeback Functionality
+# Azure AD Sync Enhancement Tool: User Write-back Functionality
 
-Azure AD Sync is an instrumental resource for forging a hybrid cloud model and facilitating password write-back. However, if your organization requires user writeback functionality, Azure AD Sync alone will not suffice.
+Azure AD Sync is an instrumental resource for forging a hybrid cloud model and facilitating password write-back.
+However, if your organization requires user write-back functionality, Azure AD Sync alone will not suffice.
 
 ## Solution
 
@@ -34,7 +35,7 @@ To address this need, I have developed a tool that implements user write-back fu
     "ClientId": "[ClientId]",
     "ClientSecret": "[ClientSecret]",
     "AzureAdGroups": ["The Azure AD groups would like to write back"],
-    "AdOrgUnit": "The OU of ADDS for writeback users."
+    "AdOrgUnit": "The OU of ADDS for write-back users."
   }
 }
 ```
@@ -55,7 +56,7 @@ The application will check and sync users from AzureAdGroups every 1 hour.
 Upon successful write-back of the user account to ADDS,
 the account owner must reset their password since the application generates a random password of 50 length characters.
 
-> This password is just temporary password as it will be overwritten with the latest password once users changed their password in Azure AD by the password write-back of AD-AAD Sync.
+> This password is just a temporary password as it will be overwritten with the latest password once users changed their password in Azure AD by the password write-back of AD-AAD Sync.
 
 ## Source Code
 
