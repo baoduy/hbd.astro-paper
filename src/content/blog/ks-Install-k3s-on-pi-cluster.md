@@ -25,7 +25,7 @@ Let's dive in and start the installation process.
 
 Before beginning the installation process, let's take a moment to review the cluster setup and the corresponding IP addresses assigned to each node in our Raspberry Pi 4 cluster.
 
-![Cluster Diagram](/assets/ks-Install-k3s-on-pi-cluster/pi-cluster-diagram.svg)
+<img src="/assets/ks-Install-k3s-on-pi-cluster/pi-cluster-diagram.png" width="600px">
 
 In our configuration, we have three Raspberry Pi 4 units connected to a switch. This switch, in turn, is connected to the router supplied by my internet service provider.
 Additionally, I have been provided with a static public IP address for internet access.

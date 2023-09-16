@@ -21,7 +21,7 @@ description:
 
 In our [previous article](/posts/ks-install-k3s-on-raspberry-pi-cluster), we successfully set up a k3s Pi cluster. We will now build upon that foundation. Let's dive in!
 
-![Cluster Diagram](/assets/ks-Install-k3s-on-pi-cluster/pi-cluster-diagram.svg)
+<img src="/assets/ks-Install-k3s-on-pi-cluster/pi-cluster-diagram.png" width="600px">
 
 - **pi-master**: 192.168.1.85 (Running Pi OS Lite 64Bit)
 - **pi-node-1**: 192.168.1.86 (Running Pi OS Lite 64Bit)
@@ -34,7 +34,7 @@ This routing process will redirect internet requests coming to ports 80 and 443 
 
 Please note, the configuration interface may vary among different routers. Nonetheless, most broadband routers should offer the same functionality pertaining to port forwarding.
 
-![pi-cluster-port-forwarding-diagram.svg](/assets/ks-Install-nginx-on-pi-cluster/pi-cluster-port-forwarding-diagram.svg)
+<img src="/assets/ks-Install-nginx-on-pi-cluster/pi-cluster-port-forwarding-diagram.png" width="600px">
 
 Here is my current configuration settings.
 
@@ -45,7 +45,7 @@ Here is my current configuration settings.
 We're going to start by installing Nginx on our cluster. In the following guide, we will illustrate how to set up and run Nginx on K3s.
 At its core, Nginx will listen to inbound requests on the master node's IP address and subsequently forward these requests to the services operating within our cluster.
 
-![pi-cluster-nginx-diagram.svg](/assets/ks-Install-nginx-on-pi-cluster/pi-cluster-nginx-diagram.svg)
+<img src="/assets/ks-Install-nginx-on-pi-cluster/pi-cluster-nginx-diagram.png" width="600px">
 
 **1. Config Ip address**
 
