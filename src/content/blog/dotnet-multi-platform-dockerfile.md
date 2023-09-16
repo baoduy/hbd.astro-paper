@@ -2,7 +2,7 @@
 author: Steven Hoang
 pubDatetime: 2023-09-10T00:00:00Z
 title: "Optimising .NET Core with Multi-Platform Docker Images: A Complete Guide"
-postSlug: dotnet-dickerfile-multi-platform
+postSlug: dotnet-dockerfile-multi-platform
 featured: false
 draft: false
 tags:
@@ -56,7 +56,7 @@ Utilizing the provided Dockerfile, we can seamlessly build and execute the appli
 ### What is the issue?
 
 The resulting image generated from the Dockerfile previously illustrated exceeds **215 MB** in size.
-Although this might not prove troublesome when executing on systems abundant in storage capacity,
+Although this might not prove troublesome, when executing on systems abundant in storage capacity,
 it can lead to rapid depletion of SD card storage space on platforms with lower specifications or IOT devices,
 such as a Raspberry K3s cluster.
 
@@ -144,7 +144,7 @@ ENTRYPOINT ["./SampleApi"]
 ```
 
 Good news! Our application is impressively lean and only uses about **47MB**.
-That's pretty light, right? So, we can count on it to run smoothly even on low-specs environments.
+That's pretty light, right? So, we can count on it to run smoothly even in low-specs environments.
 
 Nonetheless, it is prudently advisable to subject your application to a comprehensive compatibility test with the Alpine image,
 ensuring seamless real-world performance without compromising on any usage scenarios.
@@ -255,8 +255,8 @@ docker build --platform="linux/amd64" -f Dockerfile -t sampleapi-x64:latest .
 # Build image for arm64 processor
 docker build --platform="linux/arm64" -f Dockerfile -t sampleapi-arm64:latest .
 
-# All together, build image for multip-platform with docker buildx
-docker buildx build --platform="linux/amd64,inux/arm64" -f Dockerfile -t sampleapi:latest .
+# All together, build image for multi-platform with docker buildx
+docker buildx build --platform="linux/amd64,linux/arm64" -f Dockerfile -t sampleapi:latest .
 ```
 
 Here are some sample results of Docker images on my Intel workstation.
@@ -344,7 +344,7 @@ jobs:
           ecr: auto
           logout: true
 
-      # Pull previous image from docker hub to use it as cache to improve the image build time.
+      # Pull the previous image from docker hub to use it as cache to improve the image build time.
       - name: docker pull cache image
         continue-on-error: true
         run: docker pull ${{ inputs.imageName }}:latest
@@ -368,7 +368,7 @@ jobs:
 I've pushed my SampleAPI to my GitHub. You can find it in the **[HBD.Samples](https://github.com/baoduy/HBD.Samples)** repository.
 Following with the SampleAPI of GitAction that calls the shared workflow, making sure to give it the right parameters.
 
-_Remember, before you get this action running, it's important to first update the workflow location accrding to your Git repository
+_Remember, before you get this action running, it's important to first update the workflow location according to your Git repository
 and add your **DOCKER_USERNAME** and **DOCKER_TOKEN** into your repository's secrets._
 
 ```yaml

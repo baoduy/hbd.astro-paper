@@ -18,7 +18,7 @@ description:
 
 # Step-By-Step Guide: Installing K3s on a Raspberry Pi 4 Cluster
 
-In this guide, sharing some useful tips to help you seamlessly install K3s on a Raspberry Pi 4 cluster.
+In this guide, share some useful tips to help you seamlessly install K3s on a Raspberry Pi 4 cluster.
 Let's dive in and start the installation process.
 
 ## Raspberry Pi4 CLuster Illustration.
@@ -40,7 +40,8 @@ I will pick the Pi running at 192.168.1.85 as my master mode and start the insta
 
 ### Pi Os installation
 
-Given our project's need for a k3s cluster, I selected the Raspberry Pi OS Lite 64Bit which can be downloaded from the [Raspberry PI Imager](https://www.raspberrypi.com/software/). This particular OS variant doesn't include a desktop environment, thus, SSH will be our primary method for node installation.
+Given our project's need for a k3s cluster, I selected the Raspberry Pi OS Lite 64Bit which can be downloaded from the [Raspberry PI Imager](https://www.raspberrypi.com/software/).
+This particular OS variant doesn't include a desktop environment. Thus, SSH will be our primary method for node installation.
 
 ![Raspberry Pi OS Selection](/assets/ks-Install-k3s-on-pi-cluster/pi-os-version.png)
 
@@ -58,7 +59,8 @@ I use `Termius` as my tool of choice for establishing a connection to the cluste
 
 ### I. Config static IP for Pi
 
-By default, Pi OS will use DHCP to receive random Ip from the router so to ensure the stable connectivity between the node We will config the status IP for each node by using the following steps.
+By default, Pi OS will use DHCP to receive random Ip from the router, so to ensure the stable connectivity between the node
+We will config the status IP for each node by using the following steps.
 
 ```shell
 # 1. Open the file dhcpcd.conf
@@ -128,7 +130,7 @@ curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --disable=traefik --flan
 - **--disable=traefik**: This is instructing k3s to disable the Traefik ingress controller. By default, k3s includes and enables Traefik; this flag will prevent that from happening.
 - **--flannel-backend=host-gw**: This flag is setting the backend for Flannel (k3s's default network provider) to use. The host-gw option provides high-performance networking by creating a route for each node in the cluster.
 - **--tls-san=192.168.1.85**: The --tls-san flag allows you to specify additional IP or DNS names that should be included in the TLS certificate that is automatically generated for the Kubernetes API server. You can repeat this flag to add more than one SAN. The value 192.168.1.85 is an additional Subjective Alternative Name (SAN) for the Kubernetes API server's certificate.
-- **--bind-address=192.168.1.85**: This is the IP address that the k3s API server will listen on.
+- **--bind-address=192.168.1.85**: This is the IP address that the k3s API server will listen to.
 - **--advertise-address=192.168.1.85**: This is the IP address that the k3s API server will advertise to other nodes in the cluster. They will use this IP to connect to the API server.
 - **--node-ip=192.168.1.85**: This defines the IP that should be used for Kubernetes services on the node.
 - **--cluster-init**: This flag instructs k3s to initialize a new Kubernetes cluster. If this flag is not provided, k3s will join an existing cluster if one is available.
@@ -166,4 +168,4 @@ Congratulations, your K3s cluster is now ready to be utilized.
 Thank you so much for your time, Really appreciate it!
 
 Steven
-[Github](<[https://github.com/baoduy](https://github.com/baoduy)>)
+[GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)

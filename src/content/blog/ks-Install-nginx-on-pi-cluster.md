@@ -36,7 +36,7 @@ Please note, the configuration interface may vary among different routers. Nonet
 
 <img src="/assets/ks-Install-nginx-on-pi-cluster/pi-cluster-port-forwarding-diagram.png" width="600px">
 
-Here is my current router settings.
+Here are my current router settings.
 
 <img src="/assets/ks-Install-nginx-on-pi-cluster/router-port-forwarding-config.png" width="550px"/>
 
@@ -56,13 +56,13 @@ We can override these values by creating your own values.yaml file. Here is an e
 controller:
   service:
     # Our master node ip address here.
-    # Do remember replace this ip address with your once accordingly.
+    # Do remember replacing this ip address with your once accordingly.
     loadBalancerIP: "192.168.1.85"
 ```
 
 **2. Download the Helm chart:**
 
-Download the Nginix helm chart. You can do this by adding the Nginx repo to Helm. Run the following commands:
+Download the Nginix helm chart. You can do this by adding the Nginx repo to the Helm. Run the following commands:
 
 ```shell
 helm repo add nginx-stable https://helm.nginx.com/stable
@@ -167,17 +167,17 @@ spec:
 
 **3. Update your domain DNS**
 
-To ensure you can access from the internet, you need to point a domain to your public up address.
+To ensure you can access from the internet, you need to point a domain to your public address.
 
 Here is my `drunkcoding.net` DNS configuration on Cloudflare for reference purposes.
 ![drunkcoding-cloudflare-dns.png](/assets/ks-Install-nginx-on-pi-cluster/drunkcoding-cloudflare-dns.png)
 
 After all these configurations now we should be able to access your application hosting on our k3s cluster from the internet.
-when accessing to `http://echo.drunkcoding.net` you able to see the JSON response from the echo pod as below.
+When accessing to `http://echo.drunkcoding.net` you able to see the JSON response from the echo pod as below.
 
 ![echo-app-response.png](/assets/ks-Install-nginx-on-pi-cluster/echo-app-response.png)
 
 Thank you so much for your time, Really appreciate it!
 
 Steven
-[Github](<[https://github.com/baoduy](https://github.com/baoduy)>)
+[GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)
