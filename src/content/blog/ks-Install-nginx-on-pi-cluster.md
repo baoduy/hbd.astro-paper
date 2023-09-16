@@ -77,7 +77,7 @@ kubectl create namespace nginx-ingress
 
 **4. Install the Helm chart:**
 
-Now you can install the Helm chart, using your custom values.yaml file to override the default configuration values. Run the following command:
+Now you can install the Helm chart using your custom values.yaml file to override the default configuration values. Run the following command:
 
 ```shell
 helm install nginx nginx-stable/nginx-ingress --values values.yaml -n nginx-ingress
@@ -85,7 +85,7 @@ helm install nginx nginx-stable/nginx-ingress --values values.yaml -n nginx-ingr
 
 **5. Verify nginx pod:**
 
-After installed successfully we should be able to find a pod running there:
+After installed successfully, we should be able to find a pod running there:
 ![nginx-installed-successfully.png](/assets/ks-Install-nginx-on-pi-cluster/nginx-installed-successfully.png)
 
 ### Nginx Verification
@@ -164,13 +164,13 @@ spec:
 
 **3. Update your domain DNS**
 
-To ensure you able to access from the internet you need to point an domain to your public up address.
+To ensure you can access from the internet, you need to point a domain to your public up address.
 
-Here is my `drunkcoding.net` DNS configuration on cloudflare for reference purposes.
+Here is my `drunkcoding.net` DNS configuration on Cloudflare for reference purposes.
 ![drunkcoding-cloudflare-dns.png](/assets/ks-Install-nginx-on-pi-cluster/drunkcoding-cloudflare-dns.png)
 
-After all these configuration now we should be able to access your application hosting on our k3s cluster from the internet.
-when accessing to `http://echo.drunkcoding.net` you able to see the JSON response from echo pod as below.
+After all these configurations now we should be able to access your application hosting on our k3s cluster from the internet.
+when accessing to `http://echo.drunkcoding.net` you able to see the JSON response from the echo pod as below.
 
 ![echo-app-response.png](/assets/ks-Install-nginx-on-pi-cluster/echo-app-response.png)
 
