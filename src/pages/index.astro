@@ -15,6 +15,7 @@ const posts = await getCollection("blog");
 
 const sortedPosts = getSortedPosts(posts);
 const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
+const nonFeaturedPosts = sortedPosts.filter(({ data }) => !data.featured);
 
 const socialCount = SOCIALS.filter(social => social.active).length;
 ---
@@ -90,7 +91,7 @@ const socialCount = SOCIALS.filter(social => social.active).length;
       <h2>New Posts</h2>
       <ul>
         {
-          sortedPosts.map(
+          nonFeaturedPosts.map(
             ({ data }, index) =>
               index < 4 && (
                 <Card
