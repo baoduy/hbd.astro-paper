@@ -13,7 +13,7 @@ tags:
 ogImage: ""
 description:
   This robust solution provides a feasible alternative to Nginx when there's no public static IP address or port forwarding required.
-  This guide walks you through the process step by step, enabling you to get your services online more efficiently.
+  This guide walks us through the process step by step, enabling the services online more efficiently.
 ---
 
 In the previous articles we successfully:
@@ -25,8 +25,8 @@ In the previous articles we successfully:
 However, to expose our services to the internet, it's essential to obtain a **Static Public IP Address** and configure the **router/firewall to open ports 80 and 443**.
 If for any reason we're unable to meet these requirements, we won't be able to expose our services online.
 
-In addition, if your organization relies on private Kubernetes on cloud platforms such as AKS, EKS, or GKS, and you wish to expose a select set of services to the internet
-without jeopardizing security, you might consider using [Cloudflare Tunnel](https://www.cloudflare.com/products/tunnel/).
+In addition, if our organization relies on private Kubernetes on cloud platforms such as AKS, EKS, or GKS, and we wish to expose a select set of services to the internet
+without jeopardizing security, we might consider using [Cloudflare Tunnel](https://www.cloudflare.com/products/tunnel/).
 
 Let's delve into this topic further.
 
@@ -34,19 +34,19 @@ Let's delve into this topic further.
 
 ## Cloudflare Tunnel Configuration
 
-. This guide assumes that you have followed the instructions from our [previous post](/posts/ks-install-cert-manager-free-ssl-kubernetes-cluster), and you have a configured Cloudflare account with at least one onboarded domain.
+1. This guide assumes that we have followed the instructions from our [previous post](/posts/ks-install-cert-manager-free-ssl-kubernetes-cluster), and configured Cloudflare account with at least one onboarded domain.
 
-2. Your next step is to create a [Cloudflare Zero Trust Account](https://one.dash.cloudflare.com). While creating this account might require adding a payment method, please note that there are no charges for the first 50 users. You can proceed to register without any hesitation.
+2. The next step is to create a [Cloudflare Zero Trust Account](https://one.dash.cloudflare.com). While creating this account might require adding a payment method, please note that there are no charges for the first 50 users. You can proceed to register without any hesitation.
 
 <img src="/assets/ks-public-services-with-cloudflare-tunnel/cloudflare-zero-trust-dashboard.png" width="600px">
 
-3. Once logged in, navigate to **Access => Tunnel** and create a new tunnel. For the purposes of this guide, we'll name it `pi-k3s`. After creating the tunnel, make sure to copy the tunnel token that appears (similar to the one below):
+2. Once logged in, navigate to **Access => Tunnel** and create a new tunnel. For the purposes of this guide, we'll name it `pi-k3s`. After creating the tunnel, make sure to copy the tunnel token that appears (similar to the one below):
 
 ```textmate
 eyJhIjoiYWVlMGFjYzZiYejTkz....yzCfgm7oqfnhz2DrJDKyL8PBDr9hR5FvYgDR45TxPiAxbmVW=
 ```
 
-4. Finally, ensure you click the Save button to confirm the creation of the tunnel.
+3. Finally, ensure we click the Save button to confirm the creation of the tunnel.
 
 ## Kubernetes Tunnel Installation
 
@@ -145,16 +145,27 @@ Note: Kubernetes internal service URLs follow the convention: `http://{service-n
 
 ![Cloudflare Public Host Configuration](/assets/ks-public-services-with-cloudflare-tunnel/cloudflare-echo-service-config.png)
 
-2. Test your configuration by accessing `https://echo.drunkcoding.net`. You should be able to access the service without any restrictions.
+2. Verify the performance of the application by visiting `https://echo.drunkcoding.net`. The service should be accessible without any constraints.
+
+3. I have established two endpoints as follows and conducted a load test using Postman.
+   The results were astonishing as the Cloudflare tunnel delivered speeds even greater than direct access via Nginx.
+
+- **echo-nginx.drunkcoding.net**: This endpoint provides access to the echo application through Nginx ingress and with a public IP address.
+- **echo.drunkcoding.net**: This endpoint offers access to the echo application through the Cloudflare tunnel.
+
+Please see the results in the attached image.
+![load-test.png](/assets/ks-public-services-with-cloudflare-tunnel/load-test.png)
+
+> Note: The cluster hosting this application is based in Singapore, while the test was conducted from a terminal in Vietnam.
 
 ## Concluding Remarks
 
-Leveraging Cloudflare tunnels simplifies application exposure to the internet bypassing the necessity for:
+Leveraging Cloudflare tunnels simplifies application exposure to the internet without the necessity of below:
 
 - A public IP Address.
 - Port forwarding.
 - Firewall whitelisting.
-- Nginx proxy.
+- Nginx proxy/ingress.
 - A Cert-manager or Cloudflare origin server certificate.
 
 This results in a significantly simplified infrastructure setup.
