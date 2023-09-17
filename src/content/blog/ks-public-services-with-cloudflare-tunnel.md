@@ -145,7 +145,18 @@ Note: Kubernetes internal service URLs follow the convention: `http://{service-n
 
 ![Cloudflare Public Host Configuration](/assets/ks-public-services-with-cloudflare-tunnel/cloudflare-echo-service-config.png)
 
-2. Test the application by accessing `https://echo.drunkcoding.net`. We should be able to access the service without any restrictions.
+2. Verify the performance of the application by visiting `https://echo.drunkcoding.net`. The service should be accessible without any constraints.
+
+3. I have established two endpoints as follows and conducted a load test using Postman.
+   The results were astonishing as the Cloudflare tunnel delivered speeds even greater than direct access via Nginx.
+
+- **echo-nginx.drunkcoding.net**: This endpoint provides access to the echo application through Nginx ingress and with a public IP address.
+- **echo.drunkcoding.net**: This endpoint offers access to the echo application through the Cloudflare tunnel.
+
+Please see the results in the attached image.
+![load-test.png](/assets/ks-public-services-with-cloudflare-tunnel/load-test.png)
+
+> Note: The cluster hosting this application is based in Singapore, while the test was conducted from a terminal in Vietnam.
 
 ## Concluding Remarks
 
