@@ -13,7 +13,7 @@ tags:
 ogImage: ""
 description:
   This robust solution provides a feasible alternative to Nginx when there's no public static IP address or port forwarding required.
-  This guide walks you through the process step by step, enabling you to get your services online more efficiently.
+  This guide walks us through the process step by step, enabling the services online more efficiently.
 ---
 
 In the previous articles we successfully:
@@ -25,8 +25,8 @@ In the previous articles we successfully:
 However, to expose our services to the internet, it's essential to obtain a **Static Public IP Address** and configure the **router/firewall to open ports 80 and 443**.
 If for any reason we're unable to meet these requirements, we won't be able to expose our services online.
 
-In addition, if your organization relies on private Kubernetes on cloud platforms such as AKS, EKS, or GKS, and you wish to expose a select set of services to the internet
-without jeopardizing security, you might consider using [Cloudflare Tunnel](https://www.cloudflare.com/products/tunnel/).
+In addition, if our organization relies on private Kubernetes on cloud platforms such as AKS, EKS, or GKS, and we wish to expose a select set of services to the internet
+without jeopardizing security, we might consider using [Cloudflare Tunnel](https://www.cloudflare.com/products/tunnel/).
 
 Let's delve into this topic further.
 
@@ -145,16 +145,16 @@ Note: Kubernetes internal service URLs follow the convention: `http://{service-n
 
 ![Cloudflare Public Host Configuration](/assets/ks-public-services-with-cloudflare-tunnel/cloudflare-echo-service-config.png)
 
-2. Test your configuration by accessing `https://echo.drunkcoding.net`. You should be able to access the service without any restrictions.
+2. Test the application by accessing `https://echo.drunkcoding.net`. We should be able to access the service without any restrictions.
 
 ## Concluding Remarks
 
-Leveraging Cloudflare tunnels simplifies application exposure to the internet bypassing the necessity for:
+Leveraging Cloudflare tunnels simplifies application exposure to the internet without the necessity of below:
 
 - A public IP Address.
 - Port forwarding.
 - Firewall whitelisting.
-- Nginx proxy.
+- Nginx proxy/ingress.
 - A Cert-manager or Cloudflare origin server certificate.
 
 This results in a significantly simplified infrastructure setup.
