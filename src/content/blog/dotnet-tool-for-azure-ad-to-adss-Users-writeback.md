@@ -14,8 +14,6 @@ ogImage: ""
 description: Sharing a small tool-self developed to sync the users from AzureAD to on=premise Active Directory Service.
 ---
 
-# Azure AD Sync Enhancement Tool: User Write-back Functionality
-
 Azure AD Sync is an instrumental resource for forging a hybrid cloud model and facilitating password write-back.
 However, if your organization requires user write-back functionality, Azure AD Sync alone will not suffice.
 

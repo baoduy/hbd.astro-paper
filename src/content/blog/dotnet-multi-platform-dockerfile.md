@@ -18,8 +18,6 @@ description:
   Moreover, we will discuss the integration of GitAction into the image-building process, empowering us to automate creating and publishing multi-platform Docker images.
 ---
 
-# Optimising .NET Core with Multi-Platform Docker Images: A Complete Guide
-
 ## Built-in template
 
 Let's start with a simple API for a .NET application with Docker support.
