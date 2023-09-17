@@ -1,6 +1,6 @@
 ---
 author: Steven Hoang
-pubDatetime: 2023-09-20T00:00:00Z
+pubDatetime: 2023-09-16T00:00:00Z
 title: "Step-By-Step Guide: Installation of Cert-Manager, Implementing Free SSL Certificates for Kubernetes Clusters"
 postSlug: ks-install-cert-manager-free-ssl-kubernetes-cluster
 featured: true
@@ -8,8 +8,6 @@ draft: false
 tags:
   - k3s
   - kubernetes
-  - raspberry cluster
-  - pi cluster
   - cert-manager
   - ssl
   - tls
@@ -18,8 +16,6 @@ description:
   This comprehensive guide will help you to smoothly install Cert-Manager and implement free SSL certificates for Kubernetes clusters.
   It is designed with step-by-step instructions to facilitate a seamless installation process. Dive in and let's begin this journey for enhanced security!
 ---
-
-# Step-By-Step Guide: Installation of Cert-Manager, Implementing Free SSL Certificates for Kubernetes Clusters.
 
 Welcome back to our ongoing dialogue about Kubernetes. In the [previous article](/posts/ks-install-nginx-on-k3s-raspberry-pi-cluster/), we successfully executed the Nginx installation and made our applications internet-accessible.
 However, you might've observed that the applications are operating under the HTTP protocol, which is not secure at present.

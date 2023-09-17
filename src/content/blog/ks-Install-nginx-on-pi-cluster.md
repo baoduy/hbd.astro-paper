@@ -17,8 +17,6 @@ description:
   Detailed and step-by-step instructions will ensure a seamless installation process. Let's get started!
 ---
 
-# Step-By-Step Guide: Installing Nginx Ingress on K3s Pi 4 Cluster
-
 In our [previous article](/posts/ks-install-k3s-on-raspberry-pi-cluster), we successfully set up a k3s Pi cluster. We will now build upon that foundation. Let's dive in!
 
 <img src="/assets/ks-Install-k3s-on-pi-cluster/pi-cluster-diagram.png" width="600px">

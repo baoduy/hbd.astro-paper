@@ -16,8 +16,6 @@ description:
   Let's dive in and start the installation process.
 ---
 
-# Step-By-Step Guide: Installing K3s on a Raspberry Pi 4 Cluster
-
 In this guide, share some useful tips to help you seamlessly install K3s on a Raspberry Pi 4 cluster.
 Let's dive in and start the installation process.
 

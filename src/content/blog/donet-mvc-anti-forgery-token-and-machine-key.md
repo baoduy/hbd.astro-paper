@@ -17,8 +17,6 @@ description:
   The post emphasizes the necessity of implementing both measures to enhance overall security.
 ---
 
-# Anti Forgery Token and Machine Key
-
 If you're developing using ASP.NET MVC, it's highly likely that you've come across the concept of anti-forgery tokens.
 These tokens play a critical role in bolstering the security of our web applications and safeguarding them against Cross-Site Request Forgery (CSRF) attacks.
 
