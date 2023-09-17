@@ -1,6 +1,6 @@
 ---
 author: Steven Hoang
-pubDatetime: 2023-09-17T00:00:00Z
+pubDatetime: 2023-09-18T00:00:00Z
 title: "Step-By-Step Guide: Cert-Manager Alternative with Cloudflare, Implementing Free SSL Certificates for Kubernetes Clusters"
 postSlug: ks-cert-manager-alternative-with-cloudflare
 featured: true
