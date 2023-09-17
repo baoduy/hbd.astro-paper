@@ -3,7 +3,7 @@ author: Steven Hoang
 pubDatetime: 2023-09-15T00:00:00Z
 title: "Step-By-Step Guide: Installing K3s on a Raspberry Pi 4 Cluster"
 postSlug: ks-install-k3s-on-raspberry-pi-cluster
-featured: true
+featured: false
 draft: false
 tags:
   - k3s
@@ -162,6 +162,8 @@ curl -sfL https://get.k3s.io | K3S_URL=https://192.168.1.85:6443 \
 Congratulations, your K3s cluster is now ready to be utilized.
 
 ![k82-lend-pi-cluster.png](/assets/ks-Install-k3s-on-pi-cluster/k82-lend-pi-cluster.png)
+
+<hr/>
 
 Thank you so much for your time, Really appreciate it!
 

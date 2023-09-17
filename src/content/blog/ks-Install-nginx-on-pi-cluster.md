@@ -3,7 +3,7 @@ author: Steven Hoang
 pubDatetime: 2023-09-16T00:00:00Z
 title: "Step-By-Step Guide: Installing Nginx Ingress on K3s Pi 4 Cluster"
 postSlug: ks-install-nginx-on-k3s-raspberry-pi-cluster
-featured: true
+featured: false
 draft: false
 tags:
   - k3s
@@ -174,6 +174,8 @@ After all these configurations now we should be able to access your application 
 When accessing to `http://echo.drunkcoding.net` you able to see the JSON response from the echo pod as below.
 
 ![echo-app-response.png](/assets/ks-Install-nginx-on-pi-cluster/echo-app-response.png)
+
+<hr/>
 
 Thank you so much for your time, Really appreciate it!
 

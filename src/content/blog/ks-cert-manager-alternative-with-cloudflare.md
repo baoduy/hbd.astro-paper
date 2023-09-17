@@ -1,9 +1,9 @@
 ---
 author: Steven Hoang
-pubDatetime: 2023-09-18T00:00:00Z
+pubDatetime: 2023-09-17T02:00:00Z
 title: "Step-By-Step Guide: Cert-Manager Alternative with Cloudflare, Implementing Free SSL Certificates for Kubernetes Clusters"
 postSlug: ks-cert-manager-alternative-with-cloudflare
-featured: true
+featured: false
 draft: false
 tags:
   - k3s
@@ -41,8 +41,6 @@ Cloudflare provides several valuable services:
 
 4. **Proxy**: Sits between the website's server and its visitors, with [WAF enabled](https://www.cloudflare.com/application-services/products/waf/) through proxy giving protection from threats like DDoS attacks and bots, while also enhancing performance.
    All requests appear to be coming from Cloudflare IP addresses, enabling us to enhance site security by just whitelisting [Cloudflare IP Addresses](https://www.cloudflare.com/en-in/ips/).
-5. Switch the SSL/TLS encryption mode of the domain to `Full (strict)`
-   ![cloudflare-domain-tls-mode.png](/assets/ks-cert-manager-alternative-with-cloudflare/cloudflare-domain-tls-mode.png)
 
 ## Kickstart with Cloudflare
 
@@ -61,9 +59,13 @@ Cloudflare provides several valuable services:
 
 6. Following this, download the Cloudflare Root CA certificate from [here](https://developers.cloudflare.com/ssl/static/origin_ca_rsa_root.pem).
 7. Once all the above steps are complete, we should have the following three files:
+
    - `cert.crt`: This public key certification is in PEM format.
    - `private.key`: This private key of the certificate is also in PEM format.
    - `Root CA`: This root CA certificate is also in PEM format.
+
+8. Switch the SSL/TLS encryption mode of the domain to `Full (strict)`
+   ![cloudflare-domain-tls-mode.png](/assets/ks-cert-manager-alternative-with-cloudflare/cloudflare-domain-tls-mode.png)
 
 ## Cloudflare Certificate Installation
 
@@ -135,6 +137,8 @@ However, it's important to note that for production applications, an upgrade to 
 is recommended for Production environment which provides a certificate from a standard, trusted third-party authority and boasts an extended validity period.
 
 > After completing these steps, we can proceed with uninstalling the Cert-Manager, as it is no longer needed.
+
+<hr/>
 
 Thank you so much for your time, Really appreciate it!
 

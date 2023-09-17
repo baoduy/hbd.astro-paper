@@ -3,7 +3,7 @@ author: Steven Hoang
 pubDatetime: 2023-09-17T00:00:00Z
 title: "Step-By-Step Guide: Installation of Cert-Manager, Implementing Free SSL Certificates for Kubernetes Clusters"
 postSlug: ks-install-cert-manager-free-ssl-kubernetes-cluster
-featured: true
+featured: false
 draft: false
 tags:
   - k3s
@@ -149,6 +149,8 @@ The application is also fully functional with SSL for secure communication.
 
 Below is the detailed certificate information as seen from the browser.
 ![Browser certificate details](/assets/ks-install-cert-manager-free-ssl-kubernetes-cluster/cert-details.png)
+
+<hr/>
 
 Thank you so much for your time, Really appreciate it!
 

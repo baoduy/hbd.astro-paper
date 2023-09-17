@@ -404,6 +404,8 @@ Woohoo! Once the Git action has been executed successfully, we can hop over to D
 _To ensure that everything's working as it should,
 both images were put to the test on my iMac (which has an Intel chip) and a K3s Raspberry Pi 4 cluster._
 
+<hr/>
+
 Thank you so much for your time, Really appreciate it!
 
 Steven
