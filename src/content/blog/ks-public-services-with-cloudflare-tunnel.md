@@ -34,9 +34,9 @@ Let's delve into this topic further.
 
 ## Cloudflare Tunnel Configuration
 
-. This guide assumes that you have followed the instructions from our [previous post](/posts/ks-install-cert-manager-free-ssl-kubernetes-cluster), and you have a configured Cloudflare account with at least one onboarded domain.
+1. This guide assumes that we have followed the instructions from our [previous post](/posts/ks-install-cert-manager-free-ssl-kubernetes-cluster), and configured Cloudflare account with at least one onboarded domain.
 
-1. Your next step is to create a [Cloudflare Zero Trust Account](https://one.dash.cloudflare.com). While creating this account might require adding a payment method, please note that there are no charges for the first 50 users. You can proceed to register without any hesitation.
+2. The next step is to create a [Cloudflare Zero Trust Account](https://one.dash.cloudflare.com). While creating this account might require adding a payment method, please note that there are no charges for the first 50 users. You can proceed to register without any hesitation.
 
 <img src="/assets/ks-public-services-with-cloudflare-tunnel/cloudflare-zero-trust-dashboard.png" width="600px">
 
@@ -46,7 +46,7 @@ Let's delve into this topic further.
 eyJhIjoiYWVlMGFjYzZiYejTkz....yzCfgm7oqfnhz2DrJDKyL8PBDr9hR5FvYgDR45TxPiAxbmVW=
 ```
 
-3. Finally, ensure you click the Save button to confirm the creation of the tunnel.
+3. Finally, ensure we click the Save button to confirm the creation of the tunnel.
 
 ## Kubernetes Tunnel Installation
 
