@@ -7,7 +7,7 @@ export const SITE: Site = {
   title: "drunkcoding.net",
   ogImage: "astropaper-og.jpg",
   lightAndDarkMode: true,
-  postPerPage: 10,
+  postPerPage: 5,
 };
 
 export const LOCALE = ["en-EN"]; // set to [] to use the environment default
@@ -46,13 +46,13 @@ export const SOCIALS: SocialObjects = [
   },
   {
     name: "WhatsApp",
-    href: "https://github.com/satnaing/astro-paper",
+    href: "",
     linkTitle: `${SITE.title} on WhatsApp`,
     active: false,
   },
   {
     name: "Mastodon",
-    href: "https://github.com/satnaing/astro-paper",
+    href: "",
     linkTitle: `${SITE.title} on Mastodon`,
     active: false,
   },
