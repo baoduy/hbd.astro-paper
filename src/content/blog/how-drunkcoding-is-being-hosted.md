@@ -4,7 +4,7 @@ pubDatetime: 2023-09-25T02:00:00Z
 title: "How drunkcoding.net is hosting on kubernetes clusters."
 postSlug: how-drunkcoding-is-being-hosted
 featured: false
-draft: false
+draft: true
 tags:
   - blog
   - kubernetes

@@ -171,7 +171,6 @@ Leveraging Cloudflare tunnels simplifies application exposure to the internet wi
 This results in a significantly simplified infrastructure setup.
 
 <hr/>
-
 Thank you so much for your time, Really appreciate it!
 
 Steven
