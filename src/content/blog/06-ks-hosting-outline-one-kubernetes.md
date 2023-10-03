@@ -4,7 +4,7 @@ pubDatetime: 2023-10-01T00:00:00Z
 title: "Step-By-Step Guide: Hosting Outline VPN on Kubernetes"
 postSlug: ks-hosting-outline-one-kubernetes
 featured: true
-draft: true
+draft: false
 tags:
   - k3s
   - kubernetes
@@ -15,14 +15,31 @@ description: "Outline VPN, a comprehensive server and client software tool, is a
 In this article, we will delve into the process of hosting Outline VPN on Kubernetes and outlining the steps to expose connection ports via NGINX."
 ---
 
-In the [previous article]("posts/ks-install-nginx-on-k3s-raspberry-pi-cluster"), we successfully executed the installation of NGINX on Kubernetes.
-In this current tutorial, Let's take the advantage of nginx to hosting the Outline VPN on Kubernetes and expose connection ports via NGINX.
+In our [previous article]("posts/ks-install-nginx-on-k3s-raspberry-pi-cluster"),
+we were successful installed NGINX on Kubernetes.Now, we're going to take NGINX for a spin and use it to host the Outline VPN on Kubernetes and open up our connection ports.
+
+You're probably aware that by default, Outline VPN changes the client port each time a new connection is made.
+It can be a bit of a challenge when we need to expose the ports through NGINX and get the outbound port on the whitelist at the firewall level.
+
+However, there is a feature allow us to modify the Outline VPN's default configuration during deployment.
+With this little tweak, we can get all connections to pass through a single port and manage to expose both the management and client ports through NGINX.
+Stick with us as we walk you through this process.
 
 ## Install Outline VPN
 
-If following the instruction from [Outline Manager,](https://getoutline.org/get-started/#step-1) we realise
-that the client connection port is changing whenever create a new connection.
-This is not suitable for us to hosting on Kubernetes.
+Before proceeding with the installation of the Outline, it's essential to define some variables as follows:
+
+- **Management Port (60000)**: This port facilitates the connection between the Outline Manager and the VPN server.
+- **Client Port (40000)**: This port is assigned for client devices to establish a connection with the VPN server.
+- **DNS (vpn.drunkcoding.net)**: This DNS (Domain Name Server) allows client devices to communicate with the VPN server from the public internet.
+
+1. Let's start with a new _Outline-system_ namespace creation.
+
+```shell
+kubectl create namespace outline-system
+```
+
+2. Create a Self-sign certificate
 
 To install Outline VPN, a required certificate plays multiple crucial roles:
 
@@ -34,22 +51,10 @@ To install Outline VPN, a required certificate plays multiple crucial roles:
 - **Secured Connection Assurance**: This essential certificate ensures the connection between the client devices and the VPN server is both private and secure.
   This is particularly crucial when connecting from insecure networks like public Wi-Fi.
 
-Before proceeding with the installation of the Outline, it's essential to define some variables as follows:
+Let's generate a self-signed certificate.
+It can be accomplished through various methods, each tailored to specific environments.
 
-- **Management Port (60000)**: This port facilitates the connection between the Outline Manager and the VPN server.
-- **Client Port (40000)**: This port is assigned for client devices to establish a connection with the VPN server.
-- **DNS (vpn.drunkcoding.net)**: Internally, this DNS (Domain Name Server) allows client devices to communicate with the VPN server from the public internet.
-
-1. Create _Outline-system_ namespace
-
-```shell
-kubectl create namespace outline-system
-```
-
-2. Create a Self-sign certificate
-
-Generating a self-signed certificate can be accomplished through various methods, each tailored to specific environments.
-Here, we'll be using OpenSSL as an example. The commands illustrating this process are detailed below.
+Here, we'll be using OpenSSL as an example. The commands illustrating this process are detailed below:
 
 ```shell
 # 1. Create private key
@@ -75,13 +80,20 @@ openssl req -new -key private.key -out csr_request.csr
 openssl x509 -req -days 365 -in csr_request.csr -signkey private.key -out cert.crt
 ```
 
-Once the certificate is generated, let's import into kubernetes with the following command.
+Once the certificate is generated, following command to import into kubernetes cluster.
 
 ```shell
 kubectl create secret tls tls-outline-vpn-imported --cert=cert.crt --key=private.key --namespace=outline-system
 ```
 
-2. Deploy Outline Service with following `outline-deployment.yaml` file.
+3. Deploy Outline Service with following `outline-deployment.yaml` file.
+
+- **PersistentVolumeClaim**:
+  A PersistentVolumeClaim named _outline-vpn-claim_ is created
+  which requests storage is being created in the namespace _outline-system_ to store the configuration of Outline VPN.
+- **Deployement**: A Deployment named _outline-vpn_ is being created in the namespace _outline-system_.
+  With this Deployment, a Pod is created with a container that uses the image quay.io/outline/shadowbox:stable. The container defines two TCP ports (40000, 60000) to expose.
+- **Service**: A Service named _outline-vpn_ is configured to expose the Pods and expose the ports (40000 and 60000) for both TCP and UDP protocols.
 
 ```yaml
 # 1. PersistentVolume
@@ -231,8 +243,41 @@ Apply it on the cluster:
 kubectl apply -f outline-deployment.yaml
 ```
 
-Upon successful deployment, you should be able to see a pod along with its corresponding logs, as depicted in the screenshot below.
+Upon successful deployment, you should be able to see a pod along with its corresponding logs as in the screenshot below.
 ![outline-vpn-deployed-successfully.png](/assets/ks-hosting-outline-one-kubernetes/outline-vpn-deployed-successfully.png)
+
+## PostStart command & Environment variables explanation
+
+In the deployment lifecycle configuration above, there is a postStart command
+that creates a JSON file located at **/root/shadowbox/persisted-state/shadowbox_server_config.json**.
+
+The structure of the JSON object should look like this:
+
+```json
+{
+  "rollouts": [
+    {
+      "id": "single-port",
+      "enabled": true
+    }
+  ],
+  "portForNewAccessKeys": 40000,
+  "hostname": "vpn.drunkcoding.net"
+}
+```
+
+Let's break down the components of the JSON configuration for the Outline VPN:
+
+- **rollouts**: This has an ID 'single-port', indicating to the Outline VPN that client connections are to be allowed on this single port.
+- **portForNewAccessKeys**: This represents the port number (40000), where new access keys will be created.
+- **hostname**: This refers to the domain name or IP address of the VPN server the clients will connect to, in this case being "vpn.drunkcoding.net".
+
+There are also a few environment variables to acknowledge:
+
+- **SB_API_PORT**: It denotes the port exposed by the Outline Management API.
+- **SB_API_PREFIX**: It's a random GUID to be used as a prefix on the Outline Management API.
+- **SB_CERTIFICATE_FILE**: It points to a file, /tmp/shadowbox.crt, which corresponds to the certificate we created earlier.
+- **SB_PRIVATE_KEY_FILE**: This points to the path of the private key file. In this case, it's /tmp/shadowbox.key. This file matches the aforementioned certificate.
 
 ## Expose connection ports through nginx
 
