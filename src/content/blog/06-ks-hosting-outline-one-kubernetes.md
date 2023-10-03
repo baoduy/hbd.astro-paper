@@ -279,7 +279,11 @@ There are also a few environment variables to acknowledge:
 - **SB_CERTIFICATE_FILE**: It points to a file, /tmp/shadowbox.crt, which corresponds to the certificate we created earlier.
 - **SB_PRIVATE_KEY_FILE**: This points to the path of the private key file. In this case, it's /tmp/shadowbox.key. This file matches the aforementioned certificate.
 
-## Expose connection ports through nginx
+## Exposing connection ports through nginx
+
+## Outline Management
+
+## Outline Client
 
 <hr/>
 
