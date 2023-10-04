@@ -293,6 +293,9 @@ To begin with, we need to update the `values.yaml` file from our previous NGINX 
 Here's the template:
 
 ```yaml
+# Refer to line 155 and 160 here for details
+# https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
+
 # 1. Expose the TCP with convention tcp: 'port':'namespace/service:port'
 tcp:
   60000: "outline-system/outline-vpn:60000"

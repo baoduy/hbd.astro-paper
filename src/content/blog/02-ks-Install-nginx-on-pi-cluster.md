@@ -51,9 +51,12 @@ Helm charts come with a file called `values.yaml` which contains the default con
 We can override these values by creating your own values.yaml file. Here is an example:
 
 ```yaml
+# Refer to line 434 here for details
+# https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
+
 controller:
   service:
-    # Our master node ip address here.
+    # Our primary node ip address here.
     # Do remember replacing this ip address with your once accordingly.
     loadBalancerIP: "192.168.1.85"
 ```
