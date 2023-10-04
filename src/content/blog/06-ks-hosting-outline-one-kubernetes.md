@@ -281,6 +281,38 @@ There are also a few environment variables to acknowledge:
 
 ## Exposing connection ports through nginx
 
+Once we've completed the installation as mentioned above, our Outline Container will be active and providing services on ports 60000 and 40000.
+Currently, this service is confined to the Kubernetes network, meaning they can't be accessed directly from external sources, such as the internet.
+
+In order to make these services receptive to outside connections, we'll need to expose the ports through NGINX.
+The following illustration provides a visual representation on how to do this.
+![outline-nginx-kubernetes.png](/assets/ks-hosting-outline-one-kubernetes/outline-nginx-kubernetes.png)
+
+To begin with, we need to update the `values.yaml` file from our previous NGINX deployment. This configuration will open up the needed ports.
+
+Here's the template:
+
+```yaml
+# 1. Expose the TCP with convention tcp: 'port':'namespace/service:port'
+tcp:
+  60000: "outline-system/outline-vpn:60000"
+  40000: "outline-system/outline-vpn:40000"
+
+# 2. Expose the UDP with convention udp: 'port':'namespace/service:port'
+udp:
+  40000: "outline-system/outline-vpn:40000"
+
+controller:
+  service:
+    loadBalancerIP: "192.168.1.85"
+```
+
+After updating the values.yaml with the correct information, re-upgrade the helm chart using the command:
+
+```shell
+helm upgrade nginx nginx-stable/nginx-ingress --values values.yaml -n nginx-ingress
+```
+
 ## Outline Management
 
 ## Outline Client
