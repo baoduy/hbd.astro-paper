@@ -1,6 +1,6 @@
 ---
 author: Steven Hoang
-pubDatetime: 2023-10-01T00:00:00Z
+pubDatetime: 2023-10-05T00:00:00Z
 title: "Step-By-Step Guide: Hosting Outline VPN on Kubernetes"
 postSlug: ks-hosting-outline-one-kubernetes
 featured: true
@@ -16,12 +16,12 @@ In this article, we will delve into the process of hosting Outline VPN on Kubern
 ---
 
 In our [previous article]("posts/ks-install-nginx-on-k3s-raspberry-pi-cluster"),
-we were successful installed NGINX on Kubernetes.Now, we're going to take NGINX for a spin and use it to host the Outline VPN on Kubernetes and open up our connection ports.
+we were successfully installed NGINX on Kubernetes.Now, we're going to take NGINX for a spin and use it to host the Outline VPN on Kubernetes and open up our connection ports.
 
 You're probably aware that by default, Outline VPN changes the client port each time a new connection is made.
 It can be a bit of a challenge when we need to expose the ports through NGINX and get the outbound port on the whitelist at the firewall level.
 
-However, there is a feature allow us to modify the Outline VPN's default configuration during deployment.
+However, there is a feature that allows us to modify the Outline VPN's default configuration during deployment.
 With this little tweak, we can get all connections to pass through a single port and manage to expose both the management and client ports through NGINX.
 Stick with us as we walk you through this process.
 
@@ -91,7 +91,7 @@ kubectl create secret tls tls-outline-vpn-imported --cert=cert.crt --key=private
 - **PersistentVolumeClaim**:
   A PersistentVolumeClaim named _outline-vpn-claim_ is created
   which requests storage is being created in the namespace _outline-system_ to store the configuration of Outline VPN.
-- **Deployement**: A Deployment named _outline-vpn_ is being created in the namespace _outline-system_.
+- **Deployment**: A Deployment named _outline-vpn_ is being created in the namespace _outline-system_.
   With this Deployment, a Pod is created with a container that uses the image quay.io/outline/shadowbox:stable. The container defines two TCP ports (40000, 60000) to expose.
 - **Service**: A Service named _outline-vpn_ is configured to expose the Pods and expose the ports (40000 and 60000) for both TCP and UDP protocols.
 
