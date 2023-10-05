@@ -31,7 +31,7 @@ Before proceeding with the installation of the Outline, it's essential to define
 
 - **Management Port (60000)**: This port facilitates the connection between the Outline Manager and the VPN server.
 - **Client Port (40000)**: This port is assigned for client devices to establish a connection with the VPN server.
-- **DNS (vpn.drunkcoding.net)**: This DNS (Domain Name Server) allows client devices to communicate with the VPN server from the public internet.
+- **Hostname (vpn.drunkcoding.net)**: This DNS (Domain Name Server) allows client devices to communicate with the VPN server from the public internet.
 
 1. Let's start with a new _Outline-system_ namespace creation.
 
@@ -314,18 +314,75 @@ After updating the values.yaml with the correct information, re-upgrade the helm
 
 ```shell
 # 1. To install brand new nginx
-helm install nginx nginx-stable/nginx-ingress --values values.yaml -n nginx-ingress
+helm install nginx ingress-nginx/ingress-nginx --values values.yaml -n nginx-ingress
 
 # 2. To update the existing nginx
-helm upgrade nginx nginx-stable/nginx-ingress --values values.yaml -n nginx-ingress
+helm upgrade nginx ingress-nginx/ingress-nginx --values values.yaml -n nginx-ingress
 
 # 3. TO delete existing nginx and re-install with step 1 above.
 helm delete nginx -n nginx-ingress
 ```
 
-## Outline Management
+## Managing the Outline VPN
 
-## Outline Client
+Follow these steps to manage your Outline VPN:
+
+**Step 1: Download the Outline Manager**
+
+Download the Outline Manager from [Outline's official website](https://getoutline.org/get-started/#step-1).
+
+**Step 2: Prepare the Connection Configuration**
+
+Prepare the connection configuration with the following parameters:
+
+- **apiUrl**: Use the following format `https://{hostname}:{management-port}/{SB_API_PREFIX}`.
+- **certSha256**: This is the thumbprint of the certificate created. Use the following command to access the thumbprint:
+
+```shell
+echo SHA=$(openssl x509 -noout -fingerprint -sha256 -inform pem -in cert.crt | sed "s/://g" | sed 's/.*=//')
+```
+
+**Step 3: Generate the Configuration**
+
+Our configuration should look like this:
+
+```json
+{
+  "apiUrl": "https://vpn.drunkcoding.net:60000/b782eecb-bb9e-58be-614a-d5de1431d6b3",
+  "certSha256": "34B3C8EB1C6EC9B5335556D7E8DC73A30152D27C66B054BAB8ACF5D11AE0C810"
+}
+```
+
+**Step 4: Setup Outline Anywhere**
+
+Open the Outline Manager App and click **Setup Outline Anywhere**. Paste the configuration into the second input box and click Done. .
+![outline-manager-config.png](/assets/ks-hosting-outline-one-kubernetes/outline-manager-config.png)
+
+**Step 5: Connect to the Outline VPN Server**
+
+On successful configuration, you should be able to connect to the Outline VPN server as shown below:
+![outline-manager-server.png](/assets/ks-hosting-outline-one-kubernetes/outline-manager-server.png)
+
+**Step 6: Create a Connection**
+
+To allow the clients to connect to the server, click Add new key to create a connection and note down the access key:
+
+```textmate
+ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpQc1YxY0V0ZkhzSVFueEJFVEVsMFRF@vpn.drunkcoding.net:40000/?outline=1
+```
+
+## Getting Started with the Outline Client
+
+To get started with the VPN, follow the steps below:
+
+1. Begin by navigating to the [Outline official website](https://getoutline.org/get-started/#step-3) to download the client application. Be sure to select the version compatible with your platform architecture.
+
+2. Launch the client application. Select **Add Access Key**, then input the access key mentioned above. Afterward, click on **Add Server**.
+   <img src="/assets/ks-hosting-outline-one-kubernetes/outline-client-config.png" width="400px">
+
+3. Proceed by clicking on the 'Connect' button to establish a connection.
+
+4. To verify the VPN server's capability, access [myip.info](https://www.myip.info). Upon successful connection, your public IP address should reflect the Kubernetes outbound public IP. This means the VPN server is functioning as expected.
 
 <hr/>
 

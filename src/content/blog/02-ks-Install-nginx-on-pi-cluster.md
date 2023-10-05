@@ -66,7 +66,7 @@ controller:
 Download the Nginix helm chart. You can do this by adding the Nginx repo to the Helm. Run the following commands:
 
 ```shell
-helm repo add nginx-stable https://helm.nginx.com/stable
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 ```
 
@@ -81,7 +81,7 @@ kubectl create namespace nginx-ingress
 Now you can install the Helm chart using your custom values.yaml file to override the default configuration values. Run the following command:
 
 ```shell
-helm install nginx nginx-stable/nginx-ingress --values values.yaml -n nginx-ingress
+helm install nginx ingress-nginx/ingress-nginx --values values.yaml -n nginx-ingress
 ```
 
 **5. Verify nginx pod:**
