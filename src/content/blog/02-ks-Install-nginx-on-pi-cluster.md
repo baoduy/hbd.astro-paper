@@ -51,9 +51,12 @@ Helm charts come with a file called `values.yaml` which contains the default con
 We can override these values by creating your own values.yaml file. Here is an example:
 
 ```yaml
+# Refer to line 434 here for details
+# https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
+
 controller:
   service:
-    # Our master node ip address here.
+    # Our primary node ip address here.
     # Do remember replacing this ip address with your once accordingly.
     loadBalancerIP: "192.168.1.85"
 ```
@@ -63,7 +66,7 @@ controller:
 Download the Nginix helm chart. You can do this by adding the Nginx repo to the Helm. Run the following commands:
 
 ```shell
-helm repo add nginx-stable https://helm.nginx.com/stable
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 ```
 
@@ -78,7 +81,7 @@ kubectl create namespace nginx-ingress
 Now you can install the Helm chart using your custom values.yaml file to override the default configuration values. Run the following command:
 
 ```shell
-helm install nginx nginx-stable/nginx-ingress --values values.yaml -n nginx-ingress
+helm install nginx ingress-nginx/ingress-nginx --values values.yaml -n nginx-ingress
 ```
 
 **5. Verify nginx pod:**

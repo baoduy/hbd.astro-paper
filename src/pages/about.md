@@ -2,15 +2,21 @@
 layout: ../layouts/AboutLayout.astro
 title: "About"
 ---
+
 <div>
   <img src="/assets/steven-hoang.jpeg" class="sm:w-1/4 mx-auto" alt="Steven (Hoang Bao Duy)">
 </div>
 
-**Steven** (Hoang Bao Duy) is a passionate professional with over 15 years of experience leading development teams to deliver end-to-end solutions.
+Steven (Hoang Bao Duy) is a highly skilled professional with a strong passion for software development and over 15 years of experience
+leading development teams. His expertise lies in delivering end-to-end solutions, covering the entire software development life-cycle
+from development and testing to security scanning and production deployment.
 
-He has the ability to delivery **end-to-end software development life-cycle** covering development, testing, security scanning, and production deployment. This ensures that his projects are of high quality and scalability.
+With a focus on .NET and Microsoft Technologies, Steven ensures that his projects are of the highest quality and scalability.
+He has a deep understanding of DevOps, CloudOps, and Infrastructure as Code, which allows him to automate the provisioning of infrastructure components on the cloud and efficiently manage cloud infrastructure.
+This approach ensures proper version control, change tracking across regions, and simplified disaster recovery for cloud environments.
 
-By utilised **DevOps, CloudOps, and Infra as code** He has automated the infra components provision on the cloud and manage cloud infrastructure efficiently.This approach also ensured proper version control, change tracking across regions, and simplified disaster recovery for cloud environments.
+Steven's commitment to staying up-to-date with the latest industry trends and technologies makes him a valuable asset
+in delivering successful projects with optimal efficiency and reliability.
 
 ## Cloud Stack
 
