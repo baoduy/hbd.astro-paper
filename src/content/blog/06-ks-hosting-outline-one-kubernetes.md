@@ -313,7 +313,14 @@ controller:
 After updating the values.yaml with the correct information, re-upgrade the helm chart using the command:
 
 ```shell
+# 1. To install brand new nginx
+helm install nginx nginx-stable/nginx-ingress --values values.yaml -n nginx-ingress
+
+# 2. To update the existing nginx
 helm upgrade nginx nginx-stable/nginx-ingress --values values.yaml -n nginx-ingress
+
+# 3. TO delete existing nginx and re-install with step 1 above.
+helm delete nginx -n nginx-ingress
 ```
 
 ## Outline Management
