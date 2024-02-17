@@ -24,8 +24,7 @@ Thus, the combination of Kubernetes clusters for container orchestration and the
 Through this guide, we aim to explore the specifics of this effective system architecture, gain insights into its working, and comprehend the factors contributing to its high uptime and resilience.
 
 <hr/>
-
-Thank you so much for your time, Really appreciate it!
+Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
 
 Steven
 [GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)
