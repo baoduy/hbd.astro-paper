@@ -179,8 +179,7 @@ When accessing to `http://echo.drunkcoding.net` you able to see the JSON respons
 ![echo-app-response.png](/assets/ks-Install-nginx-on-pi-cluster/echo-app-response.png)
 
 <hr/>
-
-Thank you so much for your time, Really appreciate it!
+Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
 
 Steven
 [GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)
