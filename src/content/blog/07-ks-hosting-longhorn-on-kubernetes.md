@@ -28,21 +28,15 @@ As you know by default the kubernetes provide a **"local-path"** storage. Howeve
 
 ## What is Longhorn?
 
-Longhorn is a cloud-native distributed block storage system designed for Kubernetes, it is known for its lightweight, reliable, and open-source nature,
+Longhorn is a cloud-native distributed block storage system designed for Kubernetes, and known for its lightweight, reliable, and open-source nature,
 which simplifies the process of adding persistent storage to Kubernetes clusters, making it easier to run stateful applications.
 
-1. **Highly Available Persistent Storage**: In the past, adding replicated storage to Kubernetes clusters was challenging for ITOps and DevOps.
-   Many non-cloud-hosted Kubernetes clusters lacked support for persistent storage. External storage arrays were non-portable and expensive.
-   Longhorn addresses this by providing simplified, easy-to-deploy,
-   and upgradeable 100% open-source cloud-native persistent block storage without the cost overhead of open core or proprietary alternatives.
-
-2. **Incremental Snapshots and Backups**: Longhorn includes built-in features for incremental snapshots and backups.
-   These features ensure that volume data remains safe both within and outside the Kubernetes cluster.
-   Scheduled backups of persistent storage volumes are made easier through Longhorn’s intuitive with a free management UI.
-
-3. **Cross-Cluster Disaster Recovery**: Unlike external replication solutions that re-replicate the entire data store after a disk failure (which can take days),
-   Longhorn allows fine-grained control. You can create a disaster recovery volume in another Kubernetes cluster and fail over to it swiftly in emergencies.
-   If your main cluster fails, you can quickly bring up the application in the DR cluster with defined recovery point objectives (RPO) and recovery time objectives (RTO).
+1. **High Availability**: Longhorn replicates storage volumes across multiple nodes in the Kubernetes cluster,
+   ensuring that data remains available even if a node fails.
+2. **Cost-Effective**: Traditional external storage arrays can be expensive and non-portable. Longhorn offers a cost-effective,
+   cloud-native solution that can run anywhere.
+3. **Disaster Recovery**: Longhorn allows you to easily create a disaster recovery volume in another Kubernetes cluster and fail over to it in the event of an emergency.
+   This ensures that your applications can quickly recover with a defined Recovery Point Objective (RPO) and Recovery Time Objective (RTO).
 
 ## Longhorn installation
 
@@ -165,7 +159,8 @@ Once installed successfully and all the pods are up and running.
 You should be able to access Longhorn UI through the `longhorn-frontend` service (needs port-forward or expose through nginx or cloudflare tunnel).
 <img src="/assets/ks-hosting-longhorn-on-kubernetes/longhorn-ui.png" width="600px">
 
-4. Uninstalling Longhorn
+4. **Uninstalling Longhorn**
+
    If any reason we would like to uninstall Longhorn helm then the below commands will help.
 
 ```shell
@@ -198,7 +193,7 @@ helm install mariadb-ha bitnami/mariadb-galera \
 helm uninstall mariadb-ha -n db
 ```
 
-After successful deployment, you should find three MariaDB pods running in the `db` namespace:
+After deployed successful, you should find three MariaDB pods running in the `db` namespace:
 
 ```shell
 kubectl get pod -n db
