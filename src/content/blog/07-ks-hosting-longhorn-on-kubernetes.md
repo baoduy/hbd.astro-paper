@@ -135,12 +135,6 @@ kubectl delete -f https://raw.githubusercontent.com/longhorn/longhorn/v1.6.0/dep
 csi:
   kubeletRootDir: "/var/lib/kubelet"
 defaultSettings:
-  replicaSoftAntiAffinity: true
-  replicaZoneSoftAntiAffinity: true
-  createDefaultDiskLabeledNodes: true
-  defaultReplicaCount: 2
-  defaultLonghornStaticStorageClass: "longhorn-static-storageclass"
-  guaranteedEngineCPU: 0.1
   diskType: "flesystem"
 ```
 
