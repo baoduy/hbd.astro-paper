@@ -28,8 +28,7 @@ As you know by default the kubernetes provide a **"local-path"** storage. Howeve
 
 ## What is Longhorn?
 
-Longhorn is a cloud-native distributed block storage system designed for Kubernetes, and known for its lightweight, reliable, and open-source nature,
-which simplifies the process of adding persistent storage to Kubernetes clusters, making it easier to run stateful applications.
+Longhorn, an innovative open-source project by **Rancher Labs**, offers a reliable, lightweight, and user-friendly distributed block storage system for Kubernetes.
 
 1. **High Availability**: Longhorn replicates storage volumes across multiple nodes in the Kubernetes cluster,
    ensuring that data remains available even if a node fails.
