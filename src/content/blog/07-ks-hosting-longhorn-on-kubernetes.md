@@ -201,6 +201,20 @@ mariadb-ha-mariadb-galera-2   1/1     Running   0          2m41s
 You’ll also find three persistent volumes in the Longhorn UI portal. !Longhorn Volumes
 <img src="/assets/ks-hosting-longhorn-on-kubernetes/longhorn-volumes.png" width="600px">
 
+### Longhorn System Backup
+
+Longhorn is supporting many different backup targets like `Aure Storage, AWS S3, Google Storage, NFS and SMB/CIFS`.
+In this post will cover the configuration for Azure Storage first and will be continuing with others later.
+
+1. **System Backup with Azure Storage**
+   Assume you already have azure storage and the Kubernetes cluster able to connect to Azure.
+
+- Create Kubernetes with Azure Storage information:
+
+```yaml
+
+```
+
 <hr/>
 Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
 
