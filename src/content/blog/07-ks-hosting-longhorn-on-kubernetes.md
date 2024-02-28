@@ -203,17 +203,73 @@ You’ll also find three persistent volumes in the Longhorn UI portal. !Longhorn
 
 ### Longhorn System Backup
 
-Longhorn is supporting many different backup targets like `Aure Storage, AWS S3, Google Storage, NFS and SMB/CIFS`.
-In this post will cover the configuration for Azure Storage first and will be continuing with others later.
+Longhorn supports a variety of backup targets, including Azure Storage, AWS S3, Google Storage, NFS, and SMB/CIFS.
+This post will initially cover the configuration for Azure Storage, with subsequent posts addressing the other backup targets.
 
 1. **System Backup with Azure Storage**
-   Assume you already have azure storage and the Kubernetes cluster able to connect to Azure.
 
-- Create Kubernetes with Azure Storage information:
+This section assumes that you already have Azure Storage and a Kubernetes cluster that can connect to Azure.
+
+- Create a `longhorn-azure-blob-backup.yaml` secret with your Azure Storage Account credentials:
 
 ```yaml
-
+# Update the secret below with your Azure Storage Account credentials
+apiVersion: v1
+kind: Secret
+metadata:
+  name: longhorn-azure-blob-backup
+  namespace: longhorn-system
+stringData:
+  AZBLOB_ACCOUNT_KEY: "YOUR_STORAGE_KEY"
+  AZBLOB_ACCOUNT_NAME: "YOUR_STORAGE_NAME"
 ```
+
+- Apply the secret to the cluster using the following command.
+
+```shell
+kubectl apply -f longhorn-azure-blob-backup.yaml
+```
+
+- Next, update the backup information in the defaultSettings section of the `value.yaml` file:
+
+```yaml
+csi:
+  kubeletRootDir: "/var/lib/kubelet"
+defaultSettings:
+  diskType: "flesystem"
+  backupTargetCredentialSecret: "longhorn-azure-blob-backup" #The name of the secret created above.
+  backupTarget: "azblob://YOUR_CONTAINER_NAME@core.windows.net/" # Trailer slash is important
+```
+
+- Upgrade the Longhorn Helm chart with the updated values using the following command:
+
+```shell
+helm upgrade longhorn longhorn/longhorn -f value.yaml --namespace longhorn-system
+
+# You should see a message indicating that the upgrade was successful
+Release "longhorn" has been upgraded. Happy Helming!
+NAME: longhorn
+LAST DEPLOYED: Wed Feb 28 08:57:56 2024
+NAMESPACE: longhorn-system
+STATUS: deployed
+REVISION: 2
+TEST SUITE: None
+NOTES:
+Longhorn is now installed on the cluster!
+
+Please wait a few minutes for other Longhorn components such as CSI deployments, Engine Images, and Instance Managers to be initialized.
+
+Visit our documentation at https://longhorn.io/docs/
+```
+
+- Once the upgrade is complete, the backup information under `Setting` → `General` should reflect the changes made.
+  <img src="/assets/ks-hosting-longhorn-on-kubernetes/long-horn-azure-backup.png" width="600px">
+
+- After creating a sys-backup under `Setting` → `System Backup`, you should see the following
+  <img src="/assets/ks-hosting-longhorn-on-kubernetes/azure-sys-bakup.png" width="600px">
+
+- You should be able to see the data being backed up into the Azure Storage Container.
+  <img src="/assets/ks-hosting-longhorn-on-kubernetes/azure-storage-account.png" width="600px">
 
 <hr/>
 Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
