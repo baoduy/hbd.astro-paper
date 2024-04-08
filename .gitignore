@@ -35,3 +35,6 @@ pnpm-debug.log*
 .pnp.*
 
 **/*.bkp
+.vscode
+.idea
+.jampack
