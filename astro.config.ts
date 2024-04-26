@@ -4,17 +4,14 @@ import react from "@astrojs/react";
 import remarkToc from "remark-toc";
 import remarkCollapse from "remark-collapse";
 import sitemap from "@astrojs/sitemap";
-import { astroImageTools } from "astro-imagetools";
+import { SITE } from "./src/config";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://drunkcoding.net/", // replace this with your deployed domain
+  site: SITE.website,
   integrations: [
-    astroImageTools,
     tailwind({
-      config: {
-        applyBaseStyles: false,
-      },
+      applyBaseStyles: false,
     }),
     react(),
     sitemap(),
@@ -29,17 +26,15 @@ export default defineConfig({
         },
       ],
     ],
-    // Can be 'shiki' (default), 'prism' or false to disable highlighting
-    syntaxHighlight: 'shiki',
     shikiConfig: {
-      theme: "dracula",// dracula, one-dark-pro
+      theme: "one-dark-pro",
       wrap: true,
     },
-    extendDefaultPlugins: true,
   },
   vite: {
     optimizeDeps: {
       exclude: ["@resvg/resvg-js"],
     },
   },
+  scopedStyleStrategy: "where",
 });
