@@ -8,14 +8,13 @@ import Hr from "@components/Hr.astro";
 import Card from "@components/Card";
 import Socials from "@components/Socials.astro";
 import getSortedPosts from "@utils/getSortedPosts";
-import slugify from "@utils/slugify";
 import { SOCIALS } from "@config";
 
 const posts = await getCollection("blog");
 
 const sortedPosts = getSortedPosts(posts);
 const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
-const nonFeaturedPosts = sortedPosts.filter(({ data }) => !data.featured);
+const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 
 const socialCount = SOCIALS.filter(social => social.active).length;
 ---
@@ -24,7 +23,7 @@ const socialCount = SOCIALS.filter(social => social.active).length;
   <Header />
   <main id="main-content">
     <section id="hero">
-      <h1>Hi,</h1>
+      <h1>Welcome to DrunkCoding</h1>
       <a
         target="_blank"
         href="/rss.xml"
@@ -39,16 +38,20 @@ const socialCount = SOCIALS.filter(social => social.active).length;
             d="M12 20.001h2C14 14.486 9.514 10 4 10v2c4.411 0 8 3.589 8 8.001z"
           ></path><circle cx="6" cy="18" r="2"></circle>
         </svg>
+        <span class="sr-only">RSS Feed</span>
       </a>
 
       <p>
-        Drunkcoding.net is a blog page from Steven Hoang, a highly experienced professional with extensive knowledge in technology and software development.
-        The blog is sharing various aspects of technology, such as cloud computing, software development methodologies, and different tech stacks.
+        Drunkcoding.net is a blog page from Steven Hoang, a highly experienced
+        professional with extensive knowledge in technology and software
+        development. The blog is sharing various aspects of technology, such as
+        cloud computing, software development methodologies, and different tech
+        stacks.
       </p>
       <!--<p>-->
       <!--  Read the blog posts or check-->
       <!--  <LinkButton-->
-      <!--    className="hover:text-skin-accent underline underline-offset-4 decoration-dashed"-->
+      <!--    className="underline decoration-dashed underline-offset-4 hover:text-skin-accent"-->
       <!--    href="https://github.com/satnaing/astro-paper#readme"-->
       <!--  >-->
       <!--    README-->
@@ -73,47 +76,50 @@ const socialCount = SOCIALS.filter(social => social.active).length;
           <section id="featured">
             <h2>Featured</h2>
             <ul>
-              {featuredPosts.map(({ data }) => (
+              {featuredPosts.map(({ data, slug }) => (
                 <Card
-                  href={`/posts/${slugify(data)}`}
+                  href={`/posts/${slug}/`}
                   frontmatter={data}
                   secHeading={false}
                 />
               ))}
             </ul>
           </section>
-          <Hr />
+          {recentPosts.length > 0 && <Hr />}
         </>
       )
     }
 
-    <section id="recent-posts">
-      <h2>New Posts</h2>
-      <ul>
-        {
-          nonFeaturedPosts.map(
-            ({ data }, index) =>
-              index < 4 && (
-                <Card
-                  href={`/posts/${slugify(data)}`}
-                  frontmatter={data}
-                  secHeading={false}
-                />
-              )
-          )
-        }
-      </ul>
-      <div class="all-posts-btn-wrapper">
-        <LinkButton href="/posts">
-          All Posts
-          <svg xmlns="http://www.w3.org/2000/svg"
-            ><path
-              d="m11.293 17.293 1.414 1.414L19.414 12l-6.707-6.707-1.414 1.414L15.586 11H6v2h9.586z"
-            ></path>
-          </svg>
-        </LinkButton>
-      </div>
-    </section>
+    {
+      recentPosts.length > 0 && (
+        <section id="recent-posts">
+          <h2>Recent Posts</h2>
+          <ul>
+            {recentPosts.map(
+              ({ data, slug }, index) =>
+                index < 4 && (
+                  <Card
+                    href={`/posts/${slug}/`}
+                    frontmatter={data}
+                    secHeading={false}
+                  />
+                )
+            )}
+          </ul>
+        </section>
+      )
+    }
+
+    <div class="all-posts-btn-wrapper">
+      <LinkButton href="/posts/">
+        All Posts
+        <svg xmlns="http://www.w3.org/2000/svg"
+          ><path
+            d="m11.293 17.293 1.414 1.414L19.414 12l-6.707-6.707-1.414 1.414L15.586 11H6v2h9.586z"
+          ></path>
+        </svg>
+      </LinkButton>
+    </div>
   </main>
 
   <Footer />
