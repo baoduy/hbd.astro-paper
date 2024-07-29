@@ -1,10 +1,10 @@
 name: Build-Docker
 
-on:
-  push:
-    branches:
-      - 'main'
-  
+#on:
+#  push:
+#    branches:
+#      - 'main'
+
 jobs:
   release_job:
     uses: baoduy/ShareWorkflows/.github/workflows/docker-publish.yaml@main
