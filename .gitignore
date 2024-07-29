@@ -13,17 +13,14 @@ pnpm-debug.log*
 
 
 # environment variables
-#.env
-#.env.production
+.env
+.env.production
 
 # macOS-specific files
 .DS_Store
 
 # ignore .astro directory
 .astro
-
-# ignore Jampack cache files
-.jampack/
 
 # yarn
 .yarn/*
@@ -33,8 +30,7 @@ pnpm-debug.log*
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
-
-**/*.bkp
-.vscode
 .idea
+.vscode
 .jampack
+.husky

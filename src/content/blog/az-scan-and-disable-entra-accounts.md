@@ -1,6 +1,6 @@
 ---
 author: Steven Hoang
-pubDatetime: 2024-09-1T12:00:00Z
+pubDatetime: 2024-07-29T12:00:00Z
 title: "[AZ] How to Scan and Disable Inactive Accounts on Azure EntraID"
 postSlug: az-scan-and-disable-entra-accounts
 featured: true

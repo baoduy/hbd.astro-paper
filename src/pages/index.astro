@@ -8,7 +8,7 @@ import Hr from "@components/Hr.astro";
 import Card from "@components/Card";
 import Socials from "@components/Socials.astro";
 import getSortedPosts from "@utils/getSortedPosts";
-import { SOCIALS } from "@config";
+import { SITE, SOCIALS } from "@config";
 
 const posts = await getCollection("blog");
 
@@ -47,15 +47,6 @@ const socialCount = SOCIALS.filter(social => social.active).length;
         is sharing various aspects of technology, such as cloud computing, software
         development methodologies, and different tech stacks.
       </p>
-      <!--<p>-->
-      <!--  Read the blog posts or check-->
-      <!--  <LinkButton-->
-      <!--    className="underline decoration-dashed underline-offset-4 hover:text-skin-accent"-->
-      <!--    href="https://github.com/satnaing/astro-paper#readme"-->
-      <!--  >-->
-      <!--    README-->
-      <!--  </LinkButton> for more info.-->
-      <!--</p>-->
       {
         // only display if at least one social link is enabled
         socialCount > 0 && (
@@ -96,7 +87,7 @@ const socialCount = SOCIALS.filter(social => social.active).length;
           <ul>
             {recentPosts.map(
               ({ data, slug }, index) =>
-                index < 4 && (
+                index < SITE.postPerIndex && (
                   <Card
                     href={`/posts/${slug}/`}
                     frontmatter={data}

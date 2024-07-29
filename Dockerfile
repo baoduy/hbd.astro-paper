@@ -1,17 +1,12 @@
-FROM --platform=$BUILDPLATFORM node:lts AS build
-ARG BUILDPLATFORM
-
+# Base stage for building the static files
+FROM node:lts AS base
 WORKDIR /app
+COPY package*.json ./
+RUN npm install
 COPY . .
-
-RUN npm install --force
 RUN npm run build
 
-FROM --platform=$TARGETARCH joseluisq/static-web-server:latest AS runtime
-ARG TARGETARCH
-
-ENV SERVER_ROOT=/app
-ENV SERVER_FALLBACK_PAGE=/app/index.html
-
-WORKDIR /app
-COPY --from=build /app/dist .
+# Runtime stage for serving the application
+FROM nginx:mainline-alpine-slim AS runtime
+COPY --from=base ./app/dist /usr/share/nginx/html
+EXPOSE 80
