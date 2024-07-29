@@ -5,7 +5,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm ci
+RUN npm install --forcer
 RUN npm run build
 
 FROM --platform=$TARGETARCH joseluisq/static-web-server:latest AS runtime
