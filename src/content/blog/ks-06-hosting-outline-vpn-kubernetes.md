@@ -2,7 +2,7 @@
 author: Steven Hoang
 pubDatetime: 2023-10-05T00:00:00Z
 title: "[k8s] Step-By-Step Guide: Hosting Outline VPN on Kubernetes"
-postSlug: ks-hosting-outline-one-kubernetes
+postSlug: ks-hosting-outline-vpn-kubernetes
 featured: false
 draft: false
 tags:
@@ -244,7 +244,7 @@ kubectl apply -f outline-deployment.yaml
 ```
 
 Upon successful deployment, you should be able to see a pod along with its corresponding logs as in the screenshot below.
-![outline-vpn-deployed-successfully.png](/assets/ks-hosting-outline-one-kubernetes/outline-vpn-deployed-successfully.png)
+![outline-vpn-deployed-successfully.png](/assets/ks-hosting-outline-vpn-kubernetes/outline-vpn-deployed-successfully.png)
 
 ## PostStart command & Environment variables explanation
 
@@ -286,7 +286,7 @@ Currently, this service is confined to the Kubernetes network, meaning they can'
 
 In order to make these services receptive to outside connections, we'll need to expose the ports through NGINX.
 The following illustration provides a visual representation on how to do this.
-![outline-nginx-kubernetes.png](/assets/ks-hosting-outline-one-kubernetes/outline-nginx-kubernetes.png)
+![outline-nginx-kubernetes.png](/assets/ks-hosting-outline-vpn-kubernetes/outline-nginx-kubernetes.png)
 
 To begin with, we need to update the `values.yaml` file from our previous NGINX deployment. This configuration will open up the needed ports.
 
@@ -356,12 +356,12 @@ Our configuration should look like this:
 **Step 4: Setup Outline Anywhere**
 
 Open the Outline Manager App and click **Setup Outline Anywhere**. Paste the configuration into the second input box and click Done. .
-![outline-manager-config.png](/assets/ks-hosting-outline-one-kubernetes/outline-manager-config.png)
+![outline-manager-config.png](/assets/ks-hosting-outline-vpn-kubernetes/outline-manager-config.png)
 
 **Step 5: Connect to the Outline VPN Server**
 
 On successful configuration, you should be able to connect to the Outline VPN server as shown below:
-![outline-manager-server.png](/assets/ks-hosting-outline-one-kubernetes/outline-manager-server.png)
+![outline-manager-server.png](/assets/ks-hosting-outline-vpn-kubernetes/outline-manager-server.png)
 
 **Step 6: Create a Connection**
 
@@ -378,7 +378,7 @@ To get started with the VPN, follow the steps below:
 1. Begin by navigating to the [Outline official website](https://getoutline.org/get-started/#step-3) to download the client application. Be sure to select the version compatible with your platform architecture.
 
 2. Launch the client application. Select **Add Access Key**, then input the access key mentioned above. Afterward, click on **Add Server**.
-   <img src="/assets/ks-hosting-outline-one-kubernetes/outline-client-config.png" width="400px">
+   <img src="/assets/ks-hosting-outline-vpn-kubernetes/outline-client-config.png" width="400px">
 
 3. Proceed by clicking on the 'Connect' button to establish a connection.
 
