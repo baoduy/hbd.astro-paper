@@ -1,7 +1,7 @@
 ---
 author: Steven Hoang
 pubDatetime: 2023-09-17T00:00:00Z
-title: "Step-By-Step Guide: Installation of Cert-Manager, Implementing Free SSL Certificates for Kubernetes Clusters"
+title: "[k8s]Step-By-Step Guide: Installation of Cert-Manager, Implementing Free SSL Certificates for Kubernetes Clusters"
 postSlug: ks-install-cert-manager-free-ssl-kubernetes-cluster
 featured: false
 draft: false

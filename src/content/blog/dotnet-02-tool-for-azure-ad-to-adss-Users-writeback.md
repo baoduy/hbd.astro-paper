@@ -1,7 +1,7 @@
 ---
 author: Steven Hoang
 pubDatetime: 2021-10-13T00:00:00Z
-title: "Small tool for Azure AD to AD User Write back"
+title: "[.NET] Small tool for Azure AD to AD User Write back"
 postSlug: azure-ad-to-adss-users-write-back
 featured: false
 draft: false
