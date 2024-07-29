@@ -62,6 +62,7 @@ import { Client } from "@microsoft/microsoft-graph-client";
 import { TokenCredentialAuthenticationProvider } from "@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials";
 import dayjs, { Dayjs } from "dayjs";
 
+const numberOfMonths = -2;
 /** Exclude some important global admin accounts here */
 const excludedAccounts = ["drunkcoding"];
 
@@ -150,7 +151,7 @@ const printAccounts = (message: string, accounts: AdUser[]) =>
 (async () => {
   //1. Find inactive accounts on Azure
   console.log(`1. Finding inactive login accounts on Azure AD...`);
-  const lastLogin = dayjs().add(-2, "M");
+  const lastLogin = dayjs().add(numberOfMonths, "M");
   const accounts = await getAllAccountsLastLoginBefore(lastLogin);
   // Log the information here
   printAccounts(
@@ -172,7 +173,7 @@ const printAccounts = (message: string, accounts: AdUser[]) =>
 })();
 ```
 
-> You can download the entire NodeJs from here: https://dev.azure.com/drunk24/drunkcoding-public/_git/az.account-management
+> You should able to download the entire NodeJs from here: https://dev.azure.com/drunk24/drunkcoding-public/_git/az.account-management
 
 ## 3. Schedule the Script with Azure DevOps
 
