@@ -1,8 +1,8 @@
 ---
 author: Steven Hoang
-pubDatetime: 2024-08-01T12:00:00Z
+pubDatetime: 2024-09-1T12:00:00Z
 title: "[AZ] How to Scan and Disable Inactive Accounts on Azure EntraID"
-postSlug: az-scan-and-disable-az-entraid-accounts
+postSlug: az-scan-and-disable-entra-accounts
 featured: true
 draft: false
 tags:
@@ -10,7 +10,9 @@ tags:
   - EntraID
   - Disable Account
 ogImage: ""
-description: Inactive accounts in Azure EntraID can pose significant security risks. This post discusses the importance of implementing a housekeeping strategy and introduces a streamlined approach using Azure DevOps.
+description:
+  Inactive accounts in Azure EntraID can pose significant security risks.
+  This post discusses the importance of implementing a housekeeping strategy and introduces a streamlined approach using Azure DevOps.
 ---
 
 ## Introduction
@@ -28,7 +30,7 @@ Before diving into the code, the first step is to create an **App registration**
 1. **Navigate to Azure EntraID**: Open the Azure portal and go to the Azure EntraID service.
 2. **Create App Registration**: Click on “App registrations” and then “New registration”.
 3. **Configure the App**: - Name the app `Azure-EntraID-Management`. - Set it to be available only for your organization (single tenant). - No Redirect URL is required.
-   <img src="/assets/az-Scan-and-disable-Az-EntraID-accounts/app-registration.png" width="700px">
+   <img src="/assets/az-scan-and-disable-entra-accounts/app-registration.png" width="700px">
 
 ### Adding API Permissions
 
@@ -37,7 +39,7 @@ After creating the app registration, you need to add and grant admin consent for
 1. `AuditLog.Read.All`: Allows reading the sign-in activity information of all accounts in EntraID.
 2. `User.Read.All`: Allows scanning and reading the basic information of all accounts in EntraID.
 3. `User.EnableDisableAccount.All`: Allows disabling/enabling accounts in EntraID.
-   <img src="/assets/az-Scan-and-disable-Az-EntraID-accounts/app-api-permission.png" width="700px">
+   <img src="/assets/az-scan-and-disable-entra-accounts/app-api-permission.png" width="700px">
 
 ## 2. Implementing a TypeScript Program
 
@@ -184,7 +186,7 @@ To automate this process, we will schedule the script to run regularly using Azu
 1. Create a Variable Group:
    Navigate to Azure DevOps/Pipelines/Library and Add a new variable group with the following variables: - `AZURE_TENANT_ID`: The tenant ID of the app registration. - `AZURE_CLIENT_ID`: The client ID of the app registration. - `AZURE_CLIENT_SECRET`: The client secret of the app registration.
 
-<img src="/assets/az-Scan-and-disable-Az-EntraID-accounts/variable-group.png" width="700px">
+<img src="/assets/az-scan-and-disable-entra-accounts/variable-group.png" width="700px">
 
 2. **Define the Pipeline**:
    - **Create a New Pipeline**: In Azure DevOps, create a new pipeline and ensure it has access to the variable group created in the previous step.

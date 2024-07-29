@@ -8,8 +8,7 @@ draft: false
 tags:
   - k3s
   - kubernetes
-  - raspberry cluster
-  - pi cluster
+  - picluster
 ogImage: ""
 description:
   In this guide, sharing some useful tips to help you seamlessly install K3s on a Raspberry Pi 4 cluster.
