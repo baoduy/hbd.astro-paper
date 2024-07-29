@@ -3,7 +3,7 @@ author: Steven Hoang
 pubDatetime: 2023-09-18T00:00:00Z
 title: "[k8s]Step-By-Step Guide: Nginx Alternative with Cloudflare Tunnel, Enables services to internet a public static IP address"
 postSlug: ks-public-services-with-cloudflare-tunnel
-featured: true
+featured: false
 draft: false
 tags:
   - k3s
