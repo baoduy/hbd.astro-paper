@@ -8,8 +8,7 @@ draft: false
 tags:
   - k3s
   - kubernetes
-  - raspberry cluster
-  - pi cluster
+  - picluster
   - nginx
 ogImage: ""
 description:

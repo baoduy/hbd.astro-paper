@@ -9,9 +9,9 @@ jobs:
   release_job:
     uses: baoduy/ShareWorkflows/.github/workflows/docker-publish.yaml@main
     with:
-      dockerFile: 'Dockerfile'
-      context: '.'
-      imageName: 'baoduy2412/astro-blog'
+      dockerFile: "Dockerfile"
+      context: "."
+      imageName: "baoduy2412/astro-blog"
       platforms: linux/arm64,linux/amd64
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
