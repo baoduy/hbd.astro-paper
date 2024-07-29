@@ -7,10 +7,6 @@ featured: false
 draft: true
 tags:
   - blog
-  - kubernetes
-  - high-availability
-  - multi-region
-  - cloudflare-tunnel
 ogImage: ""
 description: Let's take a look, how the website `drunkcoding.net` is hosted in high-availability mode across multiple Kubernetes clusters with utilizing the capabilities of Cloudflare Tunnel.
 ---

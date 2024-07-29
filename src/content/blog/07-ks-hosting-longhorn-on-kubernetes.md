@@ -1,7 +1,7 @@
 ---
 author: Steven Hoang
 pubDatetime: 2024-02-29T00:00:00Z
-title: "Step-By-Step Guide: Hosting Longhorn on K3s (ARM)"
+title: "[k8s] Step-By-Step Guide: Hosting Longhorn on K3s (ARM)"
 postSlug: ks-hosting-longhorn-on-k3s-arm
 featured: false
 draft: false

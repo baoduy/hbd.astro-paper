@@ -1,7 +1,7 @@
 ---
 author: Steven Hoang
 pubDatetime: 2023-09-16T00:00:00Z
-title: "Step-By-Step Guide: Installing Nginx Ingress on K3s Pi 4 Cluster"
+title: "[k8s] Step-By-Step Guide: Installing Nginx Ingress on K3s Pi 4 Cluster"
 postSlug: ks-install-nginx-on-k3s-raspberry-pi-cluster
 featured: false
 draft: false

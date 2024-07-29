@@ -1,7 +1,7 @@
 ---
 author: Steven Hoang
 pubDatetime: 2023-09-10T00:00:00Z
-title: "Optimising .NET Core with Multi-Platform Docker Images: A Complete Guide"
+title: "[.NET] Optimising .NET Core with Multi-Platform Docker Images: A Complete Guide"
 postSlug: dotnet-dockerfile-multi-platform
 featured: false
 draft: false

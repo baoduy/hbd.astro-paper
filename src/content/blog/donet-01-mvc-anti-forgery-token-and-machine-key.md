@@ -1,7 +1,7 @@
 ---
 author: Steven Hoang
 pubDatetime: 2017-02-14T00:00:00Z
-title: "Anti Forgery Token and Machine Key for MVC on IIS"
+title: "[.NET] Anti Forgery Token and Machine Key for MVC on IIS"
 postSlug: anti-forgery-token-and-machine-key-aspnet-mvc-iis
 featured: false
 draft: false
