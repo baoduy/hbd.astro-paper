@@ -106,7 +106,7 @@ const disableAccounts = async (accounts: AdUser[]) => {
     accounts.map(async u => {
       /* Check and keep the account if found in the excludedAccounts */
       if (
-        excludedAccounts.filter(a =>
+        excludedAccounts.find(a =>
           u.userPrincipalName.toLowerCase().includes(a.toLowerCase())
         )
       ) {
