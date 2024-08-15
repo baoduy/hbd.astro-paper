@@ -107,7 +107,7 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    #Update this accoring to your domain
+    # Replace with the administrator email associated with your domain.
     email: 'admin@drunk.dev'
     privateKeySecretRef:
       name: letsencrypt-prod
@@ -116,14 +116,22 @@ spec:
         cloudflare:
           #Update this accoring to your domain
           email: 'admin@drunk.dev'
-          # the secert reference to the one has been crated above
+          # Ensure that the name matches the secret you created (cf-dns-secret), and the key references the correct data key within the secret (token).
           apiTokenSecretRef:
             name: cf-dns-secret
             key: token
 ```
 
-- `email`: Replace with the administrator email associated with your drunk.dev domain.
-- `apiTokenSecretRef`: Ensure that the name matches the secret you created (cf-dns-secret), and the key references the correct data key within the secret (token).
+- **Firewall Whitelisting**
+
+Since the AKS cluster’s outbound traffic is managed by a firewall, it’s neededs to whitelist specific external services to ensure that Cert Manager can successfully issue certificates. Without these exceptions, the certificate issuance process will fail.
+
+Here’s what needs to allow at the Firewall rules:
+
+- Allow outbound access to `api.cloudflare.com` on port `443`.
+- Allow outbound access to `*.api.letsencrypt.org` on port `443`.
+
+Ensuring these domains are whitelisted will enable Cert Manager to communicate with Cloudflare and Let’s Encrypt, facilitating the automatic issuance and renewal of SSL certificates.
 
 ## Nginx Ingress Installation
 
