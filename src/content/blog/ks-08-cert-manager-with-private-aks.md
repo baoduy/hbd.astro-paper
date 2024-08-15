@@ -43,14 +43,14 @@ To address the challenge, I implemented the following approach:
 ### **Installation**
 
 1. **Create a Cloudflare DNS API Token:**  
-   First, navigate to your Cloudflare profile and create an API token by following [this link](https://dash.cloudflare.com/profile/api-tokens). The API token should have permissions to manage DNS records for the domains. 
+   First, navigate to the Cloudflare profile and create an API token by following [this link](https://dash.cloudflare.com/profile/api-tokens). The API token should have permissions to manage DNS records for the domains. 
    
-   Additionally, for enhanced security, specify the AKS public IP address under `Client IP Address Filtering` in Cloudflare. This ensures that the API token is only accessible from your AKS platform, preventing unauthorized access from other locations.
+   Additionally, for enhanced security, specify the AKS public IP address under `Client IP Address Filtering` in Cloudflare. This ensures that the API token is only accessible from the AKS platform, preventing unauthorized access from other locations.
   <img src="/assets/aks-cert-manager-with-private-aks/cf-dns-token.png">
 
 2. **Create a Kubernetes Secret for the Cloudflare API Token:**
 
-Next, create a Kubernetes secret to securely store the Cloudflare API token within your AKS cluster. This secret will be referenced by Cert Manager during DNS validation.
+Next, create a Kubernetes secret to securely store the Cloudflare API token within the AKS cluster. This secret will be referenced by Cert Manager during DNS validation.
 
 ```yaml
 apiVersion: "v1"
@@ -59,7 +59,7 @@ metadata:
   name: cf-dns-secret
 stringData:
   token: 'YOUR-CF-DNS-TOKEN'
-# Replace 'YOUR-CF-DNS-TOKEN' with the actual API token you generated in the previous step.
+# Replace 'YOUR-CF-DNS-TOKEN' with the actual API token generated in the previous step.
 ```
 
 3. **Cert Manager Installation:**
@@ -117,7 +117,8 @@ spec:
         cloudflare:
           #Update this accoring to your domain
           email: 'admin@drunk.dev'
-          # Ensure that the name matches the secret you created (cf-dns-secret), and the key references the correct data key within the secret (token).
+          # Ensure that the name matches the secret you created (cf-dns-secret), 
+          # and the key references the correct data key within the secret (token).
           apiTokenSecretRef:
             name: cf-dns-secret
             key: token
