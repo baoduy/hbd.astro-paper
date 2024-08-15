@@ -13,7 +13,7 @@ description: "Exploring the deployment and management of SSL certificates using 
 This article covers the architecture involving CloudPC and AKS VNETs, the use of NGINX ingress for private connections, and the implementation of Cloudflare DNS management to secure internal communications."
 ---
 
-"In a previous [post](https://drunkcoding.net/posts/ks-03-install-cert-manager-free-ssl-kubernetes-cluster/), I detailed how to set up Cert Manager on a Raspberry Pi K3s Cluster. That was a great starting point, but this time, I decided to explore a more complex scenario—deploying Cert Manager within a private Kubernetes cluster on Azure. I’m excited to share the insights and techniques I discovered along the way, hoping they can make your journey a bit smoother."
+In a previous [post](https://drunkcoding.net/posts/ks-03-install-cert-manager-free-ssl-kubernetes-cluster/), It detailed how to set up Cert Manager on a Raspberry Pi K3s Cluster. That was a great starting point, and in this article, I decided to explore a more complex scenario by deploying Cert Manager within a private Kubernetes cluster on Azure. I’m excited to share the insights and techniques I discovered along the way, hoping they can make your journey a bit smoother."
 
 ### **Azure Architecture Overview**
 
@@ -30,26 +30,27 @@ The setup involves two Virtual Networks (VNETs) that are peered:
 
 ### **The Challenge I Encountered: Securing Internal Traffic**
 
-One of the challenges I came across was figuring out how to secure the communication between the applications hosted on AKS and the CloudPC environment, even though it’s all internal. I wanted to make sure that all data in transit was encrypted using SSL certificates.
-
+One of the challenges I came across was figuring out how to secure the communication between the applications hosted on AKS and the CloudPC environment, even though it’s all internal within the virtual networks. I wanted to make sure that all data in transit was encrypted using SSL certificates.
 
 ### **How I Solved It: Leveraging Cloudflare DNS and Cert Manager**
 
 To address the challenge, I implemented the following approach:
 
-1. **Domain Setup with Cloudflare:** Let’s assume I have a domain, `drunk.dev`, registered with Cloudflare. While this domain isn’t directly used for external-facing services, it plays a crucial role in the process. I utilize this domain with Let’s Encrypt to verify and issue SSL certificates for the ingress controllers of my applications within the AKS cluster.
+1. **Domain Setup with Cloudflare:** Let’s assume I have a domain, `drunk.dev`, registered with Cloudflare. While this domain isn’t directly used for external-facing services. But, I utilize this domain with Let’s Encrypt to verify and issue SSL certificates for the ingress controllers of my applications within the AKS cluster.
 
-2. **Internal DNS Configuration on Azure:** Internally, I created a private DNS Zone in Azure with the same domain name (`drunk.dev`) and linked this zone to both the CloudPC and AKS VNETs. This setup is critical as it ensures that internal DNS queries for the `drunk.dev` domain are resolved correctly within the private network, facilitating secure communication between services.
+2. **Internal DNS Configuration on Azure:** Internally, I created a private DNS Zone in Azure with the same name (`drunk.dev`) and linked this zone to both the CloudPC and AKS VNETs. This setup is critical as it ensures that internal DNS queries for the `drunk.dev` domain are resolved correctly within the private network, facilitating secure communication between services.
 
 ### **Installation**
 
 1. **Create a Cloudflare DNS API Token:**  
-   First, navigate to your Cloudflare profile and create an API token by following [this link](https://dash.cloudflare.com/profile/api-tokens). The API token should have permissions to manage DNS records for the `drunk.dev` domain. Additionally, for enhanced security, specify the AKS public IP address under `Client IP Address Filtering` in Cloudflare. This ensures that the API token is only accessible from your AKS platform, preventing unauthorized access from other locations.
+   First, navigate to the Cloudflare profile and create an API token by following [this link](https://dash.cloudflare.com/profile/api-tokens). The API token should have permissions to manage DNS records for the domains. 
+   
+   Additionally, for enhanced security, specify the AKS public IP address under `Client IP Address Filtering` in Cloudflare. This ensures that the API token is only accessible from the AKS platform, preventing unauthorized access from other locations.
   <img src="/assets/aks-cert-manager-with-private-aks/cf-dns-token.png">
 
 2. **Create a Kubernetes Secret for the Cloudflare API Token:**
 
-Next, create a Kubernetes secret to securely store the Cloudflare API token within your AKS cluster. This secret will be referenced by Cert Manager during DNS validation.
+Next, create a Kubernetes secret to securely store the Cloudflare API token within the AKS cluster. This secret will be referenced by Cert Manager during DNS validation.
 
 ```yaml
 apiVersion: "v1"
@@ -58,7 +59,7 @@ metadata:
   name: cf-dns-secret
 stringData:
   token: 'YOUR-CF-DNS-TOKEN'
-# Replace 'YOUR-CF-DNS-TOKEN' with the actual API token you generated in the previous step.
+# Replace 'YOUR-CF-DNS-TOKEN' with the actual API token generated in the previous step.
 ```
 
 3. **Cert Manager Installation:**
@@ -116,7 +117,8 @@ spec:
         cloudflare:
           #Update this accoring to your domain
           email: 'admin@drunk.dev'
-          # Ensure that the name matches the secret you created (cf-dns-secret), and the key references the correct data key within the secret (token).
+          # Ensure that the name matches the secret you created (cf-dns-secret), 
+          # and the key references the correct data key within the secret (token).
           apiTokenSecretRef:
             name: cf-dns-secret
             key: token
@@ -126,12 +128,10 @@ spec:
 
 Since the AKS cluster’s outbound traffic is managed by a firewall, it’s neededs to whitelist specific external services to ensure that Cert Manager can successfully issue certificates. Without these exceptions, the certificate issuance process will fail.
 
-Here’s what needs to allow at the Firewall rules:
+Here’s what needs to allow in the Firewall rules:
 
 - Allow outbound access to `api.cloudflare.com` on port `443`.
 - Allow outbound access to `*.api.letsencrypt.org` on port `443`.
-
-Ensuring these domains are whitelisted will enable Cert Manager to communicate with Cloudflare and Let’s Encrypt, facilitating the automatic issuance and renewal of SSL certificates.
 
 ## Nginx Ingress Installation
 
@@ -169,16 +169,30 @@ controller:
 - `loadBalancerIP`: Assigns a static private IP address (192.168.250.250) to the NGINX load balancer, ensuring it’s accessible only within the internal network.
 Once NGINX is deployed with this configuration, it will only be accessible from within the internal network via the private IP address `192.168.250.250`.
 
+**Install Nginx with Helm**
+
+```shell
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+
+helm nginx ingress-nginx/ingress-nginx \
+  --values values.yaml \
+  -n  nginx-ingress \
+  --create-namespace --cleanup-on-fail
+```
+
 2. **Configure DNS for Internal Access**
 
-After deploying the NGINX Ingress controller, the next step is to ensure that internal DNS queries resolve to the NGINX private IP. To do this, add an A record in the Azure private DNS zone (drunk.dev) that created earlier:
+After deploying the NGINX Ingress controller, the next step is to ensure that internal DNS queries resolve to the NGINX private IP. To do this, add an A record in the Azure private DNS zone that created earlier:
 
-- **DNS Record**: Add an A record pointing to 192.168.250.250 for your internal domain (drunk.dev). This ensures that any internal traffic destined for blogs.drunk.dev is routed to the NGINX Ingress controller.
+- **DNS Record**: Add an A record pointing to 192.168.250.250 for the internal domain. This ensures that any internal traffic destined for blogs.drunk.dev is routed to the NGINX Ingress controller.
   <img src="/assets/aks-cert-manager-with-private-aks/az-private-dns.png">
 
 3. **Create a Secure Ingress with Dynamic TLS Certificate Generation**
 
-Now that NGINX is set up and DNS is configured, it’s time to create a secure Ingress resource that uses dynamic TLS certificate generation. Here’s an example configuration:
+Now, it’s time to create a secure Ingress resource that uses dynamic TLS certificate generation. 
+
+Here’s an example configuration:
 
 ```yaml
 apiVersion: networking.k8s.io/v1
