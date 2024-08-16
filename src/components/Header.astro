@@ -8,9 +8,18 @@ export interface Props {
 }
 
 const { activeNav } = Astro.props;
+const measurementId = import.meta.env.PUBLIC_GOOGLE_MEASUREMENT_ID;
 ---
 
 <header>
+  <!-- Google tag (gtag.js) -->
+  <script type="text/partytown" async src=`https://www.googletagmanager.com/gtag/js?id=${measurementId}`></script>
+  <script type="text/partytown">
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', `${measurementId}`);
+  </script>
   <a id="skip-to-content" href="#main-content">Skip to content</a>
   <div class="nav-container">
     <div class="top-nav-wrap">
