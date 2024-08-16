@@ -8,7 +8,7 @@ export interface Props {
 }
 
 const { activeNav } = Astro.props;
-const measurementId = process.env.PUBLIC_GOOGLE_MEASUREMENT_ID;
+const measurementId = import.meta.env.PUBLIC_GOOGLE_MEASUREMENT_ID;
 ---
 
 <header>
