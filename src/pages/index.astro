@@ -9,9 +9,8 @@ import Card from "@components/Card";
 import Socials from "@components/Socials.astro";
 import getSortedPosts from "@utils/getSortedPosts";
 import { SITE, SOCIALS } from "@config";
-const measurementId = process.env.PUBLIC_GOOGLE_MEASUREMENT_ID;
-const posts = await getCollection("blog");
 
+const posts = await getCollection("blog");
 const sortedPosts = getSortedPosts(posts);
 const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
 const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
@@ -21,16 +20,6 @@ const socialCount = SOCIALS.filter(social => social.active).length;
 
 <Layout>
   <Header />
-  <head>
-    <!-- Google tag (gtag.js) -->
-    <script type="text/partytown" async src=`https://www.googletagmanager.com/gtag/js?id=${measurementId}`></script>
-    <script type="text/partytown">
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', `${measurementId}`);
-    </script>
-  </head>
   <main id="main-content">
     <section id="hero">
       <h1>Welcome to DrunkCoding</h1>
