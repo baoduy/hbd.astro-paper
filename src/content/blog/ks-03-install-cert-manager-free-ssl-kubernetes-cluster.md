@@ -151,6 +151,7 @@ Below is the detailed certificate information as seen from the browser.
 ![Browser certificate details](/assets/ks-install-cert-manager-free-ssl-kubernetes-cluster/cert-details.png)
 
 <hr/>
+
 Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
 
 Steven

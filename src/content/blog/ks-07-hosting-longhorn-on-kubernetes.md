@@ -272,6 +272,7 @@ Visit our documentation at https://longhorn.io/docs/
   <img src="/assets/ks-hosting-longhorn-on-kubernetes/azure-storage-account.png" width="600px">
 
 <hr/>
+
 Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
 
 Steven

@@ -139,6 +139,7 @@ is recommended for Production environment which provides a certificate from a st
 > After completing these steps, we can proceed with uninstalling the Cert-Manager, as it is no longer needed.
 
 <hr/>
+
 Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
 
 Steven

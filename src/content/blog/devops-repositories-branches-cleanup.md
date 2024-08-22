@@ -482,6 +482,7 @@ This script provides a robust solution for identifying and deleting old, unused 
 With the provided pipeline setup, you can schedule regular cleanups to ensure your repositories remain clean-and-bright.
 
 <hr/>
+
 Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
 
 Steven
