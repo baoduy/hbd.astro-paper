@@ -29,7 +29,7 @@ Before we dive into the script, make sure you have the following environment var
 
 The script uses a `config.json` file to specify the branches to exclude from deletion. Here is an example configuration:
 
-```json:config.json
+```json
 {
   "globalExcludes": [
     "master",
@@ -49,7 +49,7 @@ The script uses a `config.json` file to specify the branches to exclude from del
 
 The script starts by loading environment variables from a `.env` file using the `dotenv` package. These variables include the Azure DevOps URL, Personal Access Token (PAT), project name, and a flag to indicate if the script should run in dry-run mode.
 
-```typescript:index.ts
+```typescript
 import * as dotenv from "dotenv";
 
 // Load environment variables from .env file
@@ -63,7 +63,7 @@ const isDryRun = process.env.DryRun === "true";
 
 The `Config` interface defines the structure of the configuration object, which includes global and repository-specific branch exclusions.
 
-```typescript:index.ts
+```typescript
 // Configuration interface for branch exclusions
 interface Config {
   globalExcludes: string[];
@@ -77,7 +77,7 @@ interface Config {
 
 The `DAYS_90_MS` constant represents 90 days in milliseconds, which is used to determine if a branch is old enough to be considered for deletion.
 
-```typescript:index.ts
+```typescript
 // 90 days in milliseconds
 const DAYS_90_MS = 90 * 24 * 60 * 60 * 1000;
 ```
@@ -86,7 +86,7 @@ const DAYS_90_MS = 90 * 24 * 60 * 60 * 1000;
 
 The `getGitApi` function retrieves the Git API client for Azure DevOps using the organization URL and PAT.
 
-```typescript:index.ts
+```typescript
 import * as azdev from "azure-devops-node-api";
 import * as GitApi from "azure-devops-node-api/GitApi";
 
@@ -119,7 +119,7 @@ async function getGitApi(): Promise<GitApi.IGitApi> {
 
 The `loadConfig` function loads the configuration from a `config.json` file, which specifies the branches to exclude from deletion.
 
-```typescript:index.ts
+```typescript
 import * as fs from "fs";
 import * as path from "path";
 
@@ -138,7 +138,7 @@ function loadConfig(): Config {
 
 The `getRepositories` and `getBranches` functions retrieve the list of repositories and branches in a project, respectively.
 
-```typescript:index.ts
+```typescript
 import * as GitInterfaces from "azure-devops-node-api/interfaces/GitInterfaces";
 
 /**
@@ -176,7 +176,7 @@ async function getBranches(
 
 The `getLastCommitDate` function retrieves the date of the last commit on a branch. This is used to determine if the branch is old enough to be deleted.
 
-```typescript:index.ts
+```typescript
 /**
  * Get the date of the last commit on a branch.
  * @param {GitApi.IGitApi} gitApi - The Git API client.
@@ -215,7 +215,7 @@ async function getLastCommitDate(
 
 The `isBranchMerged` function checks if a branch is merged into a target branch. This helps ensure that only merged branches are deleted.
 
-```typescript:index.ts
+```typescript
 /**
  * Check if a branch is merged into a target branch.
  * @param {GitApi.IGitApi} gitApi - The Git API client.
@@ -259,7 +259,7 @@ async function isBranchMerged(
 
 The `deleteBranch` function deletes a branch from a repository. If the branch is locked, it first unlocks the branch before deleting it.
 
-```typescript:index.ts
+```typescript
 /**
  * Delete a branch from a repository.
  * @param {GitApi.IGitApi} gitApi - The Git API client.
@@ -319,7 +319,7 @@ async function deleteBranch(
 
 The `getExclusionList` function retrieves the list of branches to exclude from deletion based on the configuration.
 
-```typescript:index.ts
+```typescript
 /**
  * Get the list of branches to exclude from deletion.
  * @param {Config} config - The configuration object.
@@ -337,7 +337,7 @@ function getExclusionList(config: Config, repoName: string): string[] {
 
 The `cleanUpBranches` function orchestrates the entire cleanup process. It retrieves the repositories and branches, checks if the branches are old and merged, and deletes them if they meet the criteria.
 
-```typescript:index.ts
+```typescript
 /**
  * Clean up old branches in all repositories of a project.
  */
