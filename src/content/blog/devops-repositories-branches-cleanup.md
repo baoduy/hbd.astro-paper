@@ -43,7 +43,7 @@ The script uses a `config.json` file to specify the branches to exclude from del
 }
 ```
 
-## Step-by-Step Implementation and Purpose of Each Method
+## Step-by-Step Implementation
 
 ### 1. Loading Environment Variables
 
@@ -429,17 +429,13 @@ To automate the execution of this script, you can set up an Azure DevOps pipelin
 
 1. **Setting Up Azure DevOps Library Group for Environment Variables**
 
-To securely manage and use environment variables in your Azure DevOps pipeline, you can set up a library group:
-
 - **Navigate to Azure DevOps**: Go to your Azure DevOps project.
-- **Library**: In the left sidebar, click on **Pipelines** and then **Library**.
-- **Add Variable Group**: Click on **+ Variable group**.
-- **Name and Description**: Provide a name ex: `az-devops` and description for the variable group.
+- **Add Variable Group**: with provided a name ex: `az-devops` and description.
 - **Add Variables**: Add the following variables:
   - `AZURE_DEVOPS_URL`
   - `AZURE_DEVOPS_PAT`
   - `AZURE_DEVOPS_PROJECT`
-- **Save**: Click **Save** to create the variable group.
+- Click **Save** to create the variable group.
 
 2. **Setting Up Azure DevOps Pipeline**
    Setup an azure pipeline and schedule it running at midnight every Sunday and perform the branch cleanup.
@@ -479,15 +475,11 @@ steps:
     AZURE_DEVOPS_PROJECT: $(AZURE_DEVOPS_PROJECT)
 ```
 
-In this pipeline:
-
-1. The `UseNode@2` task installs Node.js.
-2. The script step installs the necessary npm packages and runs the `index.ts` script.
-3. Environment variables are passed to the script from the pipeline variables.
-
 ## Conclusion
 
-By automating the branch cleanup process, you can keep your repositories clean and manageable, making it easier to navigate and maintain your codebase. This script provides a robust solution for identifying and deleting old, unused branches in Azure DevOps Git repositories. With the provided pipeline setup, you can schedule regular cleanups to ensure your repositories remain clutter-free.
+By automating the branch cleanup process, you can keep your repositories clean and manageable, making it easier to navigate and maintain your codebase. 
+This script provides a robust solution for identifying and deleting old, unused branches in Azure DevOps Git repositories. 
+With the provided pipeline setup, you can schedule regular cleanups to ensure your repositories remain clean-and-bright.
 
 <hr/>
 Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
