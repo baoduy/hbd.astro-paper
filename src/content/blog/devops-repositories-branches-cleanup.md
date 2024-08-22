@@ -444,7 +444,7 @@ To securely manage and use environment variables in your Azure DevOps pipeline, 
 2. **Setting Up Azure DevOps Pipeline**
    Setup an azure pipeline and schedule it running at midnight every Sunday and perform the branch cleanup.
 
-```yaml:azure-pipelines.yml
+```yaml
 schedules:
   - cron: "0 0 * * 0" # Runs every Sunday at 00:00
     displayName: "Weekly Sunday Midnight Schedule"
