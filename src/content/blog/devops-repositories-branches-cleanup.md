@@ -1,17 +1,15 @@
 ---
 author: Steven Hoang
-pubDatetime: 2024-08-25T12:00:00Z
-title: "[Az-DevOps] Automating Branch Cleanup in Azure DevOps with Node.js"
-postSlug: az-devops-repositories-branches-cleanup
+pubDatetime: 2024-08-21T12:00:00Z
+title: "[DevOps] Automating Branch Cleanup in Azure DevOps with Node.js"
+#postSlug: devops-repositories-branches-cleanup
 featured: true
 draft: false
 tags:
-  - Azure DevOPs
-  - Repository Cleanup
-ogImage: ""
-description:
-  This article provides a comprehensive guide on automating the cleanup of old branches in Azure DevOps Git repositories using a Node.js script. 
-  The script identifies branches that haven't been updated in the last 90 days and deletes them if they meet certain criteria.
+  - azure-devops
+  - repo-cleanup
+description: "This article provides a comprehensive guide on automating the cleanup of old branches in Azure DevOps Git repositories using a Node.js script.
+The script identifies branches that haven't been updated in the last 90 days and deletes them if they meet certain criteria."
 ---
 
 Managing branches in a Git repository can become cumbersome, especially when dealing with multiple repositories and projects. Over time, old and unused branches can clutter the repository, making it difficult to navigate and manage. To address this issue, we can automate the cleanup process using a Node.js script that interacts with Azure DevOps.
@@ -40,11 +38,7 @@ The script uses a `config.json` file to specify the branches to exclude from del
     "release"
   ],
   "repositoryExcludes": {
-    "Pulumi-Transwap": ["Releases/dev","Releases/sandbox","Releases/prd"],
-    "ts-infra.sg": ["Releases/dev","Releases/sandbox","Releases/prd"],
-    "ts-infra.uk": ["Releases/uk-dev","Releases/uk-sandbox","Releases/ukprd"],
-    "ts-helm.sg-aks": ["Releases/dev","Releases/sandbox","Releases/prd"],
-    "ts-helm.uk-aks": ["Releases/uk-dev","Releases/uk-sandbox","Releases/ukprd"]
+    "your-repo": ["branch/name"]
   }
 }
 ```
@@ -429,8 +423,8 @@ cleanUpBranches().catch((err) => {
 
 Please download the complete code of the program here: https://dev.azure.com/drunk24/drunkcoding-public/_git/az.tools?path=/az-devops-delete-branches
 
-
 ## Azure DevOps Pipeline Setup
+
 To automate the execution of this script, you can set up an Azure DevOps pipeline. Here is an example YAML pipeline configuration:
 
 1. **Setting Up Azure DevOps Library Group for Environment Variables**
@@ -442,13 +436,13 @@ To securely manage and use environment variables in your Azure DevOps pipeline, 
 - **Add Variable Group**: Click on **+ Variable group**.
 - **Name and Description**: Provide a name ex: `az-devops` and description for the variable group.
 - **Add Variables**: Add the following variables:
-    - `AZURE_DEVOPS_URL`
-    - `AZURE_DEVOPS_PAT`
-    - `AZURE_DEVOPS_PROJECT`
+  - `AZURE_DEVOPS_URL`
+  - `AZURE_DEVOPS_PAT`
+  - `AZURE_DEVOPS_PROJECT`
 - **Save**: Click **Save** to create the variable group.
 
 2. **Setting Up Azure DevOps Pipeline**
-Setup an azure pipeline and schedule it running at midnight every Sunday and perform the branch cleanup.
+   Setup an azure pipeline and schedule it running at midnight every Sunday and perform the branch cleanup.
 
 ```yaml:azure-pipelines.yml
 schedules:
@@ -461,7 +455,7 @@ schedules:
 
 pool:
   vmImage: ubuntu-latest
-  
+
 variables:
   - group: az-devops
 
@@ -486,6 +480,7 @@ steps:
 ```
 
 In this pipeline:
+
 1. The `UseNode@2` task installs Node.js.
 2. The script step installs the necessary npm packages and runs the `index.ts` script.
 3. Environment variables are passed to the script from the pipeline variables.
