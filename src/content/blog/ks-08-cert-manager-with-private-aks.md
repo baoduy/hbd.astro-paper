@@ -18,7 +18,7 @@ In a previous [post](https://drunkcoding.net/posts/ks-03-install-cert-manager-fr
 ### **Azure Architecture Overview**
 
 The following diagram illustrates the architecture we'll be working with:
-  <img src="/assets/aks-cert-manager-with-private-aks/private-AKS-with-cert-manager.png">
+<img src="/assets/aks-cert-manager-with-private-aks/private-AKS-with-cert-manager.png">
 
 The setup involves two Virtual Networks (VNETs) that are peered:
 
@@ -43,10 +43,10 @@ To address the challenge, I implemented the following approach:
 ### **Installation**
 
 1. **Create a Cloudflare DNS API Token:**  
-   First, navigate to the Cloudflare profile and create an API token by following [this link](https://dash.cloudflare.com/profile/api-tokens). The API token should have permissions to manage DNS records for the domains. 
-   
+    First, navigate to the Cloudflare profile and create an API token by following [this link](https://dash.cloudflare.com/profile/api-tokens). The API token should have permissions to manage DNS records for the domains.
+
    Additionally, for enhanced security, specify the AKS public IP address under `Client IP Address Filtering` in Cloudflare. This ensures that the API token is only accessible from the AKS platform, preventing unauthorized access from other locations.
-  <img src="/assets/aks-cert-manager-with-private-aks/cf-dns-token.png">
+   <img src="/assets/aks-cert-manager-with-private-aks/cf-dns-token.png">
 
 2. **Create a Kubernetes Secret for the Cloudflare API Token:**
 
@@ -58,14 +58,14 @@ kind: Secret
 metadata:
   name: cf-dns-secret
 stringData:
-  token: 'YOUR-CF-DNS-TOKEN'
+  token: "YOUR-CF-DNS-TOKEN"
 # Replace 'YOUR-CF-DNS-TOKEN' with the actual API token generated in the previous step.
 ```
 
 3. **Cert Manager Installation:**
 
 - **Create a values.yaml file for Helm Installation:**
-Before installing Cert Manager, create a values.yaml file with the following content. The extraArgs section is important as it directs Cert Manager to use Cloudflare’s DNS resolver for DNS-01 challenge validation.
+  Before installing Cert Manager, create a values.yaml file with the following content. The extraArgs section is important as it directs Cert Manager to use Cloudflare’s DNS resolver for DNS-01 challenge validation.
 
 ```yaml
 # auto create CRD resources
@@ -82,10 +82,11 @@ extraArgs:
   - --dns01-recursive-nameservers-only
   - --dns01-recursive-nameservers=1.1.1.1:53
 ```
+
 This configuration ensures that Cert Manager will only use Cloudflare’s DNS servers (specifically 1.1.1.1:53) to perform DNS-01 challenge validation, which is necessary for issuing SSL certificates.
 
 - **Install Cert Manager with Helm:**
-Now, proceed with installing Cert Manager using Helm. The following commands will add the Jetstack Helm repository, update it, and then install Cert Manager with the custom values.yaml configuration file above.
+  Now, proceed with installing Cert Manager using Helm. The following commands will add the Jetstack Helm repository, update it, and then install Cert Manager with the custom values.yaml configuration file above.
 
 ```shell
 helm repo add jetstack https://charts.jetstack.io
@@ -98,7 +99,7 @@ helm install cert-manager jetstack/cert-manager \
 ```
 
 - **Set Up a ClusterIssuer for Cert Manager:**
-The next step is create a ClusterIssuer resource to define how Cert Manager should obtain SSL certificates. The following template uses the Cloudflare DNS API token stored in the Kubernetes secret created earlier.
+  The next step is create a ClusterIssuer resource to define how Cert Manager should obtain SSL certificates. The following template uses the Cloudflare DNS API token stored in the Kubernetes secret created earlier.
 
 ```yaml
 apiVersion: cert-manager.io/v1
@@ -109,19 +110,19 @@ spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
     # Replace with the administrator email associated with your domain.
-    email: 'admin@drunk.dev'
+    email: "admin@drunk.dev"
     privateKeySecretRef:
       name: letsencrypt-prod
     solvers:
-    - dns01:
-        cloudflare:
-          #Update this accoring to your domain
-          email: 'admin@drunk.dev'
-          # Ensure that the name matches the secret you created (cf-dns-secret), 
-          # and the key references the correct data key within the secret (token).
-          apiTokenSecretRef:
-            name: cf-dns-secret
-            key: token
+      - dns01:
+          cloudflare:
+            #Update this accoring to your domain
+            email: "admin@drunk.dev"
+            # Ensure that the name matches the secret you created (cf-dns-secret),
+            # and the key references the correct data key within the secret (token).
+            apiTokenSecretRef:
+              name: cf-dns-secret
+              key: token
 ```
 
 - **Firewall Whitelisting**
@@ -135,39 +136,40 @@ Here’s what needs to allow in the Firewall rules:
 
 ## Nginx Ingress Installation
 
-Setting up NGINX Ingress in a private AKS environment involves configuring it to use a private IP address and an internal ingress class. 
+Setting up NGINX Ingress in a private AKS environment involves configuring it to use a private IP address and an internal ingress class.
 
 1. **Install NGINX Ingress Controller**: To deploy NGINX as an internal Ingress controller with a private IP address, create a values.yaml file with the following configuration.
 
 ```yaml
 controller:
-  hostNetwork: 'false'
-  useIngressClassOnly: 'true'
-  watchIngressWithoutClass: 'true'
+  hostNetwork: "false"
+  useIngressClassOnly: "true"
+  watchIngressWithoutClass: "true"
   # the ingress class name is internal
-  ingressClass: 'internal'
+  ingressClass: "internal"
   # The custom ingress class
   ingressClassResource:
-    name: 'internal'
+    name: "internal"
     enabled: true
     default: true
     controllerValue: k8s.io/ingress-nginx
   service:
     annotations:
-    # This annotation to tell Azure to create an internal load balancer.
-      service.beta.kubernetes.io/azure-load-balancer-internal: 'true'
-    externalTrafficPolicy: 'Local'
+      # This annotation to tell Azure to create an internal load balancer.
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    externalTrafficPolicy: "Local"
     # update this private IP address accroding to your address spaces.
-    loadBalancerIP: '192.168.250.250'
+    loadBalancerIP: "192.168.250.250"
 ```
 
 **Explanation:**
+
 - `hostNetwork`: false ensures that the NGINX pods do not bind directly to the node’s network interfaces, maintaining isolation.
 - `useIngressClassOnly`: Ensures that only Ingress resources with the specified ingressClass will be processed by this controller.
 - `ingressClass`: Named internal to distinguish it from other Ingress classes, ensuring it’s used specifically for internal traffic.
 - `service.annotations`: The key annotation service.beta.kubernetes.io/azure-load-balancer-internal: 'true' tells Azure to create an internal load balancer instead of a public one.
 - `loadBalancerIP`: Assigns a static private IP address (192.168.250.250) to the NGINX load balancer, ensuring it’s accessible only within the internal network.
-Once NGINX is deployed with this configuration, it will only be accessible from within the internal network via the private IP address `192.168.250.250`.
+  Once NGINX is deployed with this configuration, it will only be accessible from within the internal network via the private IP address `192.168.250.250`.
 
 **Install Nginx with Helm**
 
@@ -190,7 +192,7 @@ After deploying the NGINX Ingress controller, the next step is to ensure that in
 
 3. **Create a Secure Ingress with Dynamic TLS Certificate Generation**
 
-Now, it’s time to create a secure Ingress resource that uses dynamic TLS certificate generation. 
+Now, it’s time to create a secure Ingress resource that uses dynamic TLS certificate generation.
 
 Here’s an example configuration:
 
@@ -201,9 +203,9 @@ metadata:
   name: drunk-blog-apps
   namespace: drunk-apps
   annotations:
-    kubernetes.io/tls-acme: 'true'
+    kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/backend-protocol: HTTP
-    ingress.kubernetes.io/force-ssl-redirect: 'true'
+    ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   # the name of ingress class percificly here.
   ingressClassName: internal
@@ -213,7 +215,7 @@ spec:
         - blogs.drunk.dev
       secretName: tls-blogs-lets
   rules:
-  # the host config
+    # the host config
     - host: blogs.drunk.dev
       http:
         paths:
@@ -227,6 +229,7 @@ spec:
 ```
 
 **Key Points:**
+
 - `ingressClassName`: Specifies that this Ingress resource should be handled by the internal Ingress class, ensuring it’s routed through the private NGINX controller.
 - `tls`: Configures automatic TLS certificate generation for `blogs.drunk.dev` using Cert Manager. The certificate will be stored in a Kubernetes secret named `tls-blogs-lets`.
 - `annotations`: The force-ssl-redirect: 'true' annotation ensures that all HTTP traffic is redirected to HTTPS, securing the communication.
