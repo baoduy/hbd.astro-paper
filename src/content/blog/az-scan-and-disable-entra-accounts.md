@@ -175,7 +175,7 @@ const printAccounts = (message: string, accounts: AdUser[]) =>
 })();
 ```
 
-> You should able to download the entire NodeJs from here: https://dev.azure.com/drunk24/drunkcoding-public/_git/az.account-management
+> You should able to download the entire NodeJs from here: https://dev.azure.com/drunk24/drunkcoding-public/_git/az.tools?path=/az-entraID-scan
 
 ## 3. Schedule the Script with Azure DevOps
 
