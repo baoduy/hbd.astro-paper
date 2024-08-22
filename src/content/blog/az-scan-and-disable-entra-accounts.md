@@ -225,6 +225,7 @@ steps:
 > **Note:** You need a Microsoft Entra ID P2 license to run this program, as the AuditLog Graph API requires a premium license.
 
 <hr/>
+
 Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
 
 Steven

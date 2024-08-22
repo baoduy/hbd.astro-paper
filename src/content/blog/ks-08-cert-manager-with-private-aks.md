@@ -243,6 +243,7 @@ So, that’s how I secured internal communications within my private AKS environ
 I hope you found this walkthrough helpful or at least interesting. If you have any thoughts, questions, or would like to share your own experiences, feel free to reach out. I’m always keen to hear how others are tackling similar challenges!
 
 <hr/>
+
 Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
 
 Steven

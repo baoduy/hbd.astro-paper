@@ -163,6 +163,7 @@ Congratulations, your K3s cluster is now ready to be utilized.
 ![k82-lend-pi-cluster.png](/assets/ks-Install-k3s-on-pi-cluster/k82-lend-pi-cluster.png)
 
 <hr/>
+
 Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
 
 Steven
