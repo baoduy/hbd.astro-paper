@@ -8,13 +8,26 @@ draft: false
 tags:
   - azure-devops
   - repo-cleanup
-description: "This article provides a comprehensive guide on automating the cleanup of old branches in Azure DevOps Git repositories using a Node.js script.
+description: "A comprehensive guide on automating the cleanup of old branches in Azure DevOps Git repositories using a Node.js script.
 The script identifies branches that haven't been updated in the last 90 days and deletes them if they meet certain criteria."
 ---
 
-Managing branches in a Git repository can become cumbersome, especially when dealing with multiple repositories and projects. Over time, old and unused branches can clutter the repository, making it difficult to navigate and manage. To address this issue, we can automate the cleanup process using a Node.js script that interacts with Azure DevOps.
+## Introduction
 
-In this blog post, we'll walk through a script that automates the cleanup of old branches in Azure DevOps Git repositories. The script checks for branches that haven't been updated in the last 90 days and deletes them if they meet certain criteria.
+As software projects grow, the number of branches in our Git repository can quickly multiply. Over time, many of these branches become outdated or redundant, cluttering the repositories and making it harder to manage. 
+Regularly cleaning up these branches is essential to maintain a clean and efficient development environment. But don’t worry—this is where automation can save you time and effort!
+
+In this guide, we'll walk through the process of setting up a script that automatically deletes old, unnecessary branches in Azure DevOps. 
+We’ll cover everything from understanding the configuration file to executing the script. By the end of this article, you'll be equipped with the knowledge to keep the repositories tidy and efficient.
+
+**Why Clean Up Branches?**
+
+Before we dive into the technical details, let's talk about why this is important:
+
+- **Reduce Clutter**: Too many branches can make it difficult to navigate the repository, especially when trying to find active or important branches.
+- **Improve Performance**: A clean repository is easier to manage and can lead to better performance in the CI/CD pipelines.
+- **Prevent Confusion**: Developers might accidentally use or merge outdated branches, leading to potential issues in the codebase.
+Now that to understand the importance, let’s move on to how you can automate this process.
 
 ## Environment Variables
 
