@@ -6,10 +6,9 @@ postSlug: tools-sql-server-data-cleanup
 featured: true
 draft: false
 tags:
-  - azure-devops
-  - repo-cleanup
-description: "A comprehensive guide on automating the cleanup of old branches in Azure DevOps Git repositories using a Node.js script.
-The script identifies branches that haven't been updated in the last 90 days and deletes them if they meet certain criteria."
+  - database-cleanup
+  - tools
+description: "In development and sandbox environments, data can quickly accumulate, leading to performance issues and increased costs. The SQL Data Cleanup program automates the removal of old records from SQL databases based on configurable settings. This post highlights the importance of regular data cleanup to reduce clutter, enhance performance, and manage costs, while also providing guidance on configuring the program to meet specific needs. The tool helps keep databases efficient and manageable, ensuring optimal performance in development and testing environments."
 ---
 
 ## Introduction
@@ -36,13 +35,13 @@ The configuration for the SQL Data Cleanup program is stored in the `appsettings
     "OlderThanDays": 365, // Keep Data for 1 year
 
     // Connection string template for connecting to the SQL databases
-    "ConnectionString": "Server=tcp:random-server-name.database.windows.net,1433;Initial Catalog=[DbName];User ID=your-username;Password=your-password;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
+    "ConnectionString": "YOUR_CONNECTION_STRING",
 
     // Primary field used for identifying records in the tables
     "PrimaryField": "Id",
 
     // Fields used to determine the age of the records for cleanup
-    "ConditionFields": ["CreatedOn", "CreatedOn"],
+    "ConditionFields": ["CreatedOn"],
 
     // Configuration for individual databases
     "Databases": {
@@ -52,7 +51,7 @@ The configuration for the SQL Data Cleanup program is stored in the `appsettings
         "PrimaryField": "Id",
 
         // Fields used to determine the age of the records for cleanup in this database
-        "ConditionFields": ["CreatedOn"],
+        "ConditionFields": ["UpdateOn"],
 
         // Configuration for individual tables within this database
         "Tables": {
@@ -73,8 +72,6 @@ The configuration for the SQL Data Cleanup program is stored in the `appsettings
 }
 ```
 
-
-
 ### Configuration Explanation
 
 The configuration is divided into three levels: Global, Database, and Table. Each level allows you to specify `ConditionFields` and `PrimaryField` settings, providing flexibility and control over the cleanup process.
@@ -93,24 +90,6 @@ The configuration is divided into three levels: Global, Database, and Table. Eac
   - **PrimaryField**: The primary key field used to identify records in this table.
   - **ConditionFields**: Fields used to determine the age of the records in this table.
 
-### Example Configuration
-
-- **Global Level**: Applies to all databases and tables unless overridden.
-  - **OlderThanDays**: 365
-  - **ConnectionString**: The Sql server connection string with a place holder `[DbName]` and this will be replaced with a real database name when doing the cleanup.
-  - **PrimaryField**: The name of primary key what will be applied all the databases and tables belows.
-  - **ConditionFields**: The name of condition fields what will be applied all the databases and tables belows.
-
-- **Database Level**: Applies to all tables within `database-1` unless overridden.
-  - **database-1**:
-    - **PrimaryField**: The name of primary key what will be applied all the tables within the database.
-    - **ConditionFields**: The name of condition fields what will be applied to all tables within the database..
-
-- **Table Level**: Applies only to `table-1` within `database-1`.
-  - **table-1**:
-    - **PrimaryField**: Overwrite the name of primary key for the particular table.
-    - **ConditionFields**: Overwrite the condition fields for the particular table.
-
 ## Usage
 
 For detailed setup instructions, please refer to the [SQL Data Cleanup GitHub repository](https://github.com/baoduy/tool-sql-data-cleanup). The repository contains comprehensive instructions on how to clone the project, update the configuration, build, and run the program.
@@ -125,3 +104,10 @@ For detailed setup instructions, please refer to the [SQL Data Cleanup GitHub re
 ## Conclusion
 
 By using the SQL Data Cleanup program, you can efficiently manage and maintain your SQL databases, ensuring that old and unnecessary data is regularly cleaned up. This not only improves database performance but also helps in reducing storage costs. The program allows you to configure and clean up only the tables you want (whitelist), providing flexibility and control over the cleanup process. Give it a try and let us know your feedback!
+
+<hr/>
+
+Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
+
+Steven
+[GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)
