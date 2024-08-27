@@ -1,0 +1,127 @@
+---
+author: Steven Hoang
+pubDatetime: 2024-08-26T12:00:00Z
+title: "[Tools] Automating SQL Data Cleanup in Development and Sandbox Environments"
+postSlug: tools-sql-server-data-cleanup
+featured: true
+draft: false
+tags:
+  - azure-devops
+  - repo-cleanup
+description: "A comprehensive guide on automating the cleanup of old branches in Azure DevOps Git repositories using a Node.js script.
+The script identifies branches that haven't been updated in the last 90 days and deletes them if they meet certain criteria."
+---
+
+## Introduction
+
+In our development and sandbox environments, data can quickly accumulate, leading to bloated databases filled with old transaction records, exchange rates, and logs. Without a dedicated housekeeper, these environments can become cluttered, impacting performance and increasing storage costs. To address this issue, I developed the SQL Data Cleanup program, a powerful tool designed to clean up old records from multiple SQL databases based on a provided configuration.
+
+## Why Clean Up Data?
+
+Before we dive into the technical details, let’s talk about why this is important:
+
+- **Reduce Clutter**: Too much data can make it difficult to manage and navigate the database, especially when trying to find relevant records.
+- **Improve Performance**: A clean database is easier to manage and can lead to better performance in your development and testing environments.
+- **Cost Savings**: Our entire environment is hosted on the cloud, and to keep storage and usage within budget, it is crucial to regularly clean up data. This applies not only to sandbox environments but also to production environments.
+- **Prevent Confusion**: Developers might accidentally use or reference outdated data, leading to potential issues in the codebase.
+
+## Configuration
+
+The configuration for the SQL Data Cleanup program is stored in the `appsettings.json` file. Here is a simplified example configuration for one database and one table:
+
+```json
+{
+  "DbCleanup": {
+    // Number of days to keep data before considering it old and eligible for cleanup
+    "OlderThanDays": 365, // Keep Data for 1 year
+
+    // Connection string template for connecting to the SQL databases
+    "ConnectionString": "Server=tcp:random-server-name.database.windows.net,1433;Initial Catalog=[DbName];User ID=your-username;Password=your-password;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
+
+    // Primary field used for identifying records in the tables
+    "PrimaryField": "Id",
+
+    // Fields used to determine the age of the records for cleanup
+    "ConditionFields": ["CreatedOn", "CreatedOn"],
+
+    // Configuration for individual databases
+    "Databases": {
+      // Configuration for the "random-database-1" database
+      "database-1": {
+        // Primary field used for identifying records in this database
+        "PrimaryField": "Id",
+
+        // Fields used to determine the age of the records for cleanup in this database
+        "ConditionFields": ["CreatedOn"],
+
+        // Configuration for individual tables within this database
+        "Tables": {
+          // Configuration for the "random-table-1" table
+          "table-1": {
+            // Primary field used for identifying records in this table
+            "PrimaryField": "Id"
+          },
+          // Configuration for the "random-table-2" table
+          "random-table-2": {
+            // Primary field used for identifying records in this table
+            "PrimaryField": "Id"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+
+
+### Configuration Explanation
+
+The configuration is divided into three levels: Global, Database, and Table. Each level allows you to specify `ConditionFields` and `PrimaryField` settings, providing flexibility and control over the cleanup process.
+
+- **Global Level**: Settings specified under `DbCleanup` apply to all databases and tables unless overridden at a lower level.
+  - **OlderThanDays**: Specifies the number of days to retain data before it is considered old and eligible for cleanup. In this case, data older than 365 days will be cleaned up.
+  - **ConnectionString**: Template for the connection string used to connect to the SQL databases. The placeholder `[DbName]` will be replaced with the actual database name during runtime.
+  - **PrimaryField**: The primary key field used to identify records in the tables.
+  - **ConditionFields**: Fields used to determine the age of the records. Records older than the specified number of days in these fields will be considered for cleanup.
+
+- **Database Level**: Settings specified for each database apply to all tables within that database unless overridden at the table level.
+  - **PrimaryField**: The primary key field used to identify records in the tables within this database.
+  - **ConditionFields**: Fields used to determine the age of the records in the tables within this database.
+
+- **Table Level**: Settings specified for each table apply only to that specific table.
+  - **PrimaryField**: The primary key field used to identify records in this table.
+  - **ConditionFields**: Fields used to determine the age of the records in this table.
+
+### Example Configuration
+
+- **Global Level**: Applies to all databases and tables unless overridden.
+  - **OlderThanDays**: 365
+  - **ConnectionString**: The Sql server connection string with a place holder `[DbName]` and this will be replaced with a real database name when doing the cleanup.
+  - **PrimaryField**: The name of primary key what will be applied all the databases and tables belows.
+  - **ConditionFields**: The name of condition fields what will be applied all the databases and tables belows.
+
+- **Database Level**: Applies to all tables within `database-1` unless overridden.
+  - **database-1**:
+    - **PrimaryField**: The name of primary key what will be applied all the tables within the database.
+    - **ConditionFields**: The name of condition fields what will be applied to all tables within the database..
+
+- **Table Level**: Applies only to `table-1` within `database-1`.
+  - **table-1**:
+    - **PrimaryField**: Overwrite the name of primary key for the particular table.
+    - **ConditionFields**: Overwrite the condition fields for the particular table.
+
+## Usage
+
+For detailed setup instructions, please refer to the [SQL Data Cleanup GitHub repository](https://github.com/baoduy/tool-sql-data-cleanup). The repository contains comprehensive instructions on how to clone the project, update the configuration, build, and run the program.
+
+### Code Structure
+
+- **SqlDataCleanup/Config.cs**: Contains configuration classes and methods for setting up dependency injection.
+- **SqlDataCleanup/DbCleanupJob.cs**: Contains the `DbCleanupJob` class, which handles the cleanup operations for individual databases.
+- **SqlDataCleanup/Extensions.cs**: Contains extension methods for configuration objects.
+- **SqlDataCleanup/SqlCleanupJob.cs**: Contains the `SqlCleanupJob` class, which orchestrates the cleanup operations for all configured databases.
+
+## Conclusion
+
+By using the SQL Data Cleanup program, you can efficiently manage and maintain your SQL databases, ensuring that old and unnecessary data is regularly cleaned up. This not only improves database performance but also helps in reducing storage costs. The program allows you to configure and clean up only the tables you want (whitelist), providing flexibility and control over the cleanup process. Give it a try and let us know your feedback!
