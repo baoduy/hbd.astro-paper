@@ -27,11 +27,11 @@ Dead-letter messages need to be cleaned up regularly for several critical reason
 
 - **Prevent Storage Overruns:** If dead-letter messages accumulate without being cleaned up, they can consume significant storage space, eventually leading to a `QuotaExceededException`. This exception occurs when the maximum entity size for a Service Bus resource is reached, potentially disrupting normal operations. Here’s an example of such an error:
 
-  ```
-  Microsoft.Azure.ServiceBus.QuotaExceededException: The maximum entity size has been reached or exceeded for Topic: 'SG-PRD-BUS-TRANS:TOPIC:COMPLIANCE-V1-TP~47'. Size of entity in bytes: 2147489161, Max entity size in bytes: 2147483648. For more information please see
+```
+  Microsoft.Azure.ServiceBus.QuotaExceededException: The maximum entity size has been reached or exceeded for Topic: 'TP-NAME-TP~47'. Size of entity in bytes: 2147489161, Max entity size in bytes: 2147483648. For more information please see
   https://aka.ms/ServiceBusExceptions.
-  QuotaType: EntitySize Reference:94a0d962-9919-48bc-8462-e32ab865bac8, TrackingId:97627e480000fd78005afd8566cc2fc4_G23_B20, SystemTracker:gi::G23:Send:268196192:638115103418830000:bus-compliance-v1-send:EntitySAS:F2:C64888, bi::in-connection2792(G23-1801057)::session2807::link5963141, Timestamp:2024-08-26T07:33:25
-  ```
+...
+```
 
 - **Ensure System Reliability:** Accumulated dead-letter messages can degrade the performance and reliability of the messaging system. Regular cleanup helps maintain optimal performance and prevents system failures due to exceeded quotas.
 
