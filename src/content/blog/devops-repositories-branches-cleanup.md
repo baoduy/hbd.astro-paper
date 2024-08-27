@@ -8,6 +8,7 @@ draft: false
 tags:
   - azure-devops
   - repo-cleanup
+  - tools
 description: "A comprehensive guide on automating the cleanup of old branches in Azure DevOps Git repositories using a Node.js script.
 The script identifies branches that haven't been updated in the last 90 days and deletes them if they meet certain criteria."
 ---

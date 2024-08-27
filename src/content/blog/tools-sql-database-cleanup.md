@@ -6,10 +6,9 @@ postSlug: tools-sql-server-data-cleanup
 featured: true
 draft: false
 tags:
-  - azure-devops
-  - repo-cleanup
-description: "A comprehensive guide on automating the cleanup of old branches in Azure DevOps Git repositories using a Node.js script.
-The script identifies branches that haven't been updated in the last 90 days and deletes them if they meet certain criteria."
+  - database-cleanup
+  - tools
+description: "In development and sandbox environments, data can quickly accumulate, leading to performance issues and increased costs. The SQL Data Cleanup program automates the removal of old records from SQL databases based on configurable settings. This post highlights the importance of regular data cleanup to reduce clutter, enhance performance, and manage costs, while also providing guidance on configuring the program to meet specific needs. The tool helps keep databases efficient and manageable, ensuring optimal performance in development and testing environments."
 ---
 
 ## Introduction
