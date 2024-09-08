@@ -67,27 +67,6 @@ The configuration for the dead-letter cleanup service is stored in the `appsetti
 - **ServiceBus:** Configuration for the Azure Service Bus, including the connection string.
 - **StorageAccount:** Configuration for the Azure Storage Account, specifying the connection string and the blob container where dead-letter messages will be stored.
 
-### Configuration Classes
-
-The configuration settings are mapped to classes in the application, ensuring that they can be easily accessed and used throughout the service.
-
-```csharp
-public sealed class BusConfig
-{
-    public static string Name => "ServiceBus";
-    [Required(AllowEmptyStrings = false)]
-    public string ConnectionString { get; set; } = default!;
-}
-
-public sealed class StorageConfig
-{
-    public static string Name => "StorageAccount";
-    [Required(AllowEmptyStrings = false)]
-    public string ConnectionString { get; set; } = default!;
-    [Required(AllowEmptyStrings = false)]
-    public string ContainerName { get; set; } = default!;
-}
-```
 
 ### ServiceBusBackgroundService
 
