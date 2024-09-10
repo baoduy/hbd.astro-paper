@@ -17,17 +17,31 @@ The tool runs as a monthly cron job on AKS, ensuring SSL certificates are always
 
 ## Introduction
 
-Managing SSL certificates for Azure services like **Azure API Management** and **Azure Front Door** with custom domains can become complex and costly, especially in **development and sandbox environments**. To reduce these costs, I’ve developed a tool that leverages **Let’s Encrypt** certificates, which are free and automated, making them ideal for these non-production environments. This tool not only automates the generation of Let’s Encrypt certificates but also detects expiring certificates and renews only those, ensuring efficient management. The certificates are then securely imported into **Azure Key Vault** for use by Azure resources. Best of all, this tool runs as a monthly cron job on **Azure Kubernetes Service (AKS)**, simplifying the entire process.
+Many services on Azure allow us to customize the domain name, which requires providing a trusted certificate.
+For **development and sandbox environments** used by internal development teams, leveraging **Let's Encrypt** certificates provides a convenient and automated solution.
+However, Let's Encrypt certificates have a short lifespan of only three months, necessitating frequent renewals.
+
+To address this, I've developed a tool that automates the generation and renewal of Let's Encrypt certificates specifically for these dev and sandbox environments.
+It detects expiring certificates and renews only those, ensuring efficient management.
+The certificates are then securely imported into **Azure Key Vault** for seamless integration with Azure resources.
+To further simplify the process, this tool runs as a monthly cron job on **Azure Kubernetes Service (AKS)**, eliminating the need for manual intervention.
 
 ## Why Automate Certificate Management?
 
-SSL certificates are essential for securing Azure services like **Azure API Management** and **Azure Front Door** when using custom domains. However, managing certificates manually can be time-consuming and expensive, especially for non-production environments. Here’s why automating the process with Let’s Encrypt certificates makes sense:
+Manually managing short-lived Let's Encrypt SSL certificates for Azure services like **Azure API Management** and **Azure Front Door** can be a cumbersome process, particularly when dealing with multiple resources across various environments.
+Automating the certificate management process using Let's Encrypt certificates offers several significant advantages:
 
-- **Cost-Effective for Dev and Sandbox Environments**: Instead of paying for certificates in development environments, Let’s Encrypt offers a free solution that saves money while providing the same level of security.
-- **Avoid Expired Certificates**: With this tool, you never have to worry about expired certificates, as it automatically renews those nearing expiration.
-- **Multi-Domain Support**: This tool supports multiple domains managed via **Cloudflare**, handling DNS challenges seamlessly.
-- **Seamless Integration with Azure Key Vault**: Newly generated certificates are automatically imported into Azure Key Vault for secure storage and integration with Azure resources.
-- **Automated Monthly Renewal on AKS**: The tool runs as a cron job on **Azure Kubernetes Service (AKS)** every month, ensuring certificates are renewed automatically without manual intervention.
+- **Cost Savings for Dev and Sandbox Environments**: Let's Encrypt provides a free alternative to paid certificates, making it an ideal solution for development and sandbox environments where cost optimization is paramount.
+- **Eliminates Certificate Expiration Concerns**: This tool proactively identifies and renews certificates that are nearing expiration, ensuring your services remain secure without requiring manual intervention.
+- **Seamless Handling of Multiple Domains**: With built-in support for managing multiple domains through **Cloudflare**, this tool streamlines the process of handling DNS challenges for certificate validation.
+- **Secure Integration with Azure Key Vault**: Generated certificates are automatically imported into Azure Key Vault, providing a secure and centralized storage solution that seamlessly integrates with your Azure resources, enhancing overall security and ease of management.
+
+## Resources
+
+I have developed a small tool here that can help pus to automate this process.
+
+- **GitHub Repository**: [az-keyvault-letsencrypt](https://github.com/baoduy/az-keyvault-letsencrypt)
+- **Docker Image**: [baoduy2412/keyvault-letsencrypt](https://hub.docker.com/r/baoduy2412/keyvault-letsencrypt)
 
 ## How It Works
 
@@ -39,13 +53,12 @@ The tool is designed to run as a **monthly cron job** on AKS and automates the p
 4. **Import to Azure Key Vault**: New certificates are imported into **Azure Key Vault**, replacing the old ones.
 5. **Repeat Monthly**: The tool runs as a cron job on AKS every month, keeping your certificates up to date with minimal effort.
 
-## Key Features
+## Generate Cloudflare DNS Api Token
 
-- **Cost-Efficient for Dev & Sandbox**: By using Let’s Encrypt certificates in development and sandbox environments, this tool helps save on certificate costs.
-- **Automated Renewal**: The tool detects and renews only certificates that are close to expiration.
-- **Multi-Domain Support**: Supports multiple domains managed by Cloudflare for DNS challenges.
-- **Secure Storage**: All certificates are imported and stored securely in Azure Key Vault.
-- **Monthly Cron Job on AKS**: The tool is deployed as a cron job on AKS, ensuring automated, regular certificate management.
+First, navigate to the Cloudflare profile and create an API token by following [this link](https://dash.cloudflare.com/profile/api-tokens). The API token should have permissions to manage DNS records for the domains.
+
+Additionally, for enhanced security, specify the AKS public IP address under `Client IP Address Filtering` in Cloudflare. This ensures that the API token is only accessible from the AKS platform, preventing unauthorized access from other locations.
+<img src="/assets/aks-cert-manager-with-private-aks/cf-dns-token.png">
 
 ## Configuration
 
@@ -53,51 +66,59 @@ The configuration is simple and managed via environment variables. Here’s an e
 
 ```json
 {
-  "Cloudflare": {
-    "Email": "your-cloudflare-email@example.com",
-    "ApiToken": "your-cloudflare-api-token"
-  },
-  "AzureKeyVault": {
-    "VaultUrl": "https://your-keyvault-url.vault.azure.net/",
-    "ClientId": "your-azure-client-id",
-    "TenantId": "your-azure-tenant-id",
-    "ClientSecret": "your-azure-client-secret"
-  },
-  "Domains": [
-    "example.com",
-    "anotherdomain.com"
-  ]
+  "CertManager": {
+    "ProductionEnabled": true,
+    "CfEmail": "your-cf-email@example.com",
+    "CfToken": "YOUR DNS ZONE TOKEN",
+    "ZoneId": "YOUR CLOUDFLARE ZONE ID",
+    "LetsEncryptEmail": "your-cf-email@example.com",
+    "Domains": ["api.example.com", "*.example.com"],
+    "CertInfo": {
+      "CountryName": "SG",
+      "State": "Singapore",
+      "Locality": "Singapore",
+      "Organization": "drunkcoding",
+      "OrganizationUnit": "DC"
+    },
+    "KeyVaultUrl": "YOUR_AZURE_KEY_VAULT_URL",
+    "KeyVaultUID": "optional: your user assigned id"
+  }
 }
 ```
 
-## Docker & AKS Deployment
+## AKS Deployment
 
 This tool is containerized and easy to deploy as a **Docker image**. Here’s a sample `docker-compose.yml` for running the tool as a cron job on AKS:
+
+Sample helm deployment:
 
 ```yaml
 services:
   cert-renewal:
     image: baoduy2412/keyvault-letsencrypt:latest
     environment:
-      Cloudflare__Email: "your-cloudflare-email@example.com"
-      Cloudflare__ApiToken: "your-cloudflare-api-token"
-      AzureKeyVault__VaultUrl: "https://your-keyvault-url.vault.azure.net/"
-      AzureKeyVault__ClientId: "your-azure-client-id"
-      AzureKeyVault__TenantId: "your-azure-tenant-id"
-      AzureKeyVault__ClientSecret: "your-azure-client-secret"
+      CertManager__ProductionEnabled: "true"
+      CertManager__CfEmail: "your-cf-email@example.com"
+      CertManager__CfToken: "YOUR DNS ZONE TOKEN"
+      CertManager__ZoneId: "YOUR CLOUDFLARE ZONE ID"
+      CertManager__LetsEncryptEmail: "your-cf-email@example.com"
+      CertManager__Domains__0: "api.example.com"
+      CertManager__Domains__1: "*.example.com"
+      CertManager__CertInfo__CountryName: "SG"
+      CertManager__CertInfo__State: "Singapore"
+      CertManager__CertInfo__Locality: "Singapore"
+      CertManager__CertInfo__Organization: "drunkcoding"
+      CertManager__CertInfo__OrganizationUnit: "DC"
+      CertManager__KeyVaultUrl: "YOUR_AZURE_KEY_VAULT_URL"
+      CertManager__KeyVaultUID: "optional: your user assigned id"
     schedule: "0 0 1 * *" # Runs on the 1st of every month
 ```
 
-## Resources
-
-- **GitHub Repository**: [az-keyvault-letsencrypt](https://github.com/baoduy/az-keyvault-letsencrypt)
-- **Docker Image**: [baoduy2412/keyvault-letsencrypt](https://hub.docker.com/r/baoduy2412/keyvault-letsencrypt)
-
 ## Conclusion
 
-This tool simplifies the management of SSL certificates for Azure resources like Azure API Management and Azure Front Door with custom domains. By automating certificate generation with Let’s Encrypt, detecting certificates nearing expiration, and securely importing them into Azure Key Vault, it saves time and costs—especially in development and sandbox environments. Running as a monthly cron job on AKS, this tool ensures that your SSL certificates are always up to date without any manual intervention.
+Managing SSL certificates for Azure resources such as Azure API Management and Azure Front Door with custom domains is made effortless with this tool. It automates the entire process of certificate generation using Let’s Encrypt, monitors for certificates nearing expiration, and securely imports them into Azure Key Vault. This not only saves time and reduces costs but also ensures that your certificates are always current, particularly in development and sandbox environments. By running as a monthly cron job on AKS, it eliminates the need for manual intervention.
 
-Give it a try and streamline your SSL certificate management!
+Try it out and simplify your SSL certificate management!
 
 <hr/>
 
