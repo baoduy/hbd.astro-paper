@@ -4,7 +4,7 @@ pubDatetime: 2024-08-26T12:00:00Z
 title: "[Tools] Automating Let's Encrypt Certificate Management with Azure Key Vault and Cloudflare"
 postSlug: tools-automate-letsencrypt-certification-with-azure-keyvault
 featured: true
-draft: true
+draft: false
 tags:
   - azure-key-vault
   - lets-encrypt
@@ -86,11 +86,15 @@ The configuration is simple and managed via environment variables. Here’s an e
 }
 ```
 
-## AKS Deployment
+## Deploy to AKS
 
-This tool is containerized and easy to deploy as a **Docker image**. Here’s a sample `docker-compose.yml` for running the tool as a cron job on AKS:
+Before go to deploy the tool to our AKS cluster. We need to provide the Key Vault Certificate Permission to the `AKS Agent Pool User Assigned Identity`, As you know for each AKS on Azure it should be there an `User Assigned Identity` (UAID) for the agent pool and all the pods using this UIAD for azure resources authentication. 
+<img src="/assets/tools-automate-letsencrypt-certification-with-azure-keyvault/aks-uaid.png">
 
-Sample helm deployment:
+Navigate to the Key Vault where you would like to store the generation certificates and then go to `Access control(IAM)` add role assignment select `Key Vault Certificates Officer` click next and select member is the agent pool UAID above. then click Review + assign. Afte this steps we have siccessfully grant the permission to AKS UAID.
+
+The next step is update the helm chart and deploy the tool
+Here is the sample of the `value.yalm` file.
 
 ```yaml
 services:

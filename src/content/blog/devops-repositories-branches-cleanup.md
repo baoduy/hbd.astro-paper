@@ -3,7 +3,7 @@ author: Steven Hoang
 pubDatetime: 2024-08-21T12:00:00Z
 title: "[DevOps] Automating Branch Cleanup in Azure DevOps with Node.js"
 postSlug: devops-repositories-branches-cleanup
-featured: true
+featured: false
 draft: false
 tags:
   - azure-devops
