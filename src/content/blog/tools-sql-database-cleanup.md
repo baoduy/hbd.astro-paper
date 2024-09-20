@@ -4,7 +4,7 @@ pubDatetime: 2024-08-26T12:00:00Z
 title: "[Tools] Automating SQL Data Cleanup in Development and Sandbox Environments"
 postSlug: tools-sql-server-data-cleanup
 featured: false
-draft: false
+draft: true
 tags:
   - database-cleanup
   - tools
@@ -59,12 +59,14 @@ The program allows you to configure which data to remove, how long to keep it, a
 The configuration has three levels: **Global**, **Database**, and **Table**, giving you full control over the cleanup process.
 
 - **Global Settings**:
+
   - **OlderThanDays**: Specify how long to keep data (in this case, 365 days).
   - **ConnectionString**: The SQL connection string template.
   - **PrimaryField**: The key field used to identify records in all tables.
   - **ConditionFields**: These fields determine the age of the records to be cleaned up.
 
 - **Database-Level Settings**:
+
   - Similar to global settings but applied to specific databases.
 
 - **Table-Level Settings**:
@@ -83,14 +85,14 @@ services:
   app:
     image: baoduy2412/tool-sql-cleanup:latest
     environment:
-      DbCleanup__OlderThanDays: '365'
-      DbCleanup__ConnectionString: 'YOUR_CONNECTION_STRING'
-      DbCleanup__PrimaryField: 'Id'
-      DbCleanup__ConditionFields__0: 'CreatedOn'
-      DbCleanup__Databases__database-1__PrimaryField: 'Id'
-      DbCleanup__Databases__database-1__ConditionFields__0: 'UpdateOn'
-      DbCleanup__Databases__database-1__Tables__table-1__PrimaryField: 'Id'
-      DbCleanup__Databases__database-1__Tables__random-table-2__PrimaryField: 'Id'
+      DbCleanup__OlderThanDays: "365"
+      DbCleanup__ConnectionString: "YOUR_CONNECTION_STRING"
+      DbCleanup__PrimaryField: "Id"
+      DbCleanup__ConditionFields__0: "CreatedOn"
+      DbCleanup__Databases__database-1__PrimaryField: "Id"
+      DbCleanup__Databases__database-1__ConditionFields__0: "UpdateOn"
+      DbCleanup__Databases__database-1__Tables__table-1__PrimaryField: "Id"
+      DbCleanup__Databases__database-1__Tables__random-table-2__PrimaryField: "Id"
 ```
 
 ### Conclusion

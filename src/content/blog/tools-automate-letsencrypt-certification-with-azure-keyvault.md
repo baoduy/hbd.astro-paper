@@ -3,7 +3,7 @@ author: Steven Hoang
 pubDatetime: 2024-08-26T12:00:00Z
 title: "[Tools] Automating Let's Encrypt Certificate Management with Azure Key Vault and Cloudflare"
 postSlug: tools-automate-letsencrypt-certification-with-azure-keyvault
-featured: true
+featured: false
 draft: false
 tags:
   - azure-key-vault
@@ -17,84 +17,157 @@ The tool runs as a monthly cron job on AKS, ensuring SSL certificates are always
 
 ## Introduction
 
-Many services on Azure allow us to customize the domain name, which requires providing a trusted certificate.
-For **development and sandbox environments** used by internal development teams, leveraging **Let's Encrypt** certificates provides a convenient and automated solution.
-However, Let's Encrypt certificates have a short lifespan of only three months, necessitating frequent renewals.
+Custom domain names enhance the professionalism and credibility of applications hosted on Azure services.
+However, associating a custom domain requires a trusted SSL/TLS certificate. For **development and sandbox environments**
+used internally by development teams, leveraging **Let's Encrypt** certificates offers a convenient and automated solution.
+Let's Encrypt provides free SSL certificates, but they have a short lifespan of only 90 days, necessitating frequent renewals.
 
-To address this, I've developed a tool that automates the generation and renewal of Let's Encrypt certificates specifically for these dev and sandbox environments.
-It detects expiring certificates and renews only those, ensuring efficient management.
-The certificates are then securely imported into **Azure Key Vault** for seamless integration with Azure resources.
-To further simplify the process, this tool runs as a monthly cron job on **Azure Kubernetes Service (AKS)**, eliminating the need for manual intervention.
+To streamline this process, I've developed a tool that automates the generation and renewal of Let's Encrypt certificates specifically for development
+and sandbox environments. The tool detects expiring certificates and renews only those that are nearing expiration, ensuring efficient management.
+The new certificates are securely imported into **Azure Key Vault**, allowing seamless integration with Azure resources such as **Azure API Management**
+and **Azure Front Door**. To eliminate manual intervention entirely, the tool runs as a monthly cron job on **Azure Kubernetes Service (AKS)**.
 
 ## Why Automate Certificate Management?
 
-Manually managing short-lived Let's Encrypt SSL certificates for Azure services like **Azure API Management** and **Azure Front Door** can be a cumbersome process, particularly when dealing with multiple resources across various environments.
-Automating the certificate management process using Let's Encrypt certificates offers several significant advantages:
+Manually managing short-lived Let's Encrypt SSL certificates can be time-consuming and error-prone, especially when dealing with multiple domains
+and environments. Automating the certificate management process offers several significant advantages:
 
-- **Cost Savings for Dev and Sandbox Environments**: Let's Encrypt provides a free alternative to paid certificates, making it an ideal solution for development and sandbox environments where cost optimization is paramount.
-- **Eliminates Certificate Expiration Concerns**: This tool proactively identifies and renews certificates that are nearing expiration, ensuring your services remain secure without requiring manual intervention.
-- **Seamless Handling of Multiple Domains**: With built-in support for managing multiple domains through **Cloudflare**, this tool streamlines the process of handling DNS challenges for certificate validation.
-- **Secure Integration with Azure Key Vault**: Generated certificates are automatically imported into Azure Key Vault, providing a secure and centralized storage solution that seamlessly integrates with your Azure resources, enhancing overall security and ease of management.
+- **Cost Savings for Development and Sandbox Environments**: Let's Encrypt provides a free alternative to paid certificates,
+  making it ideal for non-production environments where cost optimization is important.
 
-## Resources
+- **Elimination of Certificate Expiration Concerns**: The tool proactively identifies and renews certificates nearing expiration,
+  ensuring your services remain secure without requiring manual intervention.
 
-I have developed a small tool here that can help pus to automate this process.
+- **Simplified Management of Multiple Domains**: With built-in support for handling multiple domains via **Cloudflare**,
+  the tool streamlines the process of managing DNS challenges required for certificate validation.
 
-- **GitHub Repository**: [az-keyvault-letsencrypt](https://github.com/baoduy/az-keyvault-letsencrypt)
-- **Docker Image**: [baoduy2412/keyvault-letsencrypt](https://hub.docker.com/r/baoduy2412/keyvault-letsencrypt)
+- **Secure Integration with Azure Key Vault**: Automatically importing generated certificates into Azure Key Vault provides a secure
+  and centralized storage solution, enhancing overall security and simplifying certificate management across your Azure resources.
 
 ## How It Works
 
-The tool is designed to run as a **monthly cron job** on AKS and automates the process of managing SSL certificates. It checks for certificates that are nearing expiration, generates new ones via **Let’s Encrypt**, and imports them into Azure Key Vault for secure use by resources like Azure API Management and Azure Front Door. Here’s the workflow:
+The tool automates SSL certificate management by running as a **monthly cron job** on AKS. It handles the entire lifecycle of SSL certificates, from detection of impending expiration to deployment of new certificates. The workflow is as follows:
 
-1. **Check Expiration**: The tool scans all certificates in Azure Key Vault to check their expiration dates.
-2. **Generate New Certificates**: For certificates nearing expiration, the tool generates a new SSL certificate using **Let’s Encrypt**.
-3. **DNS Challenge via Cloudflare**: The tool integrates with **Cloudflare** to handle DNS challenges and validate ownership of each domain.
-4. **Import to Azure Key Vault**: New certificates are imported into **Azure Key Vault**, replacing the old ones.
-5. **Repeat Monthly**: The tool runs as a cron job on AKS every month, keeping your certificates up to date with minimal effort.
+1. **Check Certificate Expiration**: The tool scans all certificates stored in Azure Key Vault to determine their expiration dates.
 
-## Generate Cloudflare DNS Api Token
+2. **Generate New Certificates**: For certificates nearing expiration, the tool requests new SSL certificates from **Let's Encrypt**.
 
-First, navigate to the Cloudflare profile and create an API token by following [this link](https://dash.cloudflare.com/profile/api-tokens). The API token should have permissions to manage DNS records for the domains.
+3. **DNS Challenge via Cloudflare**: The tool integrates with **Cloudflare** to perform DNS challenges required by Let's Encrypt to validate domain ownership.
 
-Additionally, for enhanced security, specify the AKS public IP address under `Client IP Address Filtering` in Cloudflare. This ensures that the API token is only accessible from the AKS platform, preventing unauthorized access from other locations.
-<img src="/assets/aks-cert-manager-with-private-aks/cf-dns-token.png">
+4. **Import Certificates to Azure Key Vault**: The newly obtained certificates are securely imported into **Azure Key Vault**, replacing the old certificates.
+
+5. **Automated Monthly Execution**: The tool is scheduled to run monthly on AKS, ensuring that certificates are kept up-to-date with minimal manual effort.
+
+## Setting Up Cloudflare DNS API Token
+
+To enable the tool to perform DNS challenges for domain validation, you need to create a Cloudflare API token with permissions to manage DNS records.
+
+1. **Create an API Token**:
+
+   - Log in to your Cloudflare account and navigate to your profile.
+   - Go to the **API Tokens** section or directly via [this link](https://dash.cloudflare.com/profile/api-tokens).
+   - Click on **"Create Token"**.
+
+2. **Configure Token Permissions**:
+
+   - **Permissions**: Grant **Zone** > **DNS** > **Edit** permissions.
+   - **Zone Resources**: Select **Specific Zone** and choose the domain(s) you want to manage.
+
+3. **Client IP Address Filtering (Optional but Recommended)**:
+
+   - For enhanced security, specify the AKS cluster's public IP address under **"Client IP Address Filtering"** in the token settings.
+   - This restricts API token usage to requests originating from your AKS cluster, preventing unauthorized access.
+
+4. **Save the Token**:
+
+   - Generate the token and copy it. You'll need it for the tool's configuration.
+
+![Cloudflare API Token Creation](/assets/tools-aks-cert-manager-with-private-aks/cf-dns-token.png)
 
 ## Configuration
 
-The configuration is simple and managed via environment variables. Here’s an example `appsettings.json`:
+The tool is configured using environment variables or a JSON configuration file. Here's an example `appsettings.json` file:
 
 ```json
 {
   "CertManager": {
     "ProductionEnabled": true,
-    "CfEmail": "your-cf-email@example.com",
-    "CfToken": "YOUR DNS ZONE TOKEN",
-    "ZoneId": "YOUR CLOUDFLARE ZONE ID",
-    "LetsEncryptEmail": "your-cf-email@example.com",
+    "CfEmail": "your-cloudflare-email@example.com",
+    "CfToken": "YOUR_CLOUDFLARE_API_TOKEN",
+    "ZoneId": "YOUR_CLOUDFLARE_ZONE_ID",
+    "LetsEncryptEmail": "your-email@example.com",
     "Domains": ["api.example.com", "*.example.com"],
     "CertInfo": {
       "CountryName": "SG",
       "State": "Singapore",
       "Locality": "Singapore",
-      "Organization": "drunkcoding",
-      "OrganizationUnit": "DC"
+      "Organization": "YourOrganization",
+      "OrganizationUnit": "YourUnit"
     },
-    "KeyVaultUrl": "YOUR_AZURE_KEY_VAULT_URL",
-    "KeyVaultUID": "optional: your user assigned id"
+    "KeyVaultUrl": "https://your-keyvault-name.vault.azure.net/",
+    "KeyVaultUID": "OPTIONAL_USER_ASSIGNED_IDENTITY_CLIENT_ID"
   }
 }
 ```
 
-## Deploy to AKS
+**Configuration Parameters Explained**:
 
-Before go to deploy the tool to our AKS cluster. We need to provide the Key Vault Certificate Permission to the `AKS Agent Pool User Assigned Identity`, As you know for each AKS on Azure it should be there an `User Assigned Identity` (UAID) for the agent pool and all the pods using this UIAD for azure resources authentication. 
-<img src="/assets/tools-automate-letsencrypt-certification-with-azure-keyvault/aks-uaid.png">
+- **ProductionEnabled**: Set to `true` to use Let's Encrypt production environment. Set to `false` for testing purposes.
 
-Navigate to the Key Vault where you would like to store the generation certificates and then go to `Access control(IAM)` add role assignment select `Key Vault Certificates Officer` click next and select member is the agent pool UAID above. then click Review + assign. Afte this steps we have siccessfully grant the permission to AKS UAID.
+- **CfEmail**: Your Cloudflare account email address.
 
-The next step is update the helm chart and deploy the tool
-Here is the sample of the `value.yalm` file.
+- **CfToken**: The Cloudflare API token created earlier.
+
+- **ZoneId**: The ID of your Cloudflare DNS zone. You can find this in your Cloudflare dashboard under the domain's **Overview** section.
+
+- **LetsEncryptEmail**: An email address for Let's Encrypt notifications.
+
+- **Domains**: An array of domains and subdomains for which you want to generate certificates.
+
+- **CertInfo**: Certificate subject information.
+
+- **KeyVaultUrl**: The URL of your Azure Key Vault where certificates will be stored.
+
+- **KeyVaultUID**: The Client ID of the User Assigned Managed Identity (UAMI) used by your AKS cluster (optional if using the default identity).
+
+## Deploying to AKS
+
+### Prerequisites
+
+- An AKS cluster where the tool will run.
+
+- The AKS cluster's agent pool has a User Assigned Managed Identity (UAMI) for Azure resource authentication.
+
+- Access to the Azure Key Vault where certificates will be stored.
+
+### Granting Key Vault Access to AKS UAMI
+
+Before deploying the tool, you need to grant your AKS cluster's UAMI the necessary permissions to access Azure Key Vault:
+
+1. **Identify the AKS Agent Pool UAMI**:
+
+   - In the Azure portal, navigate to your AKS cluster.
+   - Under **Settings**, select **Identity**.
+   - Note the **Client ID** of the **User Assigned** identity associated with your node pools.
+
+![AKS User Assigned Managed Identity](/assets/tools-automate-letsencrypt-certification-with-azure-keyvault/aks-uaid.png)
+
+2. **Grant Key Vault Permissions**:
+
+   - Navigate to your Azure Key Vault.
+   - Select **Access control (IAM)**.
+   - Click on **"Add role assignment"**.
+   - In the **Role** dropdown, select **"Key Vault Certificates Officer"**.
+   - Click **Next** and select the AKS UAMI as the **Member**.
+   - Review and assign the role.
+
+By granting the **Key Vault Certificates Officer** role to your AKS UAMI, you allow the tool running on AKS to manage certificates within the Key Vault.
+
+### Deploying the Tool Using Helm
+
+Assuming you are using Helm for deployment, you can update your Helm chart values file with the necessary configurations.
+
+Here's an example `values.yaml` file:
 
 ```yaml
 services:
@@ -102,29 +175,78 @@ services:
     image: baoduy2412/keyvault-letsencrypt:latest
     environment:
       CertManager__ProductionEnabled: "true"
-      CertManager__CfEmail: "your-cf-email@example.com"
-      CertManager__CfToken: "YOUR DNS ZONE TOKEN"
-      CertManager__ZoneId: "YOUR CLOUDFLARE ZONE ID"
-      CertManager__LetsEncryptEmail: "your-cf-email@example.com"
+      CertManager__CfEmail: "your-cloudflare-email@example.com"
+      CertManager__CfToken: "YOUR_CLOUDFLARE_API_TOKEN"
+      CertManager__ZoneId: "YOUR_CLOUDFLARE_ZONE_ID"
+      CertManager__LetsEncryptEmail: "your-email@example.com"
       CertManager__Domains__0: "api.example.com"
       CertManager__Domains__1: "*.example.com"
       CertManager__CertInfo__CountryName: "SG"
       CertManager__CertInfo__State: "Singapore"
       CertManager__CertInfo__Locality: "Singapore"
-      CertManager__CertInfo__Organization: "drunkcoding"
-      CertManager__CertInfo__OrganizationUnit: "DC"
-      CertManager__KeyVaultUrl: "YOUR_AZURE_KEY_VAULT_URL"
-      CertManager__KeyVaultUID: "optional: your user assigned id"
-    schedule: "0 0 1 * *" # Runs on the 1st of every month
+      CertManager__CertInfo__Organization: "YourOrganization"
+      CertManager__CertInfo__OrganizationUnit: "YourUnit"
+      CertManager__KeyVaultUrl: "https://your-keyvault-name.vault.azure.net/"
+      CertManager__KeyVaultUID: "OPTIONAL_USER_ASSIGNED_IDENTITY_CLIENT_ID"
+    schedule: "0 0 1 * *" # Runs on the 1st of every month at midnight
 ```
+
+**Notes**:
+
+- **Image**: Ensure you're using the correct Docker image.
+
+- **Environment Variables**: Update all placeholders with your actual configuration values.
+
+- **Schedule**: The cron expression `"0 0 1 * *"` schedules the job to run at midnight on the first day of every month.
+
+### Deploying the Helm Chart
+
+1. **Update Helm Repositories**:
+
+   ```bash
+   helm repo update
+   ```
+
+2. **Deploy or Upgrade the Chart**:
+
+   ```bash
+   helm upgrade --install cert-renewal ./path-to-your-chart -f values.yaml
+   ```
+
+Replace `./path-to-your-chart` with the path to your Helm chart.
 
 ## Conclusion
 
-Managing SSL certificates for Azure resources such as Azure API Management and Azure Front Door with custom domains is made effortless with this tool. It automates the entire process of certificate generation using Let’s Encrypt, monitors for certificates nearing expiration, and securely imports them into Azure Key Vault. This not only saves time and reduces costs but also ensures that your certificates are always current, particularly in development and sandbox environments. By running as a monthly cron job on AKS, it eliminates the need for manual intervention.
+Managing SSL certificates for Azure resources with custom domains can be challenging due to the frequent renewal requirements of Let's Encrypt certificates. This tool automates the entire process of certificate generation, validation, and deployment, significantly simplifying SSL certificate management for development and sandbox environments.
 
-Try it out and simplify your SSL certificate management!
+By running as a monthly cron job on AKS, it ensures that your certificates are always up-to-date without manual intervention. The integration with Azure Key Vault enhances security by providing centralized and secure storage of your certificates, which can be accessed by other Azure services as needed.
 
-<hr/>
+**Leveraging Infrastructure as Code for Deployment**
+
+Once the certificates are stored in Azure Key Vault, you can further automate the deployment process by using infrastructure as code (IaC) tools like Pulumi or Terraform.
+These tools can retrieve the certificates from Key Vault and deploy them to your Azure resources automatically.
+By incorporating this into your IaC pipelines, you ensure that any updates to the certificates are seamlessly propagated to services like Azure API Management, Azure Front Door, or Azure Application Gateway, maintaining consistent and secure configurations across your infrastructure.
+
+**Key Benefits**:
+
+- **Automated Renewal**: Eliminates the manual effort required to renew Let's Encrypt certificates every 90 days.
+
+- **Cost Efficiency**: Uses free Let's Encrypt certificates, reducing costs for non-production environments.
+
+- **Scalability**: Easily manages multiple domains and environments.
+
+- **Security**: Securely stores certificates in Azure Key Vault and restricts Cloudflare API access to your AKS cluster.
+
+Give it a try and simplify your SSL certificate management process!
+
+---
+
+**Resources**:
+
+- **GitHub Repository**: [az-keyvault-letsencrypt](https://github.com/baoduy/az-keyvault-letsencrypt)
+- **Docker Image**: [baoduy2412/keyvault-letsencrypt](https://hub.docker.com/r/baoduy2412/keyvault-letsencrypt)
+
+---
 
 Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
 

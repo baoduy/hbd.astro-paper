@@ -2,7 +2,7 @@
 author: Steven Hoang
 pubDatetime: 2024-07-29T12:00:00Z
 title: "[AZ] How to Scan and Disable Inactive Accounts on Azure EntraID"
-postSlug: az-scan-and-disable-entra-accounts
+postSlug: tools-az-scan-and-disable-entra-accounts
 featured: false
 draft: false
 tags:
@@ -60,7 +60,7 @@ This application will authenticate and manage user accounts via the Microsoft Gr
 - Click on **"App registrations"** in the sidebar.
 - Click on **"New registration"** at the top.
 
-![App Registration Navigation](/assets/az-scan-and-disable-entra-accounts/app-registration.png)
+![App Registration Navigation](/assets/tools-az-scan-and-disable-entra-accounts/app-registration.png)
 
 #### 3. Configure the App Registration
 
@@ -91,7 +91,7 @@ Search for and select the following permissions:
 - **`User.Read.All`**: Allows the app to read user profiles.
 - **`User.ReadWrite.All`**: Allows the app to read and write user profiles.
 
-![API Permissions](/assets/az-scan-and-disable-entra-accounts/app-api-permission.png)
+![API Permissions](/assets/tools-az-scan-and-disable-entra-accounts/app-api-permission.png)
 
 > **Note**: The **`User.ReadWrite.All`** permission is required to enable or disable user accounts.
 
@@ -399,7 +399,7 @@ Navigate to **Pipelines** > **Library** in Azure DevOps.
 - For each variable, enter the corresponding value and mark it as **secret**.
 - Save the variable group.
 
-![Variable Group](/assets/az-scan-and-disable-entra-accounts/variable-group.png)
+![Variable Group](/assets/tools-az-scan-and-disable-entra-accounts/variable-group.png)
 
 #### 3. Create the Pipeline
 
