@@ -3,7 +3,7 @@ author: Steven Hoang
 pubDatetime: 2023-09-15T00:00:00Z
 title: "[k8s] Step-By-Step Guide: Installing K3s on a Raspberry Pi 4 Cluster"
 postSlug: ks-install-k3s-on-raspberry-pi-cluster
-featured: false
+featured: true
 draft: false
 tags:
   - k3s
