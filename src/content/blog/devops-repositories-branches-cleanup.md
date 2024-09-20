@@ -15,70 +15,126 @@ The script identifies branches that haven't been updated in the last 90 days and
 
 ## Introduction
 
-As software projects grow, the number of branches in our Git repository can quickly multiply. Over time, many of these branches become outdated or redundant, cluttering the repositories and making it harder to manage. 
-Regularly cleaning up these branches is essential to maintain a clean and efficient development environment. But don’t worry—this is where automation can save you time and effort!
+As software projects evolve, Git repositories can become cluttered with outdated or redundant branches. This clutter makes repository navigation cumbersome and can introduce confusion or errors in the development process. Automating the cleanup of these branches helps maintain an organized and efficient development environment.
 
-In this guide, we'll walk through the process of setting up a script that automatically deletes old, unnecessary branches in Azure DevOps. 
-We’ll cover everything from understanding the configuration file to executing the script. By the end of this article, you'll be equipped with the knowledge to keep the repositories tidy and efficient.
+In this guide, we'll walk through setting up a TypeScript script that automatically deletes old, unnecessary branches in Azure DevOps. We'll cover the essential steps, focusing on the implementation and automation of the cleanup process.
 
-**Why Clean Up Branches?**
+---
 
-Before we dive into the technical details, let's talk about why this is important:
+## Table of Contents
 
-- **Reduce Clutter**: Too many branches can make it difficult to navigate the repository, especially when trying to find active or important branches.
-- **Improve Performance**: A clean repository is easier to manage and can lead to better performance in the CI/CD pipelines.
-- **Prevent Confusion**: Developers might accidentally use or merge outdated branches, leading to potential issues in the codebase.
-Now that to understand the importance, let’s move on to how you can automate this process.
+- [Introduction](#introduction)
+- [Table of Contents](#table-of-contents)
+- [Why Automate Branch Cleanup?](#why-automate-branch-cleanup)
+- [Prerequisites](#prerequisites)
+- [Project Setup](#project-setup)
+- [Configuration File](#configuration-file)
+- [Implementing the TypeScript Script](#implementing-the-typescript-script)
+  - [1. Loading Environment Variables](#1-loading-environment-variables)
+  - [2. Defining the Configuration Interface](#2-defining-the-configuration-interface)
+  - [3. Setting Constants](#3-setting-constants)
+  - [4. Getting the Git API Client](#4-getting-the-git-api-client)
+  - [5. Loading the Configuration](#5-loading-the-configuration)
+  - [6. Retrieving Repositories and Branches](#6-retrieving-repositories-and-branches)
+  - [7. Determining the Last Commit Date](#7-determining-the-last-commit-date)
+  - [8. Checking if a Branch is Merged](#8-checking-if-a-branch-is-merged)
+  - [9. Deleting a Branch](#9-deleting-a-branch)
+  - [10. Compiling the Exclusion List](#10-compiling-the-exclusion-list)
+  - [11. Cleaning Up Branches](#11-cleaning-up-branches)
+- [Automating with Azure DevOps Pipeline](#automating-with-azure-devops-pipeline)
+- [Conclusion](#conclusion)
+- [Additional Resources](#additional-resources)
 
-## Environment Variables
+---
 
-Before we dive into the script, make sure you have the following environment variables set up in a `.env` file:
+## Why Automate Branch Cleanup?
 
-- `AZURE_DEVOPS_URL`: The URL of your Azure DevOps organization.
-- `AZURE_DEVOPS_PAT`: Your Azure DevOps Personal Access Token.
-- `AZURE_DEVOPS_PROJECT`: The name of the Azure DevOps project.
-- `DryRun`: Set to `"true"` to run the script in dry-run mode (no actual deletions).
+Automating branch cleanup is essential for several reasons:
 
-## Configuration
+- **Reduce Clutter**: Keeps the repository clean, making it easier for developers to navigate.
+- **Improve Performance**: Enhances CI/CD pipeline performance by reducing overhead.
+- **Prevent Confusion**: Minimizes the risk of developers working on or merging outdated branches.
+- **Enhance Security**: Removes obsolete branches that may contain vulnerabilities.
 
-The script uses a `config.json` file to specify the branches to exclude from deletion. Here is an example configuration:
+---
+
+## Prerequisites
+
+Ensure you have the following before starting:
+
+- **Azure DevOps Account**: Access to your organization's Azure DevOps instance.
+- **Personal Access Token (PAT)**: A PAT with permissions to access and manage repositories.
+- **Node.js and npm**: Installed on your machine (Node.js version 14 or later).
+- **TypeScript**: Installed globally (`npm install -g typescript`).
+- **Azure DevOps Node API Package**: Install via `npm install azure-devops-node-api`.
+- **dotenv Package**: Install via `npm install dotenv`.
+
+---
+
+## Project Setup
+
+1. **Create a New Directory**: Initialize a new Node.js project.
+
+   ```bash
+   mkdir azure-devops-branch-cleanup
+   cd azure-devops-branch-cleanup
+   npm init -y
+   ```
+
+2. **Install Dependencies**:
+
+   ```bash
+   npm install @azure/identity @microsoft/microsoft-graph-client azure-devops-node-api dayjs dotenv
+   npm install --save-dev typescript @types/node
+   ```
+
+---
+
+## Configuration File
+
+Create a `config.json` file in your project root to specify branches that should be excluded from deletion:
 
 ```json
 {
-  "globalExcludes": [
-    "master",
-    "develop",
-    "main",
-    "release"
-  ],
+  "globalExcludes": ["master", "develop", "main", "release"],
   "repositoryExcludes": {
-    "your-repo": ["branch/name"]
+    "your-repo-name": ["feature/important-branch"]
   }
 }
 ```
 
-## Step-by-Step Implementation
+- **globalExcludes**: Branches excluded from deletion across all repositories.
+- **repositoryExcludes**: Specific branches to exclude in specific repositories.
+
+---
+
+## Implementing the TypeScript Script
+
+Create a TypeScript file, e.g., `cleanup.ts`, and implement the following steps:
 
 ### 1. Loading Environment Variables
 
-The script starts by loading environment variables from a `.env` file using the `dotenv` package. These variables include the Azure DevOps URL, Personal Access Token (PAT), project name, and a flag to indicate if the script should run in dry-run mode.
+Use the `dotenv` package to load environment variables.
 
 ```typescript
 import * as dotenv from "dotenv";
-
-// Load environment variables from .env file
 dotenv.config();
 
-// Check if the script should run in dry-run mode
 const isDryRun = process.env.DryRun === "true";
 ```
 
-### 2. Configuration Interface
+**Environment Variables Required**:
 
-The `Config` interface defines the structure of the configuration object, which includes global and repository-specific branch exclusions.
+- `AZURE_DEVOPS_URL`: Your Azure DevOps organization URL.
+- `AZURE_DEVOPS_PAT`: Your Personal Access Token.
+- `AZURE_DEVOPS_PROJECT`: Your project name.
+- `DryRun`: Set to `"true"` for dry-run mode (no actual deletions).
+
+### 2. Defining the Configuration Interface
+
+Define an interface to ensure type safety.
 
 ```typescript
-// Configuration interface for branch exclusions
 interface Config {
   globalExcludes: string[];
   repositoryExcludes: {
@@ -87,39 +143,29 @@ interface Config {
 }
 ```
 
-### 3. Constants
+### 3. Setting Constants
 
-The `DAYS_90_MS` constant represents 90 days in milliseconds, which is used to determine if a branch is old enough to be considered for deletion.
+Define constants used in the script.
 
 ```typescript
-// 90 days in milliseconds
-const DAYS_90_MS = 90 * 24 * 60 * 60 * 1000;
+const DAYS_90_MS = 90 * 24 * 60 * 60 * 1000; // 90 days in milliseconds
 ```
 
 ### 4. Getting the Git API Client
 
-The `getGitApi` function retrieves the Git API client for Azure DevOps using the organization URL and PAT.
+Authenticate and obtain the Git API client.
 
 ```typescript
 import * as azdev from "azure-devops-node-api";
 import * as GitApi from "azure-devops-node-api/GitApi";
 
-/**
- * Get the Git API client for Azure DevOps.
- * @returns {Promise<GitApi.IGitApi>} The Git API client.
- */
 async function getGitApi(): Promise<GitApi.IGitApi> {
-  const orgUrl = process.env.AZURE_DEVOPS_URL; // Azure DevOps organization URL
-  const token = process.env.AZURE_DEVOPS_PAT; // Personal Access Token (PAT)
+  const orgUrl = process.env.AZURE_DEVOPS_URL;
+  const token = process.env.AZURE_DEVOPS_PAT;
 
-  if (!orgUrl) {
+  if (!orgUrl || !token) {
     throw new Error(
-      "Azure DevOps ORG URL is not set in the environment variable named 'AZURE_DEVOPS_URL'.",
-    );
-  }
-  if (!token) {
-    throw new Error(
-      "Azure DevOps PAT token is not set in the environment variable named 'AZURE_DEVOPS_URL'.",
+      "Azure DevOps URL or PAT is not set in environment variables."
     );
   }
 
@@ -129,96 +175,67 @@ async function getGitApi(): Promise<GitApi.IGitApi> {
 }
 ```
 
-### 5. Loading Configuration
+### 5. Loading the Configuration
 
-The `loadConfig` function loads the configuration from a `config.json` file, which specifies the branches to exclude from deletion.
+Load the `config.json` file.
 
 ```typescript
 import * as fs from "fs";
 import * as path from "path";
 
-/**
- * Load the configuration from the config.json file.
- * @returns {Config} The configuration object.
- */
 function loadConfig(): Config {
   const configPath = path.join(__dirname, "config.json");
   const configContent = fs.readFileSync(configPath, "utf-8");
-  return JSON.parse(configContent);
+  return JSON.parse(configContent) as Config;
 }
 ```
 
 ### 6. Retrieving Repositories and Branches
 
-The `getRepositories` and `getBranches` functions retrieve the list of repositories and branches in a project, respectively.
+Get the list of repositories and branches.
 
 ```typescript
 import * as GitInterfaces from "azure-devops-node-api/interfaces/GitInterfaces";
 
-/**
- * Get the list of repositories in a project.
- * @param {GitApi.IGitApi} gitApi - The Git API client.
- * @param {string} project - The project name.
- * @returns {Promise<GitInterfaces.GitRepository[]>} The list of repositories.
- */
 async function getRepositories(
   gitApi: GitApi.IGitApi,
-  project: string,
+  project: string
 ): Promise<GitInterfaces.GitRepository[]> {
   return await gitApi.getRepositories(project);
 }
 
-/**
- * Get the list of branches in a repository.
- * @param {GitApi.IGitApi} gitApi - The Git API client.
- * @param {string} project - The project name.
- * @param {string} repoId - The repository ID.
- * @returns {Promise<GitInterfaces.GitRef[]>} The list of branches.
- */
 async function getBranches(
   gitApi: GitApi.IGitApi,
   project: string,
-  repoId: string,
+  repoId: string
 ): Promise<GitInterfaces.GitRef[]> {
   const branches = await gitApi.getRefs(repoId, project);
-  // Only process refs/heads branches
-  return branches.filter((b) => b.name.startsWith("refs/heads"));
+  return branches.filter(b => b.name.startsWith("refs/heads/"));
 }
 ```
 
-### 7. Getting the Last Commit Date
+### 7. Determining the Last Commit Date
 
-The `getLastCommitDate` function retrieves the date of the last commit on a branch. This is used to determine if the branch is old enough to be deleted.
+Get the date of the last commit on a branch.
 
 ```typescript
-/**
- * Get the date of the last commit on a branch.
- * @param {GitApi.IGitApi} gitApi - The Git API client.
- * @param {string} project - The project name.
- * @param {string} repoId - The repository ID.
- * @param {string} branchName - The branch name.
- * @returns {Promise<Date | null>} The date of the last commit or null if no commits found.
- */
 async function getLastCommitDate(
   gitApi: GitApi.IGitApi,
   project: string,
   repoId: string,
-  branchName: string,
+  branchName: string
 ): Promise<Date | null> {
   const commits = await gitApi.getCommits(
     repoId,
-    {
-      itemVersion: {
-        version: branchName,
-      },
-    },
+    { itemVersion: { version: branchName } },
     project,
     undefined,
-    1,
-  ); // Fetch only the most recent commit
+    1
+  );
 
-  if (commits?.length > 0) {
-    return new Date(commits[0].committer.date ?? commits[0].author.date);
+  if (commits.length > 0) {
+    const commitDate = commits[0].committer.date || commits[0].author.date;
+    return new Date(commitDate);
   }
 
   return null;
@@ -227,119 +244,81 @@ async function getLastCommitDate(
 
 ### 8. Checking if a Branch is Merged
 
-The `isBranchMerged` function checks if a branch is merged into a target branch. This helps ensure that only merged branches are deleted.
+Check if a branch is merged into any of the target branches.
 
 ```typescript
-/**
- * Check if a branch is merged into a target branch.
- * @param {GitApi.IGitApi} gitApi - The Git API client.
- * @param {string} project - The project name.
- * @param {string} repoId - The repository ID.
- * @param {string} branch - The branch name.
- * @param {string} targetBranch - The target branch name.
- * @returns {Promise<boolean>} True if the branch is merged, false otherwise.
- */
+import { GitVersionType } from "azure-devops-node-api/interfaces/GitInterfaces";
+
 async function isBranchMerged(
   gitApi: GitApi.IGitApi,
   project: string,
   repoId: string,
   branch: string,
-  targetBranch: string,
+  targetBranches: string[]
 ): Promise<boolean> {
-  const diff = await gitApi.getCommitDiffs(
-    repoId,
-    project,
-    true,
-    5,
-    undefined,
-    {
-      baseVersionType: GitVersionType.Branch,
-      baseVersion: branch,
-    },
-    {
-      targetVersionType: GitVersionType.Branch,
-      targetVersion: targetBranch,
-    },
-  );
+  for (const targetBranch of targetBranches) {
+    const diff = await gitApi.getCommitDiffs(
+      repoId,
+      project,
+      true,
+      1,
+      undefined,
+      { baseVersionType: GitVersionType.Branch, baseVersion: branch },
+      { targetVersionType: GitVersionType.Branch, targetVersion: targetBranch }
+    );
 
-  if (diff?.aheadCount > 0 || diff?.behindCount > 0)
-    console.log(`\t${repoId}: ${branch} vs ${targetBranch}:`, diff);
-  // diff will be null if the target branch is not found.
-  return diff?.aheadCount === 0;
+    if (diff && diff.aheadCount === 0) {
+      return true;
+    }
+  }
+  return false;
 }
 ```
 
 ### 9. Deleting a Branch
 
-The `deleteBranch` function deletes a branch from a repository. If the branch is locked, it first unlocks the branch before deleting it.
+Delete the branch if it meets the criteria.
 
 ```typescript
-/**
- * Delete a branch from a repository.
- * @param {GitApi.IGitApi} gitApi - The Git API client.
- * @param {string} project - The project name.
- * @param {string} repoId - The repository ID.
- * @param {GitInterfaces.GitRef} branch - The branch reference.
- */
 async function deleteBranch(
   gitApi: GitApi.IGitApi,
   project: string,
   repoId: string,
-  branch: GitInterfaces.GitRef,
+  branch: GitInterfaces.GitRef
 ): Promise<void> {
-  try {
-    if (!isDryRun) {
-      if (branch.isLocked) {
-        // Unlock the branch
-        await gitApi.updateRef(
-          {
-            name: branch.name,
-            isLocked: false,
-          },
-          repoId,
-          "",
-          project,
-        );
-      }
-
-      // Delete the branch
-      await gitApi.updateRefs(
-        [
-          {
-            name: branch.name,
-            newObjectId: "0000000000000000000000000000000000000000",
-            oldObjectId: branch.objectId,
-          },
-        ],
+  if (!isDryRun) {
+    if (branch.isLocked) {
+      await gitApi.updateRef(
+        { name: branch.name, isLocked: false },
         repoId,
         "",
-        project,
+        project
       );
     }
 
-    console.log(`\t${repoId}: Successfully DELETED branch: ${branch.name}`, {
-      isDryRun,
-    });
-  } catch (error) {
-    console.error(
-      `\t${repoId}: Failed to delete branch: ${branch.name}.`,
-      error.message,
+    await gitApi.updateRefs(
+      [
+        {
+          name: branch.name,
+          newObjectId: "0000000000000000000000000000000000000000",
+          oldObjectId: branch.objectId,
+        },
+      ],
+      repoId,
+      "",
+      project
     );
   }
+
+  console.log(`Deleted branch: ${branch.name} (Dry Run: ${isDryRun})`);
 }
 ```
 
-### 10. Getting the Exclusion List
+### 10. Compiling the Exclusion List
 
-The `getExclusionList` function retrieves the list of branches to exclude from deletion based on the configuration.
+Combine global and repository-specific exclusions.
 
 ```typescript
-/**
- * Get the list of branches to exclude from deletion.
- * @param {Config} config - The configuration object.
- * @param {string} repoName - The repository name.
- * @returns {string[]} The list of branches to exclude.
- */
 function getExclusionList(config: Config, repoName: string): string[] {
   const globalExcludes = config.globalExcludes || [];
   const repoSpecificExcludes = config.repositoryExcludes[repoName] || [];
@@ -349,23 +328,19 @@ function getExclusionList(config: Config, repoName: string): string[] {
 
 ### 11. Cleaning Up Branches
 
-The `cleanUpBranches` function orchestrates the entire cleanup process. It retrieves the repositories and branches, checks if the branches are old and merged, and deletes them if they meet the criteria.
+Main function orchestrating the cleanup.
 
 ```typescript
-/**
- * Clean up old branches in all repositories of a project.
- */
 async function cleanUpBranches(): Promise<void> {
   const project = process.env.AZURE_DEVOPS_PROJECT;
   if (!project) {
     throw new Error(
-      "Azure DevOps PROJECT name is not set in the environment variable named 'AZURE_DEVOPS_PROJECT'.",
+      "Azure DevOps project name is not set in environment variables."
     );
   }
 
   const config = loadConfig();
   const now = new Date();
-
   const gitApi = await getGitApi();
   const repositories = await getRepositories(gitApi, project);
 
@@ -378,7 +353,7 @@ async function cleanUpBranches(): Promise<void> {
       const branchName = branch.name.replace("refs/heads/", "");
 
       if (excludeBranches.includes(branchName)) {
-        console.log(`\t${repo.name}: Skipping excluded branch: ${branchName}`);
+        console.log(`Skipping excluded branch: ${branchName}`);
         continue;
       }
 
@@ -386,114 +361,121 @@ async function cleanUpBranches(): Promise<void> {
         gitApi,
         project,
         repo.id,
-        branchName,
+        branchName
       );
 
       if (
         !lastCommitDate ||
         now.getTime() - lastCommitDate.getTime() < DAYS_90_MS
       ) {
-        console.log(`\t${repo.name}: Branch is still in use: ${branchName}`);
+        console.log(`Branch is recent or active: ${branchName}`);
         continue;
       }
 
-      const status = await Promise.all(
-        config.globalExcludes.map(
-          async (b) =>
-            await isBranchMerged(gitApi, project, repo.id, branchName, b),
-        ),
+      const isMerged = await isBranchMerged(
+        gitApi,
+        project,
+        repo.id,
+        branchName,
+        config.globalExcludes
       );
 
-      if (status.find((s) => s === true)) {
+      if (isMerged) {
         await deleteBranch(gitApi, project, repo.id, branch);
       } else {
-        console.log(
-          `\t${repo.name}: The Branch is not merged to any of:`,
-          config.globalExcludes,
-        );
+        console.log(`Branch is not merged: ${branchName}`);
       }
     }
   }
 }
 
-// Start the branch cleanup process and handle any errors
-cleanUpBranches().catch((err) => {
+cleanUpBranches().catch(err => {
   console.error("An error occurred:", err);
 });
 ```
 
-## How It Works
+---
 
-1. **Loading Environment Variables**: The script loads environment variables from a `.env` file to get the Azure DevOps URL, PAT, project name, and dry-run mode flag.
-2. **Loading Configuration**: The script loads the branch exclusion configuration from a `config.json` file.
-3. **Getting the Git API Client**: The script retrieves the Git API client for Azure DevOps using the organization URL and PAT.
-4. **Retrieving Repositories and Branches**: The script retrieves the list of repositories and branches in the specified project.
-5. **Getting the Last Commit Date**: The script retrieves the date of the last commit on each branch to determine if the branch is old enough to be considered for deletion.
-6. **Checking if a Branch is Merged**: The script checks if each branch is merged into any of the target branches specified in the configuration.
-7. **Deleting a Branch**: The script deletes branches that are old and merged, unless the script is running in dry-run mode.
-8. **Cleaning Up Branches**: The script orchestrates the entire cleanup process, iterating through repositories and branches, and deleting branches that meet the criteria.
+## Automating with Azure DevOps Pipeline
 
-## Full Code of the Program
+To automate the script execution, set up an Azure DevOps Pipeline.
 
-Please download the complete code of the program here: https://dev.azure.com/drunk24/drunkcoding-public/_git/az.tools?path=/az-devops-delete-branches
+1. **Create a Variable Group**:
 
-## Azure DevOps Pipeline Setup
+   - Navigate to **Pipelines** > **Library** in Azure DevOps.
+   - Click **"Variable groups"** > **"Add variable group"**.
+   - Name the group, e.g., `az-devops`.
+   - Add the variables:
+     - `AZURE_DEVOPS_URL`
+     - `AZURE_DEVOPS_PAT` (set as secret)
+     - `AZURE_DEVOPS_PROJECT`
+   - Save the variable group.
 
-To automate the execution of this script, you can set up an Azure DevOps pipeline. Here is an example YAML pipeline configuration:
+2. **Create the Pipeline YAML File**:
 
-1. **Setting Up Azure DevOps Library Group for Environment Variables**
+   Create a `azure-pipelines.yml` file in your repository:
 
-- **Navigate to Azure DevOps**: Go to your Azure DevOps project.
-- **Add Variable Group**: with provided a name ex: `az-devops` and description.
-- **Add Variables**: Add the following variables:
-  - `AZURE_DEVOPS_URL`
-  - `AZURE_DEVOPS_PAT`
-  - `AZURE_DEVOPS_PROJECT`
-- Click **Save** to create the variable group.
+   ```yaml
+   trigger: none
 
-2. **Setting Up Azure DevOps Pipeline**
-   Setup an azure pipeline and schedule it running at midnight every Sunday and perform the branch cleanup.
+   schedules:
+     - cron: "0 0 * * 0" # Runs every Sunday at 00:00
+       displayName: "Weekly Branch Cleanup"
+       branches:
+         include:
+           - main
+       always: true
+       batch: false
 
-```yaml
-schedules:
-  - cron: "0 0 * * 0" # Runs every Sunday at 00:00
-    displayName: "Weekly Sunday Midnight Schedule"
-    branches:
-      include:
-        - main
-    always: true # Ensures that the pipeline runs regardless of whether the source code has changed
+   pool:
+     vmImage: ubuntu-latest
 
-pool:
-  vmImage: ubuntu-latest
+   variables:
+     - group: az-devops
 
-variables:
-  - group: az-devops
+   steps:
+     - task: NodeTool@0
+       inputs:
+         versionSpec: "14.x"
+       displayName: "Install Node.js"
 
-steps:
-- task: UseNode@2
-  inputs:
-    versionSpec: '21.x'
-  displayName: 'Install Node.js'
+     - script: |
+         npm ci
+         npx ts-node cleanup.ts
+       displayName: "Run Branch Cleanup Script"
+       env:
+         AZURE_DEVOPS_URL: $(AZURE_DEVOPS_URL)
+         AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
+         AZURE_DEVOPS_PROJECT: $(AZURE_DEVOPS_PROJECT)
+   ```
 
-- task: Bash@3
-  displayName: "Branches Cleanup"
-  inputs:
-    targetType: 'inline'
-    script: |
-      npm ci
-      npm run run
-    workingDirectory: 'az-devops-delete-branches'
-  bashEnvValue:
-    AZURE_DEVOPS_URL: $(AZURE_DEVOPS_URL)
-    AZURE_DEVOPS_PAT: $(AZURE_DEVOPS_PAT)
-    AZURE_DEVOPS_PROJECT: $(AZURE_DEVOPS_PROJECT)
-```
+   - **Notes**:
+     - Replace `cleanup.ts` with the path to your script.
+     - Ensure the pipeline has access to the variable group.
+
+---
 
 ## Conclusion
 
-By automating the branch cleanup process, you can keep your repositories clean and manageable, making it easier to navigate and maintain your codebase. 
-This script provides a robust solution for identifying and deleting old, unused branches in Azure DevOps Git repositories. 
-With the provided pipeline setup, you can schedule regular cleanups to ensure your repositories remain clean-and-bright.
+Automating branch cleanup ensures your repositories remain organized, improving developer productivity and reducing potential errors. By following this guide, you can set up a script to automatically identify and delete old, unused branches in Azure DevOps, and schedule it using Azure Pipelines for regular maintenance.
+
+**Benefits**:
+
+- **Efficiency**: Saves time and resources.
+- **Consistency**: Maintains a consistent repository state.
+- **Scalability**: Easily extends to multiple projects and repositories.
+
+---
+
+## Additional Resources
+
+- **Full Working Source Code**: [drunkcoding public code](https://dev.azure.com/drunk24/drunkcoding-public/_git/az.tools?path=/az-devops-delete-branches&version=GBmain)
+- **Azure DevOps Node API Documentation**: [Git API Reference](https://github.com/microsoft/azure-devops-node-api/blob/master/api/GitApi.ts)
+- **Azure DevOps REST API Reference**: [Git Repositories](https://docs.microsoft.com/en-us/rest/api/azure/devops/git/repositories)
+
+---
+
+**Note**: Always test scripts in a controlled environment before deploying them in production. Ensure compliance with your organization's policies and procedures.
 
 <hr/>
 
