@@ -101,7 +101,7 @@ The **SQL Data Cleanup** program is a lifesaver for keeping your development and
 
 Feel free to give it a try, and as always, I’d love to hear your feedback! Let’s keep our databases tidy! 🚀
 
-<hr/>
+---
 
 Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
 
