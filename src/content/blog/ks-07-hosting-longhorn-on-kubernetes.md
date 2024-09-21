@@ -271,9 +271,11 @@ Visit our documentation at https://longhorn.io/docs/
 - You should be able to see the data being backed up into the Azure Storage Container.
   <img src="/assets/ks-hosting-longhorn-on-kubernetes/azure-storage-account.png" width="600px">
 
-<hr/>
+---
 
-Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
+## Thank You
 
-Steven
+Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
+
+**Steven**
 [GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)

@@ -44,6 +44,7 @@ In this guide, we'll walk through setting up a TypeScript script that automatica
 - [Automating with Azure DevOps Pipeline](#automating-with-azure-devops-pipeline)
 - [Conclusion](#conclusion)
 - [Additional Resources](#additional-resources)
+- [Thank You](#thank-you)
 
 ---
 
@@ -477,9 +478,11 @@ Automating branch cleanup ensures your repositories remain organized, improving 
 
 **Note**: Always test scripts in a controlled environment before deploying them in production. Ensure compliance with your organization's policies and procedures.
 
-<hr/>
+---
 
-Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
+## Thank You
 
-Steven
+Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
+
+**Steven**
 [GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)
