@@ -1,16 +1,15 @@
 ---
 author: Steven Hoang
-pubDatetime: 2024-08-26T12:00:00Z
+pubDatetime: 2025-01-01T12:00:00Z
 title: "[Az] A Comprehensive Series of Articles on Setting Up a Private AKS Environment on Azure with Pulumi"
-postSlug: az-series-aks-private-env-pulumi
+postSlug: az-pulumi-series-aks-private-env-pulumi
 featured: true
 draft: true
 tags:
   - aks
   - private
   - pulumi
-description: "The post introduces the **SQL Data Cleanup** tool, which automates the removal of old records from SQL databases, 
-improving performance and saving storage costs in development environments. It includes configuration options and Docker support for easy setup."
+description: ""
 ---
 
 # Writing a Series of Articles on Setting Up a Private AKS Environment on Azure with Pulumi
@@ -28,6 +27,9 @@ and Private CloudPC environment and How to expose some public applications throu
 ---
 
 ### Pulumi Account Setup
+
+**[Day 0: Setup pulumi environment]()**
+This guide walks you through setting up Pulumi to manage Azure resources using TypeScript
 
 ### Private AKS Environments
 
