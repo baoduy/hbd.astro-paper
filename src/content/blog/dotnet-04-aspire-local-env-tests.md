@@ -9,7 +9,7 @@ tags:
   - dotnet
   - aspire
   - local-env
-description: "Setting up a new project can be challenging, especially with various technologies involved. This guide explores how Aspire.NET simplify development by streamlining local environment setup, testing, and continuous integration. By the end, you’ll know how to enhance your workflow with these tools."
+description: "Setting up a new project can be challenging, especially with various technologies involved. This guide explores how Aspire.NET simplify development by streamlining local environment setup, testing, and continuous integration and setup end-to-end process with AzureDevOps CI/CD pipeline."
 ---
 
 Starting a new project is both exciting and challenging, especially when setting up the development environment. Projects often require a variety of technologies and configurations, which can be time-consuming and complex.
