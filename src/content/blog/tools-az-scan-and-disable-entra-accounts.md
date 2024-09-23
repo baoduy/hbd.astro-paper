@@ -488,9 +488,11 @@ Automating the management of inactive Azure Entra ID accounts enhances your orga
 
 > **Important**: Accessing certain Microsoft Graph API endpoints requires appropriate licensing. Ensure you have the necessary Microsoft Entra ID P2 or equivalent licenses to use the AuditLog API and other premium features.
 
-<hr/>
+---
 
-Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
+## Thank You
 
-Steven
+Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
+
+**Steven**
 [GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)

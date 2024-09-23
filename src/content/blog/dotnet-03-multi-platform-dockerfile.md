@@ -404,9 +404,11 @@ Woohoo! Once the Git action has been executed successfully, we can hop over to D
 _To ensure that everything's working as it should,
 both images were put to the test on my iMac (which has an Intel chip) and a K3s Raspberry Pi 4 cluster._
 
-<hr/>
+---
 
-Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
+## Thank You
 
-Steven
-[Github](<[https://github.com/baoduy](https://github.com/baoduy)>)
+Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
+
+**Steven**
+[GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)

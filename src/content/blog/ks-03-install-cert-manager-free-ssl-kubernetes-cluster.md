@@ -150,9 +150,11 @@ The application is also fully functional with SSL for secure communication.
 Below is the detailed certificate information as seen from the browser.
 ![Browser certificate details](/assets/ks-install-cert-manager-free-ssl-kubernetes-cluster/cert-details.png)
 
-<hr/>
+---
 
-Thank you for your time! If you have any further questions, feel free to ask. 🌟✨🎁
+## Thank You
 
-Steven
+Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
+
+**Steven**
 [GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)
