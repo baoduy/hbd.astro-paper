@@ -406,7 +406,6 @@ stages:
             inputs:
               packageType: 'sdk'
               version: '8.x'
-              includePreviewVersions: true
 
           # Install the necessary .NET workload
           - task: Bash@3
