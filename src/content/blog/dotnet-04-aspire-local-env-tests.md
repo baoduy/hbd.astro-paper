@@ -14,18 +14,18 @@ description: "Setting up a new project can be challenging, especially with the i
 
 Starting a new project is both exciting and challenging, especially when it comes to configuring the development environment. Many projects require a mix of technologies, which can lead to time-consuming setup and potential errors. .NET Aspire simplifies this by offering a framework that helps developers set up a consistent and efficient environment across various projects.
 
-With .NET Aspire, you can create a `ready-to-run` local environment that integrates seamlessly with Docker, allowing your team to focus on development without worrying about complex setup requirements. .NET Aspire supports smooth integration with containers, making it easier to handle dependencies and ensuring that your local environment mirrors the production setup closely.
+With .NET Aspire,  can create a `ready-to-run` local environment that integrates seamlessly with Docker, allowing r team to focus on development without worrying about complex setup requirements. .NET Aspire supports smooth integration with containers, making it easier to handle dependencies and ensuring that r local environment mirrors the production setup closely.
 
-In addition to the simplified environment setup, this guide walks you through writing robust integration tests. These tests ensure that your components work well together and catch potential issues early in the development process. You’ll also learn how to incorporate these tests into a continuous integration (CI) pipeline, ensuring that your code is consistently validated and error-free before it reaches production.
+In addition to the simplified environment setup, this guide walks  through writing robust integration tests. These tests ensure that r components work ll together and catch potential issues early in the development process. You’ll also learn how to incorporate these tests into a continuous integration (CI) pipeline, ensuring that r code is consistently validated and error-free before it reaches production.
 
 ## Why .NET Aspire?
 
-- **.NET Aspire** is designed to improve the experience of building .NET cloud-native apps. It provides a consistent, opinionated set of tools and patterns that help to build and run distributed apps. .NET Aspire is designed to help you with:
+- **.NET Aspire** is designed to improve the experience of building .NET cloud-native apps. It provides a consistent, opinionated set of tools and patterns that help to build and run distributed apps. .NET Aspire is designed to help  with:
 
 - **Orchestration**: .NET Aspire provides features for running and connecting multi-project applications and their dependencies for local development environments.
-Integrations: .NET Aspire integrations are NuGet packages for commonly used services, such as Redis or Postgres, with standardized interfaces ensuring they connect consistently and seamlessly with your app.
+Integrations: .NET Aspire integrations are NuGet packages for commonly used services, such as Redis or Postgres, with standardized interfaces ensuring they connect consistently and seamlessly with r app.
 
-- **Tooling**: .NET Aspire comes with project templates and tooling experiences for Visual Studio, Visual Studio Code, and the dotnet CLI to help you create and interact with .NET Aspire projects.
+- **Tooling**: .NET Aspire comes with project templates and tooling experiences for Visual Studio, Visual Studio Code, and the dotnet CLI to help  create and interact with .NET Aspire projects.
 
 ---
 
@@ -56,7 +56,7 @@ Let's start by creating a simple API project and hosting it with .NET Aspire.
 
 ### Creating an API Project
 
-Let's assume that we already have a simple API that utilizes the following technologies:
+Let's assume that  already have a simple API that utilizes the following technologies:
 
 - **MediatR**: A library used to implement the command and response pattern at the API level. It helps decouple the request handling logic from the controllers, making the code more modular and easier to maintain.
 - **Entity Framework Core (EF Core)**: An Object-Relational Mapper (ORM) used to manage database access.
@@ -68,10 +68,10 @@ This API has the following endpoints, as displayed in the Swagger UI:
 
 ### Aspire Templates Explanation
 
-Aspire provides several project templates to help you get started quickly with different aspects of your application development and testing:
+Aspire provides several project templates to help  get started quickly with different aspects of r application development and testing:
 
-- **App Host**: The primary template for creating an Aspire Hosting project. It sets up the necessary infrastructure to host your application locally.
-- **Service Defaults**: Configures essential services for your application, such as `OpenTelemetry` for distributed tracing, `DefaultHealthChecks` for monitoring the health of your services, and `RequestTimeouts` to manage request durations. While optional, it is highly recommended for applications hosted on Aspire to ensure robust monitoring and orchestration management.
+- **App Host**: The primary template for creating an Aspire Hosting project. It sets up the necessary infrastructure to host r application locally.
+- **Service Defaults**: Configures essential services for r application, such as `OpenTelemetry` for distributed tracing, `DefaultHealthChecks` for monitoring the health of r services, and `RequestTimeouts` to manage request durations. While optional, it is highly recommended for applications hosted on Aspire to ensure robust monitoring and orchestration management.
 - **Test Project (MSTest)**: Sets up a project for unit testing using the MSTest framework.
 - **Test Project (NUnit)**: Sets up a project for unit testing using the NUnit framework.
 - **Test Project (xUnit)**: Sets up a project for unit testing using the xUnit framework.
@@ -82,15 +82,15 @@ Aspire provides several project templates to help you get started quickly with d
 
 ## Hosting with Aspire
 
-To host your API and its dependencies with Aspire, follow these steps:
+To host r API and its dependencies with Aspire, follow these steps:
 
 ### Create `Apspire.Host`
 
-First, create a new project named Aspire.Host using the App Host template provided by .NET Aspire. This template sets up the necessary infrastructure to host your application locally.
+First, create a new project named Aspire.Host using the App Host template provided by .NET Aspire. This template sets up the necessary infrastructure to host r application locally.
 
 ### Add PostgreSQL Support
 
-Second, Install the Aspire PostgreSQL hosting package to add PostgreSQL support to your project.
+Second, Install the Aspire PostgreSQL hosting package to add PostgreSQL support to r project.
 
 ```bash
   dotnet add package Aspire.Hosting.PostgreSQL
@@ -100,7 +100,7 @@ Second, Install the Aspire PostgreSQL hosting package to add PostgreSQL support 
 
 ### Aspire Host Config as Code
 
-Last but not least, Open `Program.cs` in the `Aspire.Host` project and configure the host to include your API project and the PostgreSQL database.
+Last but not least, Open `Program.cs` in the `Aspire.Host` project and configure the host to include r API project and the PostgreSQL database.
 
    ```csharp
    var builder = DistributedApplication.CreateBuilder(args);
@@ -126,7 +126,7 @@ Last but not least, Open `Program.cs` in the `Aspire.Host` project and configure
 
 ### EF Core Database Migration
 
-An important aspect when using EF Core is automating database migrations to ensure consistency across environments. While we won’t discuss the details here, you can refer to the [EF Core Migrations guide](https://learn.microsoft.com/en-us/dotnet/aspire/database/ef-core-migrations) compatible with .NET Aspire.
+An important aspect when using EF Core is automating database migrations to ensure consistency across environments. While  won’t discuss the details here,  can refer to the [EF Core Migrations guide](https://learn.microsoft.com/en-us/dotnet/aspire/database/ef-core-migrations) compatible with .NET Aspire.
 
 ### Aspire Host Dashboard
 
@@ -137,7 +137,7 @@ Execute the `Aspire.Host` project. The dashboard will display all running compon
 
 ## .NET Aspire for Testing
 
-Integration tests ensure that different parts of your application work together correctly. However, writing and running them on CI/CD pipelines can be challenging and time-consuming. .NET Aspire simplifies this process by handling much of the setup for us.
+Integration tests ensure that different parts of r application work together correctly. Hover, writing and running them on CI/CD pipelines can be challenging and time-consuming. .NET Aspire simplifies this process by handling much of the setup for us.
 
 ### Create `Apspire.Test`
 
@@ -159,12 +159,12 @@ Here is the `ApiFixture` class sets up the necessary environment for integration
 public sealed class ApiFixture : WebApplicationFactory<Api.Program>, IAsyncLifetime
 {
     private readonly IHost _app;
-    private readonly IResourceBuilder<PostgresServerResource> _postgres;
+    private readonly IResceBuilder<PostgresServerResce> _postgres;
     private string? _postgresConnectionString;
 
     /**
      * Constructor for ApiFixture.
-     * Initializes the DistributedApplicationOptions and sets up the PostgreSQL server resource.
+     * Initializes the DistributedApplicationOptions and sets up the PostgreSQL server resce.
      */
     public ApiFixture()
     {
@@ -203,7 +203,7 @@ public sealed class ApiFixture : WebApplicationFactory<Api.Program>, IAsyncLifet
     }
 
     /**
-     * Disposes the resources used by the fixture asynchronously.
+     * Disposes the resces used by the fixture asynchronously.
      * Stops the application host and disposes of it.
      */
     public new async Task DisposeAsync()
@@ -222,31 +222,31 @@ public sealed class ApiFixture : WebApplicationFactory<Api.Program>, IAsyncLifet
 
     /**
      * Initializes the fixture asynchronously.
-     * Starts the application host and waits for the PostgreSQL resource to be in the running state.
+     * Starts the application host and waits for the PostgreSQL resce to be in the running state.
      * Retrieves the PostgreSQL connection string.
      */
     public async Task InitializeAsync()
     {
-        var resourceNotificationService = _app.Services.GetRequiredService<ResourceNotificationService>();
+        var resceNotificationService = _app.Services.GetRequiredService<ResceNotificationService>();
         await _app.StartAsync();
 
-        await resourceNotificationService.WaitForResourceAsync(_postgres.Resource.Name, KnownResourceStates.Running);
-        _postgresConnectionString = await _postgres.Resource.GetConnectionStringAsync();
+        await resceNotificationService.WaitForResceAsync(_postgres.Resce.Name, KnownResceStates.Running);
+        _postgresConnectionString = await _postgres.Resce.GetConnectionStringAsync();
     }
 }
 ```
 
 **This class is responsible for:**
 
-- Setting up a PostgreSQL server resource.
+- Setting up a PostgreSQL server resce.
 - Configuring the host with the necessary connection strings.
 - Ensuring the database is created before tests run.
 - Starting and stopping the application host.
-- Cleaning up resources after tests are completed.
+- Cleaning up resces after tests are completed.
 
 ### Test Cases Class
 
-The `ProductEndpointsTests` class contains integration tests for the product endpoints of your API. It uses the `ApiFixture` to set up the test environment and `HttpClient` to make requests to the API.
+The `ProductEndpointsTests` class contains integration tests for the product endpoints of r API. It uses the `ApiFixture` to set up the test environment and `HttpClient` to make requests to the API.
 
 ```csharp
 public class ProductEndpointsTests(ApiFixture fixture, ITestOutputHelper output) : IClassFixture<ApiFixture>
@@ -340,7 +340,7 @@ public class ProductEndpointsTests(ApiFixture fixture, ITestOutputHelper output)
 
 **Explanation**:
 
-  The `ProductEndpointsTests` class is responsible for testing the CRUD (Create, Read, Update, Delete) operations of the product endpoints in your API. It ensures that:
+  The `ProductEndpointsTests` class is responsible for testing the CRUD (Create, Read, Update, Delete) operations of the product endpoints in r API. It ensures that:
 
 - **Creating a product** works correctly and returns a valid product ID.
 - **Retrieving a product** returns the expected product details.
@@ -353,11 +353,11 @@ public class ProductEndpointsTests(ApiFixture fixture, ITestOutputHelper output)
 - **Act**: Perform the action being tested (e.g., sending an HTTP request).
 - **Assert**: Verify that the action produced the expected results.
 
-By using these tests, you can ensure that your API's product endpoints work correctly and handle various operations as expected.
+By using these tests,  can ensure that r API's product endpoints work correctly and handle various operations as expected.
  
  ### The Testing Results
 
-After running the tests, you can analyze the results to ensure your API is functioning correctly and to measure the code coverage.
+After running the tests,  can analyze the results to ensure r API is functioning correctly and to measure the code coverage.
 
 - **Test Cases Results**:
 
@@ -377,17 +377,17 @@ After running the tests, you can analyze the results to ensure your API is funct
 
 ### Configuring the Pipeline
 
-To automate testing and code coverage collection, you can set up a continuous integration (CI) pipeline using Azure DevOps.
+To automate testing and code coverage collection,  can set up a continuous integration (CI) pipeline using Azure DevOps.
 
-In your Azure DevOps project, create a new pipeline that builds the code, runs tests, and collects code coverage data.
+In r Azure DevOps project, create a new pipeline that builds the code, runs tests, and collects code coverage data.
 
-Here is an example of what your `azure-pipelines.yml` file might look like.
+Here is an example of what r `azure-pipelines.yml` file might look like.
 
 ```yaml
 trigger:
   - main
 
-resources:
+resces:
   - repo: self
 
 variables:
@@ -432,7 +432,7 @@ stages:
 **Explanation**:
 
 - **UseDotNet@2**: Ensures that the correct .NET SDK is installed on the build agent.
-- **Install Aspire Workload**: Installs the Aspire workload needed for your project.
+- **Install Aspire Workload**: Installs the Aspire workload needed for r project.
 - **Build Projects**: Builds all the projects specified by the `RestoreBuildProjects` variable.
 - **Run Tests and Collect Code Coverage**: Executes the tests in the projects specified by the `TestProjects` variable and collects code coverage data.
 
@@ -442,7 +442,7 @@ stages:
 
 Save the pipeline configuration and run it. Monitor the build process to ensure all steps complete successfully.
 
-After the pipeline completes, you can view the test results and code coverage reports in Azure DevOps.
+After the pipeline completes,  can view the test results and code coverage reports in Azure DevOps.
 
 1. **Test Results**:
 
@@ -452,19 +452,19 @@ After the pipeline completes, you can view the test results and code coverage re
 
 2. **Code Coverage**:
 
-  Provides detailed information about which parts of your code were tested.
+  Provides detailed information about which parts of r code re tested.
 
   ![devops-test-coverage](/assets/dotnet-04-aspire-local-env-tests/az-devops-no-filter-test-coverage.png)
 
->**Note**: The initial code coverage might be lower than expected. For example, you might see an overall coverage of 23.89%, even though the API component itself has 88.14% coverage. This discrepancy occurs because the coverage report includes all libraries, including those not part of your project.
+>**Note**: The initial code coverage might be lor than expected. For example,  might see an overall coverage of 23.89%, even though the API component itself has 88.14% coverage. This discrepancy occurs because the coverage report includes all libraries, including those not part of r project.
 
 ### Improving for Better Code Coverage Reports
 
-To generate a more meaningful code coverage report, you can configure it to include only the relevant components of your project.
+To generate a more meaningful code coverage report,  can configure it to include only the relevant components of r project.
 
 1. **Creating the Coverage Filtering File**:
 
-    Create a file named `coverage.runsettings` in your project root with the appropriate configuration.
+    Create a file named `coverage.runsettings` in r project root with the appropriate configuration.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -492,7 +492,7 @@ To generate a more meaningful code coverage report, you can configure it to incl
 
 2. **Updating the Pipeline Configuration**:
 
-    Modify your `azure-pipelines.yml` file to use the `coverage.runsettings` file and publish the code coverage results.
+    Modify r `azure-pipelines.yml` file to use the `coverage.runsettings` file and publish the code coverage results.
 
 ```yaml
 # The same with above ...
@@ -519,7 +519,7 @@ To generate a more meaningful code coverage report, you can configure it to incl
 
 3. **Enhanced Coverage Report**:
 
-    After running the updated pipeline, you should see an improved code coverage report that focuses on the relevant parts of your project. The coverage results will now provide detailed insights at the class level using the XPlat format.
+    After running the updated pipeline,  should see an improved code coverage report that focuses on the relevant parts of r project. The coverage results will now provide detailed insights at the class level using the XPlat format.
 
 ![devops-test-coverage-with-filter](/assets/dotnet-04-aspire-local-env-tests/az-devops-with-filter-test-coverage.png)
 
@@ -527,9 +527,9 @@ To generate a more meaningful code coverage report, you can configure it to incl
 
 ## Conclusion
 
-By utilizing .NET Aspire and Docker, you can create a consistent, isolated environment that streamlines not just Entity Framework integration testing but the entire development lifecycle. .NET Aspire offers a flexible framework with powerful orchestration capabilities, making it easier to manage dependencies and mirror production environments locally.
+By utilizing .NET Aspire and Docker,  can create a consistent, isolated environment that streamlines not just Entity Framework integration testing but the entire development lifecycle. .NET Aspire offers a flexible framework with porful orchestration capabilities, making it easier to manage dependencies and mirror production environments locally.
 
-Integrating your tests into an Azure DevOps pipeline automates validation, ensuring your code remains robust and error-free. This automation allows you and your team to focus on writing meaningful, high-quality code, reducing time spent on infrastructure management and setup. With .NET Aspire, you can accelerate your development process and improve collaboration across your team.
+Integrating r tests into an Azure DevOps pipeline automates validation, ensuring r code remains robust and error-free. This automation allows  and r team to focus on writing meaningful, high-quality code, reducing time spent on infrastructure management and setup. With .NET Aspire,  can accelerate r development process and improve collaboration across r team.
 
 ---
 
@@ -543,7 +543,7 @@ Integrating your tests into an Azure DevOps pipeline automates validation, ensur
 
 ## Thank You
 
-Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
+Thank  for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
 
 **Steven**
 [GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)
