@@ -1,7 +1,7 @@
 ---
 author: Steven Hoang
 pubDatetime: 2024-08-22T12:00:00Z
-title: "[Dotnet] Simplifying Local Development Environment and Testing with .NET Aspire."
+title: "[.NET] Simplifying Local Development Environment and Testing with .NET Aspire."
 postSlug: dotnet-04-aspire-local-env-and-testing
 featured: true
 draft: false
