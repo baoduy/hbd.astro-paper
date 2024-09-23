@@ -197,6 +197,7 @@ public sealed class ApiFixture : WebApplicationFactory<Api.Program>, IAsyncLifet
             }!);
         });
 
+        //TODO: add logic for db migration and seeding data here.
         var host = base.CreateHost(builder);
         host.EnsureDbCreated().GetAwaiter().GetResult();
         return host;
@@ -242,7 +243,7 @@ The `ApiFixture` class is responsible for:
 
 - Setting up a PostgreSQL server resource.
 - Configuring the host with the necessary connection strings.
-- Ensuring the database is created before tests run.
+- Ensuring the database is created and testing data prepared before tests run.
 - Starting and stopping the application host.
 - Cleaning up resources after tests are completed.
 
