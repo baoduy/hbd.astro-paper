@@ -339,6 +339,7 @@ public class ProductEndpointsTests(ApiFixture fixture, ITestOutputHelper output)
     }
 }
 ```
+
 **Explanation**:
 
 The `ProductEndpointsTests` class is responsible for testing the CRUD of the product endpoints. It ensures that:
@@ -347,6 +348,8 @@ The `ProductEndpointsTests` class is responsible for testing the CRUD of the pro
 - **Retrieving a product** returns the expected product details.
 - **Updating a product** successfully applies the changes and returns the appropriate status.
 - **Deleting a product** removes it from the database and returns the correct status code.
+
+> **Note:** Postgres connection issues may arise when running multiple sets of test cases in parallel. In such cases, instead of using `IClassFixture<>`, consider using [`IAssemblyFixture`](https://github.com/JDCain/Xunit.Extensions.AssemblyFixture). This approach ensures that only a single instance of `DistributedApplication` is created for the entire test suite.
 
  ### Testing Results
 
