@@ -1,7 +1,7 @@
 ---
 author: Steven Hoang
 pubDatetime: 2024-08-22T12:00:00Z
-title: "[Dotnet] Simplifying Local Development Environment and Testing with Aspire.NET."
+title: "[Dotnet] Simplifying Local Development Environment and Testing with .NET Aspire."
 postSlug: dotnet-04-aspire-local-env-and-testing
 featured: true
 draft: false
@@ -9,18 +9,18 @@ tags:
   - dotnet
   - aspire
   - local-env
-description: "Setting up a new project can be challenging, especially with various technologies involved. This guide explores how Aspire.NET simplify development by streamlining local environment setup, testing, and continuous integration and setup end-to-end process with AzureDevOps CI/CD pipeline."
+description: "Setting up a new project can be challenging, especially with the involvement of various technologies. This guide explores how .NET Aspire simplifies development by streamlining local environment setup, testing, and continuous integration, while also detailing the end-to-end process with an Azure DevOps CI/CD pipeline."
 ---
 
-Starting a new project is both exciting and challenging, especially when setting up the development environment. Projects often require a variety of technologies and configurations, which can be time-consuming and complex.
+Starting a new project is both exciting and challenging, especially when it comes to configuring the development environment. Many projects require a mix of technologies, which can lead to time-consuming setup and potential errors. .NET Aspire simplifies this by offering a framework that helps developers set up a consistent and efficient environment across various projects.
 
-In this guide, we’ll explore how Aspire.NET and Docker can streamline your development workflow. You’ll learn how to set up a `ready-to-run` local environment, write integration tests, and execute them in a continuous integration pipeline. By the end, you’ll have a clear understanding of how to simplify your development and testing processes.
+With .NET Aspire, you can create a `ready-to-run` local environment that integrates seamlessly with Docker, allowing your team to focus on development without worrying about complex setup requirements. .NET Aspire supports smooth integration with containers, making it easier to handle dependencies and ensuring that your local environment mirrors the production setup closely.
 
-This is particularly useful for frontend developers, who depend heavily on APIs for component development. With this setup, they can simply download the project and run it without needing extensive knowledge of .NET or Docker.
+In addition to the simplified environment setup, this guide walks you through writing robust integration tests. These tests ensure that your components work well together and catch potential issues early in the development process. You’ll also learn how to incorporate these tests into a continuous integration (CI) pipeline, ensuring that your code is consistently validated and error-free before it reaches production.
 
 ## Why .NET Aspire?
 
-- **.NET Aspire** is designed to improve the experience of building .NET cloud-native apps. It provides a consistent, opinionated set of tools and patterns that help you build and run distributed apps. .NET Aspire is designed to help you with:
+- **.NET Aspire** is designed to improve the experience of building .NET cloud-native apps. It provides a consistent, opinionated set of tools and patterns that help to build and run distributed apps. .NET Aspire is designed to help you with:
 
 - **Orchestration**: .NET Aspire provides features for running and connecting multi-project applications and their dependencies for local development environments.
 Integrations: .NET Aspire integrations are NuGet packages for commonly used services, such as Redis or Postgres, with standardized interfaces ensuring they connect consistently and seamlessly with your app.
@@ -31,11 +31,18 @@ Integrations: .NET Aspire integrations are NuGet packages for commonly used serv
 
 ## Table of Contents
 
+1. [Why .NET Aspire?](#why-net-aspire)
+2. [Setting Up the Local Environment](#setting-up-the-local-environment)
+3. [Hosting with Aspire](#hosting-with-aspire)
+4. [Aspire for Testing](#aspire-for-testing)
+5. [Running Tests on Azure DevOps](#running-tests-on-azure-devops)
+6. [Conclusion](#conclusion)
+
 ---
 
 ## Setting Up the Local Environment
 
-Let's start by creating a simple API project and hosting it with Aspire.NET.
+Let's start by creating a simple API project and hosting it with .NET Aspire.
 
 ### Prerequisites
 
@@ -49,17 +56,17 @@ Let's start by creating a simple API project and hosting it with Aspire.NET.
 
 ### Creating an API Project
 
-The API utilizes the following technologies:
+Let's assume that we already have a simple API that utilizes the following technologies:
 
 - **MediatR**: A library used to implement the command and response pattern at the API level. It helps decouple the request handling logic from the controllers, making the code more modular and easier to maintain.
 - **Entity Framework Core (EF Core)**: An Object-Relational Mapper (ORM) used to manage database access.
 - **PostgreSQL**: Used as the database to store and manage the application's data.
 
-Below is the Swagger UI of the API:
+This API has the following endpoints, as displayed in the Swagger UI:
 
 ![Api](/assets/dotnet-04-aspire-local-env-tests/api.png)
 
-#### Aspire Templates
+### Aspire Templates Explanation
 
 Aspire provides several project templates to help you get started quickly with different aspects of your application development and testing:
 
@@ -71,23 +78,29 @@ Aspire provides several project templates to help you get started quickly with d
 
 ![AspireTemplates](/assets/dotnet-04-aspire-local-env-tests/AspireTemplates.png)
 
-#### Hosting with Aspire
+---
+
+## Hosting with Aspire
 
 To host your API and its dependencies with Aspire, follow these steps:
 
-1. **Add PostgreSQL Support**:
+### Create `Apspire.Host`
 
-   Install the Aspire PostgreSQL hosting package to add PostgreSQL support to your project.
+First, create a new project named Aspire.Host using the App Host template provided by .NET Aspire. This template sets up the necessary infrastructure to host your application locally.
 
-   ```bash
-   dotnet add package Aspire.Hosting.PostgreSQL
-   ```
+### Add PostgreSQL Support
+
+Second, Install the Aspire PostgreSQL hosting package to add PostgreSQL support to your project.
+
+```bash
+  dotnet add package Aspire.Hosting.PostgreSQL
+```
 
 > Notes: Refer [here Aspire github](https://github.com/dotnet/aspire) for full list of hosting components that supporting by Aspire.
 
-2. **Configure Aspire Host**:
+### Aspire Host Config as Code
 
-   Open `Program.cs` in the `Aspire.Host` project and configure the host to include your API project and the PostgreSQL database.
+Last but not least, Open `Program.cs` in the `Aspire.Host` project and configure the host to include your API project and the PostgreSQL database.
 
    ```csharp
    var builder = DistributedApplication.CreateBuilder(args);
@@ -103,40 +116,44 @@ To host your API and its dependencies with Aspire, follow these steps:
    builder.Build().Run();
    ```
 
-   **Explanation**:
+**Explanation**:
 
-   - **AddPostgres("postgres")**: Adds a PostgreSQL service.
-   - **PublishAsConnectionString()**: Makes the connection string available to other services.
-   - **AddDatabase("Db")**: Sets up a database named "Db".
-   - **AddProject**: Includes the API project in the Aspire host configuration.
-   - **WithReference(db)**: Links the API project to the database.
+- **AddPostgres("postgres")**: Adds a PostgreSQL service.
+- **PublishAsConnectionString()**: Makes the connection string available to other services.
+- **AddDatabase("Db")**: Sets up a database named "Db".
+- **AddProject**: Includes the API project in the Aspire host configuration.
+- **WithReference(db)**: Links the API project to the database.
 
-3. **EF Core Database Migration**:
+### EF Core Database Migration
 
-   Automate database migrations to ensure consistency across environments and compatibility with Aspire. Refer to the [EF Core Migrations guide](https://learn.microsoft.com/en-us/dotnet/aspire/database/ef-core-migrations) for details.
+An important aspect when using EF Core is automating database migrations to ensure consistency across environments. While we won’t discuss the details here, you can refer to the [EF Core Migrations guide](https://learn.microsoft.com/en-us/dotnet/aspire/database/ef-core-migrations) compatible with .NET Aspire.
 
-4. **Run the Aspire Host**:
+### Aspire Host Dashboard
 
-   Execute the `Aspire.Host` project. The dashboard will display all running components.
-   ![Dashboard](/assets/dotnet-04-aspire-local-env-tests/AspireDashboard.png)
+Execute the `Aspire.Host` project. The dashboard will display all running components.
+![Dashboard](/assets/dotnet-04-aspire-local-env-tests/AspireDashboard.png)
 
 ---
 
-## Aspire.NET for Testing
+## .NET Aspire for Testing
 
-Integration tests ensure that different parts of your application work together correctly. However, writing and running them on CI/CD pipelines can be challenging and time-consuming. Aspire.NET simplifies this process by handling much of the setup for you.
+Integration tests ensure that different parts of your application work together correctly. However, writing and running them on CI/CD pipelines can be challenging and time-consuming. .NET Aspire simplifies this process by handling much of the setup for us.
 
-### Writing Test Cases
+### Create `Apspire.Test`
 
-Below are sample test cases for the API using the `Aspire xUnit` template. To run Aspire xUnit tests smoothly, you should reference the `Aspire.Host` project instead of installing the same set of NuGet package dependencies in the `Aspire.Tests` project.
+Create a new test project named Aspire.Tests using the Test Project (xUnit) template provided by .NET Aspire. This template sets up the necessary scaffolding for integration tests using xUnit.
+
+### Add Reference to `Aspire.Host`
+
+Instead of installing all the same NuGet package dependencies in Aspire.Tests, add a project reference to Aspire.Host. This allows the test project to leverage the configurations and services defined in the host project.
 
 Here is a reference graph:
 
 ![ProjectDependency](/assets/dotnet-04-aspire-local-env-tests/ProjectDependency.png)
 
-#### ApiFixture Class
+### ApiFixture Class
 
-The `ApiFixture` class sets up the necessary environment for integration tests. It extends `WebApplicationFactory<Api.Program>` and implements `IAsyncLifetime` to manage the lifecycle of the test environment.
+Here is the `ApiFixture` class sets up the necessary environment for integration tests. It extends `WebApplicationFactory<Api.Program>` and implements `IAsyncLifetime` to manage the lifecycle of the test environment.
 
 ```csharp
 public sealed class ApiFixture : WebApplicationFactory<Api.Program>, IAsyncLifetime
@@ -219,7 +236,7 @@ public sealed class ApiFixture : WebApplicationFactory<Api.Program>, IAsyncLifet
 }
 ```
 
-This class is responsible for:
+**This class is responsible for:**
 
 - Setting up a PostgreSQL server resource.
 - Configuring the host with the necessary connection strings.
@@ -227,7 +244,7 @@ This class is responsible for:
 - Starting and stopping the application host.
 - Cleaning up resources after tests are completed.
 
-#### Test Cases Class
+### Test Cases Class
 
 The `ProductEndpointsTests` class contains integration tests for the product endpoints of your API. It uses the `ApiFixture` to set up the test environment and `HttpClient` to make requests to the API.
 
@@ -323,22 +340,22 @@ public class ProductEndpointsTests(ApiFixture fixture, ITestOutputHelper output)
 
 **Explanation**:
 
-The `ProductEndpointsTests` class is responsible for testing the CRUD (Create, Read, Update, Delete) operations of the product endpoints in your API. It ensures that:
+  The `ProductEndpointsTests` class is responsible for testing the CRUD (Create, Read, Update, Delete) operations of the product endpoints in your API. It ensures that:
 
 - **Creating a product** works correctly and returns a valid product ID.
 - **Retrieving a product** returns the expected product details.
 - **Updating a product** successfully applies the changes and returns the appropriate status.
 - **Deleting a product** removes it from the database and returns the correct status code.
 
-Each test follows a similar structure:
+**Each test follows a similar structure:**
 
-1. **Arrange**: Set up the necessary data and state for the test.
-2. **Act**: Perform the action being tested (e.g., sending an HTTP request).
-3. **Assert**: Verify that the action produced the expected results.
+- **Arrange**: Set up the necessary data and state for the test.
+- **Act**: Perform the action being tested (e.g., sending an HTTP request).
+- **Assert**: Verify that the action produced the expected results.
 
 By using these tests, you can ensure that your API's product endpoints work correctly and handle various operations as expected.
  
-### The Testing Results
+ ### The Testing Results
 
 After running the tests, you can analyze the results to ensure your API is functioning correctly and to measure the code coverage.
 
@@ -356,7 +373,7 @@ After running the tests, you can analyze the results to ensure your API is funct
 
 ---
 
-## Testing on Azure DevOps
+## Run Test-Cases on Azure DevOps
 
 ### Configuring the Pipeline
 
@@ -427,13 +444,13 @@ Save the pipeline configuration and run it. Monitor the build process to ensure 
 
 After the pipeline completes, you can view the test results and code coverage reports in Azure DevOps.
 
-- **Test Results**:
+1. **Test Results**:
 
   Displays which tests passed or failed.
 
   ![devops-test-results](/assets/dotnet-04-aspire-local-env-tests/az-devops-no-filter-test-results.png)
 
-- **Code Coverage**:
+2. **Code Coverage**:
 
   Provides detailed information about which parts of your code were tested.
 
@@ -441,14 +458,13 @@ After the pipeline completes, you can view the test results and code coverage re
 
 >**Note**: The initial code coverage might be lower than expected. For example, you might see an overall coverage of 23.89%, even though the API component itself has 88.14% coverage. This discrepancy occurs because the coverage report includes all libraries, including those not part of your project.
 
-
-### Improving the Pipeline for Better Code Coverage Reports
+### Improving for Better Code Coverage Reports
 
 To generate a more meaningful code coverage report, you can configure it to include only the relevant components of your project.
 
-**Creating the Coverage Filtering File**:
+1. **Creating the Coverage Filtering File**:
 
-Create a file named `coverage.runsettings` in your project root with the appropriate configuration.
+    Create a file named `coverage.runsettings` in your project root with the appropriate configuration.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -474,14 +490,14 @@ Create a file named `coverage.runsettings` in your project root with the appropr
 - The `<Include>` section specifies which assemblies to include in the code coverage report. In this case, `[Api*]*` includes all assemblies starting with "Api".
 - The `<Exclude>` section can be used to exclude specific assemblies or classes.
 
-### Updating the Pipeline Configuration
+2. **Updating the Pipeline Configuration**:
 
-Modify your `azure-pipelines.yml` file to use the `coverage.runsettings` file and publish the code coverage results.
+    Modify your `azure-pipelines.yml` file to use the `coverage.runsettings` file and publish the code coverage results.
 
 ```yaml
-...
+# The same with above ...
 
-          # Run tests and collect code coverage
+          # Update the parameter with `runsettings` and code coverage
           - task: DotNetCoreCLI@2
             displayName: Test with coverage filtering
             inputs:
@@ -489,7 +505,7 @@ Modify your `azure-pipelines.yml` file to use the `coverage.runsettings` file an
               projects: "$(TestProjects)"
               arguments: '--configuration $(BuildConfiguration) --settings coverage.runsettings --collect "XPlat Code Coverage"'
 
-          # Publish code coverage results
+          # Publish the new code coverage results format AzureDevOps report.
           - task: PublishCodeCoverageResults@1
             inputs:
               codeCoverageTool: "cobertura"
@@ -501,9 +517,9 @@ Modify your `azure-pipelines.yml` file to use the `coverage.runsettings` file an
 - **Run Tests with Coverage Filtering**: Executes tests using the `coverage.runsettings` file to filter the code coverage data.
 - **Publish Code Coverage Results**: Publishes the code coverage results to Azure DevOps for easy visualization.
 
-### Enhanced Coverage Report
+3. **Enhanced Coverage Report**:
 
-After running the updated pipeline, you should see an improved code coverage report that focuses on the relevant parts of your project. The coverage results will now provide detailed insights at the class level using the XPlat format.
+    After running the updated pipeline, you should see an improved code coverage report that focuses on the relevant parts of your project. The coverage results will now provide detailed insights at the class level using the XPlat format.
 
 ![devops-test-coverage-with-filter](/assets/dotnet-04-aspire-local-env-tests/az-devops-with-filter-test-coverage.png)
 
@@ -511,14 +527,17 @@ After running the updated pipeline, you should see an improved code coverage rep
 
 ## Conclusion
 
-Integration testing with Entity Framework doesn't have to be daunting. By leveraging Aspire.NET and Docker, you can create a consistent and isolated environment for your tests. By customizing your Azure DevOps pipeline to further automate the testing process, you can focus on writing meaningful code rather than wrestling with infrastructure.
+By utilizing .NET Aspire and Docker, you can create a consistent, isolated environment that streamlines not just Entity Framework integration testing but the entire development lifecycle. .NET Aspire offers a flexible framework with powerful orchestration capabilities, making it easier to manage dependencies and mirror production environments locally.
+
+Integrating your tests into an Azure DevOps pipeline automates validation, ensuring your code remains robust and error-free. This automation allows you and your team to focus on writing meaningful, high-quality code, reducing time spent on infrastructure management and setup. With .NET Aspire, you can accelerate your development process and improve collaboration across your team.
 
 ---
 
 ## References
 
-- [Sample Aspire.NET Unit Tests](https://github.com/baoduy/sample-aspire-dotnet-unittests)
-- [Aspire.NET Documentation](https://learn.microsoft.com/en-us/dotnet/aspire/get-started/aspire-overview)
+- [Sample Code From DrunkCode](https://github.com/baoduy/sample-aspire-dotnet-unittests)
+- [.NET Aspire Documentation](https://learn.microsoft.com/en-us/dotnet/aspire/get-started/aspire-overview)
+- [EfCore Migration in .NET Aspire](https://learn.microsoft.com/en-us/dotnet/aspire/database/ef-core-migrations)
 
 ---
 
