@@ -1,83 +1,414 @@
-# Overcoming Integration Testing Challenges with Entity Framework and Aspire.NET
+---
+author: Steven Hoang
+pubDatetime: 2024-08-24T12:00:00Z
+title: "[Dotnet] Aspire.NET, A First Try with EfCore and Testing."
+postSlug: az-pulumi-series-aks-private-env-pulumi
+featured: true
+draft: false
+tags:
+  - aks
+  - private
+  - pulumi
+description: ""
+---
 
-Integration testing is a crucial aspect of software development, ensuring that different components of an application work together seamlessly. However, when it comes to testing applications that use Entity Framework, developers often face significant challenges. Setting up a test environment that includes a database and all dependent components can be cumbersome and time-consuming. In this article, we'll explore how **Aspire.NET** can simplify this process by hosting the entire environment locally and leveraging Docker for dependencies. We'll also discuss how to customize the CI/CD pipeline on Azure DevOps to capture code coverage for specific projects.
+As a developer, the most challenge I saw when joining a new project that I need to setup the development on my local PC as each project require different tech stack. 
 
-## Challenges in Integration Testing with Entity Framework
+Recently, once Docker becomes famust the docker-compose had been developed for each project and share acros the team. That can help developer to form up local development environment quickly using Docker.
 
-Entity Framework is a powerful Object-Relational Mapping (ORM) tool that simplifies data access in .NET applications. However, integration testing with Entity Framework presents several challenges:
+With Aspire.NET it is an alternative for us to not only able to replicate entire development environment locally but also natively support Integration Test development that allows us to develop "redy-to-run" local envronment for developer and running integration test on AzureDevOps.
 
-1. **Database Setup**: Creating and maintaining a test database that mirrors the production environment can be complex.
-2. **Dependencies Management**: Ensuring all dependent services and components are available during testing.
-3. **Environment Consistency**: Maintaining consistent test environments across different development machines and CI/CD pipelines.
+Aspire.NET is a framework that allows developers to host their entire application environment locally. By integrating Docker, you can containerize dependencies, making them easy to manage and ensuring consistency across different environments.
 
-These challenges can lead to unreliable tests and slow down the development process.
+---
 
-## Leveraging Aspire.NET and Docker for Local Hosting
+### Setting Up the Local Environment
 
-**Aspire.NET** is a framework that allows developers to host their entire application environment locally. By integrating Docker, you can containerize dependencies, making them easy to manage and ensuring consistency across different environments.
+#### Sample API
 
-### Setting Up the Environment
+Let's take a look on my simple API here as example and this API is using:
 
-1. **Dockerize Dependencies**: Create Docker images for your database and any other services your application depends on.
-2. **Configure Aspire.NET**: Set up Aspire.NET to use these Docker containers during testing.
-3. **Local Hosting**: Run your application and its dependencies locally, providing a controlled environment for integration tests.
+- MediatR for command and response pattern for API level.
+- EntityFrameworkCore (EfCore) for ORM
+- PostgresQL for Database level.
 
-### Benefits
+![Api](/assets/dotnet-04-aspire-local-env-tests/api.png)
 
-- **Isolation**: Tests run in an isolated environment, reducing the risk of interference from other processes.
-- **Consistency**: The same environment can be replicated across all development machines and CI/CD pipelines.
-- **Scalability**: Easily add or remove services as your application evolves.
+#### Aspire Templates
 
-## Writing Integration Tests with Aspire.NET
+Aspire is providing a few project templates as below:
 
-With the environment set up, you can now focus on writing integration tests for your project.
+- App Host: the main template to create Aspire Hosting.
+- Service Defaults: the project template that help to config `OpenTelemetry`, `DefaultHealthChecks` and `RequestTimeouts`. This is optional but recommened for the applications hosting on Aspire.
+- Test Project (MSTest): the project template For unit testing using the MSTest framework.
+- Test Project (NUnit): the project template For unit testing using the NUnit framework.
+- Test Project (xUnit): the project template For unit testing using the xUnit framework.
 
-### Sample Code
+![AspireTemplates](/assets/dotnet-04-aspire-local-env-tests/AspireTemplates.png)
 
-Here's an example of how you might structure an integration test using Aspire.NET:
+#### Hosting with Aspire
+
+- Add new Aspire `App Host` project
+- Install PostgreSQL package for Aspire:
+
+```bash
+dotnet add package Aspire.Hosting.PostgreSQL
+```
+
+- Hosting the API above toghether with Postgress Database with just a new line of code:
 
 ```csharp
-[Fact]
-public async Task Test_GetAllItems_ReturnsItems()
+var builder = DistributedApplication.CreateBuilder(args);
+
+//Database
+var postgres = builder.AddPostgres("postgres").PublishAsConnectionString();
+var db = postgres.AddDatabase("Db");
+
+//Internal API
+builder.AddProject<Projects.Api>("api")
+    .WithReference(db);
+
+builder.Build().Run();
+```
+
+- Db migration is one of the most important thing to ensure the application running propertly in all environments, and to automate that you can refer the solution [here](https://learn.microsoft.com/en-us/dotnet/aspire/database/ef-core-migrations) that compatible with Aspire.
+
+- Run the Aspire.Host project and here the Dasshboard with all components running there.
+![Dashboard](/assets/dotnet-04-aspire-local-env-tests/AspireDashboard.png)
+
+- Aspire also providing an other `ServiceDefault` project template that help to config `OpenTelemetry`, `DefaultHealthChecks` and `RequestTimeouts`. This is optional but recommened for the applications hosting on Aspire.
+
+---
+
+## Aspire.NET for Testing
+
+As you know that writing the integration tests and running them on CI/CD pipelines is challegeing and take amount of effor to make it work from praparing the data until fully test the business cases. 
+
+With Aspire, I hope this will simplify this process.
+
+### Writing Test Cases
+
+Here is sample test cases for the API abows with `Aspire xUnit` template.
+Just a note that to let Aspire xUnit running smoothly instead of install the same set of nuget packages dependence to `Aspire.Tests` project. Just simply reference to the `Aspire.Host` project.
+
+Here is reference graph
+![ProjectDependency](/assets/dotnet-04-aspire-local-env-tests/ProjectDependency.png)
+
+#### ApiFixture Class
+
+Let's writing our APi Fixture class first.
+
+```csharp
+public sealed class ApiFixture : WebApplicationFactory<Api.Program>, IAsyncLifetime
 {
-    // Arrange
-    var client = _factory.CreateClient();
+    private readonly IHost _app;
+    private readonly IResourceBuilder<PostgresServerResource> _postgres;
+    private string? _postgresConnectionString;
 
-    // Act
-    var response = await client.GetAsync("/api/items");
+    /**
+     * Constructor for ApiFixture.
+     * Initializes the DistributedApplicationOptions and sets up the PostgreSQL server resource.
+     */
+    public ApiFixture()
+    {
+        var options = new DistributedApplicationOptions
+        {
+            AssemblyName = typeof(ApiFixture).Assembly.FullName,
+            DisableDashboard = true
+        };
+        var builder = DistributedApplication.CreateBuilder(options);
 
-    // Assert
-    response.EnsureSuccessStatusCode();
-    var items = await response.Content.ReadAsAsync<List<Item>>();
-    Assert.NotEmpty(items);
+        _postgres = builder.AddPostgres("postgres").PublishAsConnectionString();
+        _app = builder.Build();
+    }
+
+    /**
+     * Creates and configures the host for the application.
+     * Adds the PostgreSQL connection string to the host configuration.
+     * Ensures the database is created before returning the host.
+     *
+     * @param builder The IHostBuilder instance.
+     * @return The configured IHost instance.
+     */
+    protected override IHost CreateHost(IHostBuilder builder)
+    {
+        builder.ConfigureHostConfiguration(config =>
+        {
+            config.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "ConnectionStrings:Db", _postgresConnectionString },
+            }!);
+        });
+
+        var host = base.CreateHost(builder);
+        host.EnsureDbCreated().GetAwaiter().GetResult();
+        return host;
+    }
+
+    /**
+     * Disposes the resources used by the fixture asynchronously.
+     * Stops the application host and disposes of it.
+     */
+    public new async Task DisposeAsync()
+    {
+        await base.DisposeAsync();
+        await _app.StopAsync();
+        if (_app is IAsyncDisposable asyncDisposable)
+        {
+            await asyncDisposable.DisposeAsync().ConfigureAwait(false);
+        }
+        else
+        {
+            _app.Dispose();
+        }
+    }
+
+    /**
+     * Initializes the fixture asynchronously.
+     * Starts the application host and waits for the PostgreSQL resource to be in the running state.
+     * Retrieves the PostgreSQL connection string.
+     */
+    public async Task InitializeAsync()
+    {
+        var resourceNotificationService = _app.Services.GetRequiredService<ResourceNotificationService>();
+        await _app.StartAsync();
+
+        await resourceNotificationService.WaitForResourceAsync(_postgres.Resource.Name, KnownResourceStates.Running);
+        _postgresConnectionString = await _postgres.Resource.GetConnectionStringAsync();
+    }
 }
 ```
 
-This test checks whether the API endpoint `/api/items` returns a list of items successfully.
+ApiFixture is a test fixture class that sets up the necessary environment for integration tests.
+ It extends WebApplicationFactory<Api.Program> and implements IAsyncLifetime to manage the lifecycle of the test environment.
 
-For a complete example, you can refer to the [sample-aspire-dotnet-unittests repository](https://github.com/baoduy/sample-aspire-dotnet-unittests) on GitHub.
+  This class is responsible for:
 
-## Customizing the CI/CD Pipeline on Azure DevOps
+- Setting up a PostgreSQL server resource.
+- Configuring the host with the necessary connection strings.
+- Ensuring the database is created before tests run.
+- Starting and stopping the application host.
+- Cleaning up resources after tests are completed.
 
-To ensure that your integration tests run smoothly in your CI/CD pipeline, you'll need to customize your Azure DevOps pipeline.
+#### Test Cases Class
 
-### Steps to Customize
+And here is our tes cases.
 
-1. **Modify the YAML Pipeline**: Update your `azure-pipelines.yml` file to include steps that build, test, and publish code coverage for your specific project.
-2. **Include Docker Compose**: Add tasks to spin up Docker containers for your dependencies during the build process.
-3. **Configure Code Coverage**: Use tools like Coverlet or dotCover to collect code coverage metrics only for the projects you're interested in.
+```csharp
+public class ProductEndpointsTests(ApiFixture fixture, ITestOutputHelper output) : IClassFixture<ApiFixture>
+{
+    private readonly HttpClient _client = fixture.CreateClient();
 
-### Example YAML Snippet
+    /**
+     * Tests the creation of a product.
+     * Ensures that the product is created successfully and returns a valid product ID.
+     */
+    [Fact]
+    public async Task CreateProduct_ReturnsCreatedProduct()
+    {
+        // Arrange
+        var command = new CreateProduct.Command { Name = "Test Product", Price = 10.99m };
+        // Act
+        var response = await _client.PostAsJsonAsync("/products", command);
 
-```yaml
-- task: DotNetCoreCLI@2
-  inputs:
-    command: "test"
-    projects: "**/*Tests.csproj"
-    arguments: '--configuration $(BuildConfiguration) --collect "Code Coverage"'
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var productId = await response.Content.ReadFromJsonAsync<int>();
+        Assert.True(productId > 0);
+    }
+
+    /**
+     * Tests the retrieval of a product.
+     * Ensures that the product is retrieved successfully and matches the expected values.
+     */
+    [Fact]
+    public async Task GetProduct_ReturnsProduct()
+    {
+        // Arrange
+        var command = new CreateProduct.Command { Name = "Test Product", Price = 10.99m };
+        var createResponse = await _client.PostAsJsonAsync("/products", command);
+        var productId = await createResponse.Content.ReadFromJsonAsync<int>();
+
+        // Act
+        var response = await _client.GetAsync($"/products/{productId}");
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var product = await response.Content.ReadFromJsonAsync<Product>();
+        Assert.NotNull(product);
+        Assert.Equal("Test Product", product.Name);
+        Assert.Equal(10.99m, product.Price);
+    }
+
+    /**
+     * Tests the update of a product.
+     * Ensures that the product is updated successfully and returns a NoContent status.
+     */
+    [Fact]
+    public async Task UpdateProduct_ReturnsNoContent()
+    {
+        // Arrange
+        var command = new CreateProduct.Command { Name = "Test Product", Price = 10.99m };
+        var createResponse = await _client.PostAsJsonAsync("/products", command);
+        var productId = await createResponse.Content.ReadFromJsonAsync<int>();
+
+        var updateCommand = new UpdateProduct.Command { Id = productId, Name = "Updated Product", Price = 20.99m };
+
+        // Act
+        var response = await _client.PutAsJsonAsync($"/products/{productId}", updateCommand);
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+    }
+
+    /**
+     * Tests the deletion of a product.
+     * Ensures that the product is deleted successfully and returns a NoContent status.
+     */
+    [Fact]
+    public async Task DeleteProduct_ReturnsNoContent()
+    {
+        // Arrange
+        var command = new CreateProduct.Command { Name = "Test Product", Price = 10.99m };
+        var createResponse = await _client.PostAsJsonAsync("/products", command);
+        var productId = await createResponse.Content.ReadFromJsonAsync<int>();
+
+        // Act
+        var response = await _client.DeleteAsync($"/products/{productId}");
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+    }
+}
 ```
 
-This task runs the tests and collects code coverage data.
+The ProductEndpointsTests class contains integration tests for the product endpoints.
+It uses the ApiFixture to set up the test environment and HttpClient to make requests to the API.
+
+This class is responsible for:
+
+- Testing the creation of a product.
+- Testing the retrieval of a product.
+- Testing the update of a product.
+- Testing the deletion of a product.
+ 
+#### The Testing result
+
+- Test cases results
+![TestCases](/assets/dotnet-04-aspire-local-env-tests/TestCasesResults.png)
+
+- Coverage Results
+![TestCases](/assets/dotnet-04-aspire-local-env-tests/TestCoverageResults.png)
+
+## Testing on Azure DevOps
+
+Here is the pipeline yaml file that running Aspire Tesing on AzureDevOps. This Azure Pipeline configuration file defines the CI/CD pipeline for building and testing the project with code coverage collecting.
+
+```yaml
+trigger:
+  - main
+
+resources:
+  - repo: self
+
+variables:
+  BUILDCONFIGURATION: Release
+  RestoreBuildProjects: "**/*.csproj"
+  TestProjects: "**/*[Tt]ests/*.csproj"
+
+  # Agent VM image name
+  vmImageName: "ubuntu-latest"
+
+stages:
+  - stage: Build
+    displayName: Build and push stage
+    jobs:
+      - job: Build
+        displayName: Build
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          # Install the necessary .NET workload
+          - task: Bash@3
+            inputs:
+              targetType: "inline"
+              script: "dotnet workload install aspire"
+
+          # Build the project
+          - task: DotNetCoreCLI@2
+            displayName: Build
+            inputs:
+              projects: $(RestoreBuildProjects)
+              arguments: -c $(BuildConfiguration)
+
+          # Run tests and collect code coverage
+          - task: DotNetCoreCLI@2
+            displayName: Test
+            inputs:
+              command: "test"
+              projects: "$(TestProjects)"
+              arguments: '--configuration $(BuildConfiguration) --collect "Code Coverage"'
+```
+
+After run the pipeline We have the result as below:
+
+- Test cases
+![devops-test-results](/assets/dotnet-04-aspire-local-env-tests/az-devops-no-filter-test-results.png)
+
+- Code Coverage
+![devops-test-coverage](/assets/dotnet-04-aspire-local-env-tests/az-devops-no-filter-test-coverage.png)
+
+With the coverage above we only got 23.89% of the overal coverage. However, the API component itself got 88.14% coverage.
+
+So to make the report better We can enhance the piple-line that only includes the component belong to the projects by using the configuration below.
+
+I create a file named `coverage.runsettings` with the content as below
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <Include>
+            [Api*]*
+          </Include>
+          <Exclude>
+          </Exclude>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>
+```
+
+Take a look at the includes section this only include the library that belong to the project. In this case is `[Api*]*`
+
+And here is updated pipline with the configuration above: I only show th updated steps here since the others are remining the same:
+
+```yaml
+...
+
+          # Run tests and collect code coverage
+          - task: DotNetCoreCLI@2
+            displayName: Test with coverage filtering
+            inputs:
+              command: "test"
+              projects: "$(TestProjects)"
+              arguments: '--configuration $(BuildConfiguration) --settings coverage.runsettings --collect "XPlat Code Coverage"'
+
+          # Publish code coverage results
+          - task: PublishCodeCoverageResults@1
+            inputs:
+              codeCoverageTool: "cobertura"
+              summaryFileLocation: "$(Agent.TempDirectory)/**/coverage.cobertura.xml"
+```
+
+Here is the coverage results, this one using `XPlat` format which shows details of the covergate at the class leve.
+![devops-test-coverage-with-filter](/assets/dotnet-04-aspire-local-env-tests/az-devops-with-filter-test-coverage.png)
 
 ## Conclusion
 
@@ -85,7 +416,4 @@ Integration testing with Entity Framework doesn't have to be a daunting task. By
 
 ## References
 
-- [Aspire.NET Documentation](https://aspire.net/docs)
-- [Docker Documentation](https://docs.docker.com/)
-- [Azure DevOps Pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/?view=azure-devops)
 - [Sample Aspire.NET Unit Tests](https://github.com/baoduy/sample-aspire-dotnet-unittests)
