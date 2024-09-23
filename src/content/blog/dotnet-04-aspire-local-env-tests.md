@@ -16,7 +16,7 @@ Starting a new project is both exciting and challenging, especially when it come
 
 With .NET Aspire,  can create a `ready-to-run` local environment that integrates seamlessly with Docker, allowing r team to focus on development without worrying about complex setup requirements. .NET Aspire supports smooth integration with containers, making it easier to handle dependencies and ensuring that r local environment mirrors the production setup closely.
 
-In addition to the simplified environment setup, this guide walks  through writing robust integration tests. These tests ensure that r components work ll together and catch potential issues early in the development process. You’ll also learn how to incorporate these tests into a continuous integration (CI) pipeline, ensuring that r code is consistently validated and error-free before it reaches production.
+In addition to the simplified environment setup, this guide walks  through writing robust integration tests. These tests ensure that r components work ll together and catch potential issues early in the development process. Let's learn how to incorporate these tests into a continuous integration (CI) pipeline, ensuring that r code is consistently validated and error-free before it reaches production.
 
 ## Why .NET Aspire?
 
