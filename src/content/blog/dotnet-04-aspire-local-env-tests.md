@@ -14,7 +14,7 @@ description: "Setting up a new project can be challenging, especially with the i
 
 Starting a new project is both exciting and challenging, especially when it comes to configuring the development environment. Many projects require a mix of technologies, which can lead to time-consuming setup and potential errors. **.NET Aspire** simplifies this process by offering a framework that helps developers set up a consistent and efficient environment across various projects.
 
-With .NET Aspire, We can create a ready-to-run local environment that integrates seamlessly with Docker, allowing the development team to focus on coding without worrying about complex setup requirements. It supports smooth integration with containers, making it easier to handle dependencies and ensuring that our local environment closely mirrors the production setup.
+With .NET Aspire, We can create a ready-to-run local environment that integrates seamlessly with Docker, allowing the development team to focus on coding without worrying about complex setup requirements. It supports smooth integration with containers, making it easier to handle dependencies and ensuring that our local environment closely mirrors the development/staging environment setup.
 
 In addition to simplifying environment setup, this guide walks us through writing robust integration tests. These tests ensure all components work well together and catch potential issues early in the development process. We'll also learn how to incorporate these tests into a continuous integration (CI) pipeline, ensuring the code is consistently validated and error-free before it reaches production.
 
@@ -97,7 +97,7 @@ dotnet add package Aspire.Hosting.PostgreSQL
 
 > **Note**: Refer to the [.NET Aspire GitHub repository](https://github.com/dotnet/aspire) for a full list of hosting components supported by Aspire.
 
-### Aspire Host Config as Code
+### Aspire Host with `Config as Code`
 
 Open `Program.cs` in the `Aspire.Host` project and configure the `DistributedApplication` as shown:
 
@@ -462,7 +462,7 @@ After the pipeline completes, the test results and code coverage reports should 
 
    ![devops-test-coverage](/assets/dotnet-04-aspire-local-env-tests/az-devops-no-filter-test-coverage.png)
 
-> **Note**: The initial code coverage might be lower than expected. For example, you might see an overall coverage of 23.89%, even though the API component itself has 88.14% coverage. This discrepancy occurs because the coverage report includes all libraries, including those not part of the API project.
+> **Note**: The initial code coverage might be lower than expected. For example, you might see an overall coverage of 23.89%, even though the API component itself has 88.14% coverage. This discrepancy occurs because the coverage report includes all libraries, those not part of the API project.
 
 ### Improving Code Coverage Reports
 
@@ -512,9 +512,8 @@ To generate a more meaningful code coverage report, We can configure it to inclu
               arguments: '--configuration $(BuildConfiguration) --settings coverage.runsettings --collect "XPlat Code Coverage"'
 
           # Publish the code coverage results to Azure DevOps
-          - task: PublishCodeCoverageResults@1
+          - task: PublishCodeCoverageResults@2
             inputs:
-              codeCoverageTool: 'cobertura'
               summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
 ```
 
@@ -533,9 +532,7 @@ To generate a more meaningful code coverage report, We can configure it to inclu
 
 ## Conclusion
 
-By utilizing .NET Aspire and Docker, we can create a consistent, isolated environment that streamlines not just Entity Framework integration testing but the entire development lifecycle. .NET Aspire offers a flexible framework with powerful orchestration capabilities, making it easier to manage dependencies and mirror the development environments locally.
-
-Integrating the tests into an Azure DevOps pipeline automates validation, ensuring our code remains robust and error-free. This automation allows the team to focus on writing meaningful, high-quality code, reducing time spent on infrastructure management and setup. With .NET Aspire.
+By utilizing .NET Aspire and Docker, we can create a consistent, isolated environment that streamlines not just Entity Framework integration testing but the entire development lifecycle. .NET Aspire offers a flexible to `config as code` and sharing `ready-to-run` environment to all the development teams.
 
 ---
 
