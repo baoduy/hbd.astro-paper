@@ -14,7 +14,7 @@ tags:
   - tls
 ogImage: ""
 description:
-  we explore the concept of using a Cert-Manager Alternative with Cloudflare to implement free SSL Certificates for Kubernetes clusters.
+  We explore the concept of using a Cert-Manager Alternative with Cloudflare to implement free SSL Certificates for Kubernetes clusters.
   This strategy leverages Cloudflare SSL certificates conjunction with the Kubernetes setup to provide a secure environment, replacing the need of Cert-Manager.
   Discover how this approach simplifies the process, and enhances the security of our Kubernetes clusters.
 ---
