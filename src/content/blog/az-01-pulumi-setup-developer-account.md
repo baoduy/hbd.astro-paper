@@ -2,14 +2,14 @@
 author: Steven Hoang
 pubDatetime: 2025-01-01T12:00:00Z
 title: "[Az] Day 01: Setup pulumi developer account"
-postSlug: az-01-pulumi-setup-developer-account
 featured: false
 draft: false
 tags:
   - aks
   - private
   - pulumi
-description: "A comprehensive guide on how to set up a Pulumi developer account and deploy Azure resources using Infrastructure as Code (IaC) via Pulumi. It walks users through the setup process from account creation to deploying Azure Resources using Pulumi and TypeScript."
+description: "A guide on how to set up a Pulumi developer account and deploy Azure resources using Infrastructure as Code (IaC) via Pulumi. 
+It walks users through the setup process from account creation to deploying Azure Resources using Pulumi and TypeScript."
 ---
 
 # Introduction
@@ -94,7 +94,7 @@ If you'd like to manage your projects under a separate organization:
    - Click on **"Create Organization"**.
    - Follow the prompts to set up your organization.
 
-![Pulumi Account](/assets/az00-pulumi-setup-developer-account/pulumi-account.png)
+![Pulumi Account](/assets/az-01-pulumi-setup-developer-account/pulumi-account.png)
 
 ---
 
@@ -309,7 +309,7 @@ After deployment, you can verify the resources in the Azure Portal:
 - Navigate to **Resource Groups** and locate your newly created resource group.
 - Verify that the Storage Account is present within the resource group.
 
-![Azure Resources](/assets/az00-pulumi-setup-developer-account/az-resources.png)
+![Azure Resources](/assets/az-01-pulumi-setup-developer-account/az-resources.png)
 
 ---
 
@@ -366,9 +366,9 @@ Pulumi simplifies cloud resource management by allowing you to use familiar prog
 
 ## Next Steps
 
-- **Day 1: Create a Virtual Network Hub on Azure**
+**[Day 02: Private Aks Environment Architecture.](/posts/az-02-private-ask-env-architecture)**
 
-  Continue your Pulumi journey by setting up a virtual network hub, adding virtual machines, or deploying Azure Functions.
+Continue your Pulumi journey by setting up a virtual network hub, adding virtual machines, or deploying Azure Functions.
 
 ---
 

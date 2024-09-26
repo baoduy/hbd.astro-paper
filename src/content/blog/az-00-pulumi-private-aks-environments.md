@@ -2,7 +2,6 @@
 author: Steven Hoang
 pubDatetime: 2025-01-01T12:00:00Z
 title: "[Az] A Comprehensive Series of Articles on Setting Up a Private AKS Environment on Azure with Pulumi"
-postSlug: az-00-pulumi-series-aks-private-env-pulumi
 featured: true
 draft: false
 tags:
