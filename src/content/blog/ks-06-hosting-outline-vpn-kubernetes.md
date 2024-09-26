@@ -2,7 +2,6 @@
 author: Steven Hoang
 pubDatetime: 2023-10-05T00:00:00Z
 title: "[k8s] Step-By-Step Guide: Hosting Outline VPN on Kubernetes"
-postSlug: ks-hosting-outline-vpn-kubernetes
 featured: false
 draft: false
 tags:

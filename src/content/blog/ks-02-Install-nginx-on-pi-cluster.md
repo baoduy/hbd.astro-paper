@@ -2,7 +2,6 @@
 author: Steven Hoang
 pubDatetime: 2023-09-16T00:00:00Z
 title: "[k8s] Step-By-Step Guide: Installing Nginx Ingress on K3s Pi 4 Cluster"
-postSlug: ks-install-nginx-on-k3s-raspberry-pi-cluster
 featured: false
 draft: false
 tags:
@@ -36,6 +35,8 @@ Please note, the configuration interface may vary among different routers. Nonet
 Here are my current router settings.
 
 <img src="/assets/ks-Install-nginx-on-pi-cluster/router-port-forwarding-config.png" width="550px"/>
+
+---
 
 ### Nginx installation
 

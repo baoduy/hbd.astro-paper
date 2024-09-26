@@ -2,7 +2,7 @@
 author: Steven Hoang
 pubDatetime: 2025-01-01T12:00:00Z
 title: "[Az] A Comprehensive Series of Articles on Setting Up a Private AKS Environment on Azure with Pulumi"
-postSlug: az-pulumi-series-aks-private-env-pulumi
+postSlug: az-00-pulumi-series-aks-private-env-pulumi
 featured: true
 draft: false
 tags:
@@ -22,20 +22,20 @@ and Private CloudPC environment and How to expose some public applications throu
 
 ## Pulumi Account Setup
 
-### [Day 1: Setup pulumi account and project](/posts/az00-pulumi-setup-developer-account)
+### [Day 01: Setup pulumi account and project](/posts/az-01-pulumi-setup-developer-account)
 
 Start your cloud journey with Pulumi by setting up your developer account and deploying your first Azure resources.
 This guide walks you through creating a Pulumi account, installing the necessary CLI tools, and using TypeScript to manage Azure infrastructure as code.
 
 ## Private AKS Environments
 
-## Azure DevOps Private Agent
+## Azure DevOps Private Agent and Pipeline
 
 ## Public Apps with Cloudflare Tunnels
 
 ## CloudPC environment (Windows 365 enterprise)
 
-## Remove Development Environments
+## Remote Development Environments with Intune (MDM) and Cloudflare
 
 ## Conclusions
 
