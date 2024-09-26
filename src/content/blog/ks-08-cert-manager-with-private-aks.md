@@ -2,7 +2,6 @@
 author: Steven Hoang
 pubDatetime: 2024-08-15T00:00:00Z
 title: "[AKS] Implementing Cert Manager with Private Azure Kubernetes Service (AKS)."
-postSlug: aks-cert-manager-with-private-aks
 featured: false
 draft: false
 tags:

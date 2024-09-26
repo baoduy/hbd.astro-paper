@@ -2,7 +2,6 @@
 author: Steven Hoang
 pubDatetime: 2023-09-15T00:00:00Z
 title: "[k8s] Step-By-Step Guide: Installing K3s on a Raspberry Pi 4 Cluster"
-postSlug: ks-install-k3s-on-raspberry-pi-cluster
 featured: false
 draft: false
 tags:
@@ -32,6 +31,8 @@ The table below outlines the specific IP configuration for each of the nodes in 
 ![IP Table Diagram](/assets/ks-Install-k3s-on-pi-cluster/ip-table.png)
 
 I will pick the Pi running at 192.168.1.85 as my master mode and start the installation as below instructions.
+
+---
 
 ## K3s Installation
 

@@ -2,7 +2,7 @@
 author: Steven Hoang
 pubDatetime: 2025-01-01T12:00:00Z
 title: "[Az] Day 01: Setup pulumi developer account"
-postSlug: az-pulumi-setup-developer-account
+postSlug: az-01-pulumi-setup-developer-account
 featured: false
 draft: false
 tags:
