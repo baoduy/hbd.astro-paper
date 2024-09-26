@@ -1,6 +1,6 @@
 ---
 author: Steven Hoang
-pubDatetime: 2024-09-26T12:00:00Z
+pubDatetime: 2024-09-25T12:00:00Z
 title: "[K8s] A Complete Series of Articles on Kubernetes Environment Locally"
 featured: true
 draft: false
