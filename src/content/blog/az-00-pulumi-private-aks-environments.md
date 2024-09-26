@@ -20,13 +20,9 @@ and Private CloudPC environment and How to expose some public applications throu
 
 ---
 
-## Table of Contents
-
----
-
 ## Pulumi Account Setup
 
-### [Day 0: Setup pulumi account and project](/posts/az00-pulumi-setup-developer-account)
+### [Day 1: Setup pulumi account and project](/posts/az00-pulumi-setup-developer-account)
 
 Start your cloud journey with Pulumi by setting up your developer account and deploying your first Azure resources.
 This guide walks you through creating a Pulumi account, installing the necessary CLI tools, and using TypeScript to manage Azure infrastructure as code.

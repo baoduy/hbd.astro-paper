@@ -1,7 +1,7 @@
 ---
 author: Steven Hoang
 pubDatetime: 2024-08-22T12:00:00Z
-title: "[.NET] Simplifying Local Development Environment and Testing with .NET Aspire."
+title: "[.NET] Aspire, Simplifying Local Development Environment and Testing."
 postSlug: dotnet-04-aspire-local-env-and-testing
 featured: true
 draft: false
@@ -352,7 +352,7 @@ The `ProductEndpointsTests` class is responsible for testing the CRUD of the pro
 
 > **Note:** Postgres connection issues may arise when running multiple sets of test cases in parallel. In such cases, instead of using `IClassFixture<>`, consider using [`IAssemblyFixture`](https://github.com/JDCain/Xunit.Extensions.AssemblyFixture). This approach ensures that only a single instance of `DistributedApplication` is created for the entire test suite.
 
- ### Testing Results
+### Testing Results
 
 Here are the reports on Azure DevOps after the pipeline ran successfully.
 
@@ -406,31 +406,31 @@ stages:
         steps:
           # Use the correct .NET SDK version
           - task: UseDotNet@2
-            displayName: 'Use .NET SDK 8.x'
+            displayName: "Use .NET SDK 8.x"
             inputs:
-              packageType: 'sdk'
-              version: '8.x'
+              packageType: "sdk"
+              version: "8.x"
 
           # Install the necessary .NET workload
           - task: Bash@3
-            displayName: 'Install Aspire Workload'
+            displayName: "Install Aspire Workload"
             inputs:
               targetType: "inline"
               script: "dotnet workload install aspire"
 
           # Build the project
           - task: DotNetCoreCLI@2
-            displayName: 'Build Project'
+            displayName: "Build Project"
             inputs:
-              command: 'build'
+              command: "build"
               projects: $(RestoreBuildProjects)
               arguments: -c $(BuildConfiguration)
 
           # Run tests and collect code coverage
           - task: DotNetCoreCLI@2
-            displayName: 'Run Tests and Collect Coverage'
+            displayName: "Run Tests and Collect Coverage"
             inputs:
-              command: 'test'
+              command: "test"
               projects: "$(TestProjects)"
               arguments: '--configuration $(BuildConfiguration) --collect "Code Coverage"'
 ```
@@ -442,7 +442,7 @@ stages:
 - **Build Projects**: Builds all the projects specified by the `RestoreBuildProjects` variable.
 - **Run Tests and Collect Code Coverage**: Executes the tests in the projects specified by the `TestProjects` variable and collects code coverage data.
 
-*Note*: Ensure that the YAML file includes the `UseDotNet@2` task to specify the required .NET SDK version.
+_Note_: Ensure that the YAML file includes the `UseDotNet@2` task to specify the required .NET SDK version.
 
 ### Running the Pipeline
 
@@ -503,18 +503,18 @@ To generate a more meaningful code coverage report, We can configure it to inclu
 ```yaml
 # ... previous configuration ...
 
-          # Run tests with coverage filtering
-          - task: DotNetCoreCLI@2
-            displayName: 'Test with Coverage Filtering'
-            inputs:
-              command: 'test'
-              projects: "$(TestProjects)"
-              arguments: '--configuration $(BuildConfiguration) --settings coverage.runsettings --collect "XPlat Code Coverage"'
+# Run tests with coverage filtering
+- task: DotNetCoreCLI@2
+  displayName: "Test with Coverage Filtering"
+  inputs:
+    command: "test"
+    projects: "$(TestProjects)"
+    arguments: '--configuration $(BuildConfiguration) --settings coverage.runsettings --collect "XPlat Code Coverage"'
 
-          # Publish the code coverage results to Azure DevOps
-          - task: PublishCodeCoverageResults@2
-            inputs:
-              summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
+# Publish the code coverage results to Azure DevOps
+- task: PublishCodeCoverageResults@2
+  inputs:
+    summaryFileLocation: "$(Agent.TempDirectory)/**/coverage.cobertura.xml"
 ```
 
 **Explanation**:
@@ -546,7 +546,7 @@ By utilizing .NET Aspire and Docker, we can create a consistent, isolated enviro
 
 ## Thank You
 
-Thank  for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
+Thank for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
 
 **Steven**
 [GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)
