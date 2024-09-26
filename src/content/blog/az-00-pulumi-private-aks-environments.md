@@ -28,6 +28,11 @@ This guide walks you through creating a Pulumi account, installing the necessary
 
 ## Private AKS Environments
 
+### [Day 02: Private AKS Environment Architecture.](/posts/az-02-private-ask-env-architecture)
+
+This post explains a the architecture of private AKS that we are going to setup on Azure, leveraging multiple subnets, Azure Firewall, and other essential cloud services.
+This architecture ensures that sensitive workloads remain isolated and protected from public internet exposure.
+
 ## Azure DevOps Private Agent and Pipeline
 
 ## Public Apps with Cloudflare Tunnels
