@@ -362,6 +362,8 @@ Congratulations! You've successfully:
 
 Pulumi simplifies cloud resource management by allowing you to use familiar programming languages and tools. You can now explore adding more complex resources and configurations to your project.
 
+- [Refer here for the source code](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/day-0/day00_pulumi-azure-start/README.md#day-0)
+
 ---
 
 ## Next Steps
