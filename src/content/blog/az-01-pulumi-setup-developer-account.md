@@ -366,9 +366,10 @@ Pulumi simplifies cloud resource management by allowing you to use familiar prog
 
 ## Next Steps
 
-**[Day 02: Private Aks Environment Architecture.](/posts/az-02-private-ask-env-architecture)**
+**[Day 02: Private Aks Environment Architecture.](/posts/az-02-pulumi-private-ask-env-architecture)**
 
-Continue your Pulumi journey by setting up a virtual network hub, adding virtual machines, or deploying Azure Functions.
+This post explains a the architecture of private AKS that we are going to setup on Azure, leveraging multiple subnets, Azure Firewall, and other essential cloud services.
+This architecture ensures that sensitive workloads remain isolated and protected from public internet exposure.
 
 ---
 

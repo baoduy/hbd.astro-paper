@@ -39,6 +39,8 @@ To address the challenge, I implemented the following approach:
 
 2. **Internal DNS Configuration on Azure:** Internally, I created a private DNS Zone in Azure with the same name (`drunk.dev`) and linked this zone to both the CloudPC and AKS VNETs. This setup is critical as it ensures that internal DNS queries for the `drunk.dev` domain are resolved correctly within the private network, facilitating secure communication between services.
 
+---
+
 ### **Installation**
 
 1. **Create a Cloudflare DNS API Token:**  
@@ -132,6 +134,8 @@ Here’s what needs to allow in the Firewall rules:
 
 - Allow outbound access to `api.cloudflare.com` on port `443`.
 - Allow outbound access to `*.api.letsencrypt.org` on port `443`.
+
+---
 
 ## Nginx Ingress Installation
 
@@ -234,6 +238,8 @@ spec:
 - `annotations`: The force-ssl-redirect: 'true' annotation ensures that all HTTP traffic is redirected to HTTPS, securing the communication.
 
 Once the Ingress resource is created, Cert Manager will automatically issue a TLS certificate for `blogs.drunk.dev` and bind it to the Ingress. The certificate will be monitored and automatically renewed by Cert Manager before expiration, ensuring continuous security without manual intervention.
+
+---
 
 ### Conclusion
 

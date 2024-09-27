@@ -20,6 +20,12 @@ This post explains a the architecture of private AKS that we are going to setup 
 ![Private AKS Environment Architecture Diagram](/assets/az-02-private-ask-env-architecture/private-aks.png)
 _(Download original draw.io file <a href="/assets/az-02-private-ask-env-architecture/private-aks.drawio" download>here</a> )_
 
+---
+
+## Table of Contents
+
+---
+
 ## Key Components
 
 This architecture includes the following major components:
@@ -114,9 +120,7 @@ By carefully designing your network architecture with security in mind, you can 
 
 ## Next Steps
 
-- **Day 03: Create a Virtual Network Hub on Azure**
-
-  In the next post, we'll dive into creating the virtual network hub on Azure using Pulumi, setting the foundation for deploying our secure AKS environment.
+- **[Day 03: Develop a Virtual Network Hub for Private AKS on Azure](/posts/az-03-pulumi-private-aks-hub-vnet-development)**
 
 ---
 
