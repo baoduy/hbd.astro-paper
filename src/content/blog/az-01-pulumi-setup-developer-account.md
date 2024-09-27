@@ -168,7 +168,7 @@ You'll be prompted to provide:
 - **Project name**: Accept the default or enter a custom name.
 - **Project description**: (Optional)
 - **Stack name**: e.g., `dev`
-- **Package manager**: Choose your preferred package manager (e.g., `npm`, `yarn`, `pnpm`).
+- **Package manager**: Choose your preferred package manager (e.g., `npm`, `yarn`, `pnpm`). Here I will pick `pnpm`.
 - **Azure location**: e.g., `SoutheastAsia`
 
 After the project is created, if you are using your own account for development then ensure you're logged into Azure:
@@ -186,6 +186,8 @@ No     Subscription name    Subscription ID                       Tenant
 [1] *  DrunkCoding          54dbd16b-81cd-yyyy-xxxx-xxxyyyzzz000  DrunkCoding
 
 ```
+
+> Note: Pulumi now supports multiple package managers, including `npm`, `yarn`, and `pnpm`. For consistency, I will be using `pnpm` across all Pulumi projects.
 
 ---
 
