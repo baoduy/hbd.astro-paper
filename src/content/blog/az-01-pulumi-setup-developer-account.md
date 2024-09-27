@@ -245,12 +245,8 @@ Before deploying, preview the changes to ensure everything is set up correctly:
 
 ```bash
 pulumi up
-```
 
-**Sample Output:**
-
-```bash
-> pulumi up
+# Sample Output
 Previewing update (dev)
 
 View in Browser (Ctrl+O): https://app.pulumi.com/drunkcoding/day00_pulumi-azure-start/dev/previews/xxxxxxxx-1f60-4ed9-bb35-xxxxxxxxxxxx
@@ -280,11 +276,8 @@ Deploy your resources to Azure:
 
 ```bash
 pulumi up -y
-```
 
-**Sample Output:**
-
-```bash
+# Sample Output
 Updating (dev)
 
 View Live: https://app.pulumi.com/YOUR_ORGANIZATION/day00_pulumi-azure-start/dev/updates/1
@@ -320,15 +313,9 @@ After deployment, you can verify the resources in the Azure Portal:
 To avoid incurring unnecessary costs, destroy the resources when they're no longer needed:
 
 ```bash
-pulumi destroy
-```
+pulumi destroy -y
 
-- Review the resources scheduled for deletion.
-- Type `yes` when prompted to confirm.
-
-**Sample Output:**
-
-```bash
+# Sample Output
 Destroying (dev)
 
 View Live: https://app.pulumi.com/YOUR_ORGANIZATION/day00_pulumi-azure-start/dev/updates/2
