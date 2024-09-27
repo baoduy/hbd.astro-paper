@@ -37,13 +37,14 @@ This architecture includes the following major components:
 
 ## Summary of Allocated Subnets
 
-| VNet Name        | Subnet Name     | Address Prefix      | IP Range                          | Total Addresses | Usable Addresses |
-| ---------------- | --------------- | ------------------- | --------------------------------- | --------------- | ---------------- |
-| **Hub VNet**     | Firewall Subnet | `192.168.30.0/26`   | `192.168.30.0 - 192.168.30.63`    | 64              | 59               |
-|                  | General Subnet  | `192.168.30.64/27`  | `192.168.30.64 - 192.168.30.95`   | 32              | 27               |
-| **AKS VNet**     | AKS Subnet      | `192.168.31.0/24`   | `192.168.31.0 - 192.168.31.255`   | 256             | 251              |
-| **CloudPC VNet** | CloudPC Subnet  | `192.168.32.0/25`   | `192.168.32.0 - 192.168.32.127`   | 128             | 123              |
-|                  | DevOps Subnet   | `192.168.32.128/27` | `192.168.32.128 - 192.168.32.159` | 32              | 27               |
+| VNet Name                                          | Subnet Name                | Address Prefix      | IP Range                          | Total Addresses | Usable Addresses |
+| -------------------------------------------------- | -------------------------- | ------------------- | --------------------------------- | --------------- | ---------------- |
+| <span style="color:yellow">**Hub VNet**</span>     | Firewall Subnet            | `192.168.30.0/26`   | `192.168.30.0 - 192.168.30.63`    | 64              | 59               |
+|                                                    | Firewall Management Subnet | `192.168.30.64/26`  | `192.168.30.64 - 192.168.30.95`   | 54              | 59               |
+|                                                    | General Subnet             | `192.168.30.128/27` | `192.168.30.96 - 192.168.30.159`  | 32              | 27               |
+| <span style="color:yellow">**AKS VNet**</span>     | AKS Subnet                 | `192.168.31.0/24`   | `192.168.31.0 - 192.168.31.255`   | 256             | 251              |
+| <span style="color:yellow">**CloudPC VNet**</span> | CloudPC Subnet             | `192.168.32.0/25`   | `192.168.32.0 - 192.168.32.127`   | 128             | 123              |
+|                                                    | DevOps Subnet              | `192.168.32.128/27` | `192.168.32.128 - 192.168.32.159` | 32              | 27               |
 
 > **Note**: Adjust the address space according to your environment, as this is intended for demonstration purposes.
 
@@ -53,7 +54,8 @@ This architecture includes the following major components:
 
 ### Azure Firewall: Securing External Access
 
-At the core of the security setup is **Azure Firewall**, deployed in the **Firewall Subnet** (`192.168.30.0/26`). This firewall is configured with a **public IP address** and acts as the only entry and exit point for internet traffic.
+At the core of the security setup is **Azure Firewall**, deployed in the **Firewall Subnet** (`192.168.30.0/26`) and **Firewall Management Subnet** (`192.168.30.64/26`).
+This firewall is configured with a **public IP address** and acts as the only entry and exit point for internet traffic.
 
 - **Outbound Traffic Control**: The Azure Firewall inspects all outgoing traffic, ensuring that only authorized connections reach external resources. Firewall rules are set to allow specific outbound traffic, such as to approved IP ranges or specific services.
 - **No Inbound NAT Rules**: In this setup, inbound Network Address Translation (NAT) rules are not configured. This means unsolicited inbound traffic from the internet is blocked, enhancing the security posture.
@@ -61,7 +63,7 @@ At the core of the security setup is **Azure Firewall**, deployed in the **Firew
 
 ### General Subnet: Supporting Infrastructure Services
 
-The **General Subnet** (`192.168.30.64/27`) hosts essential infrastructure services required for application operations. This subnet is entirely internal, with no public access allowed. It contains the following services:
+The **General Subnet** (`192.168.30.128/27`) hosts essential infrastructure services required for application operations. This subnet is entirely internal, with no public access allowed. It contains the following services:
 
 - **Azure Key Vault**: Securely stores secrets, keys, and certificates. Accessed via private endpoints to prevent public exposure.
 - **Azure Storage Account**: Handles persistent storage for applications and workloads. Uses private endpoints for secure communication.
@@ -115,6 +117,10 @@ The environment is built on a **hub-and-spoke** model, with Azure Firewall actin
 ## Conclusion
 
 By carefully designing your network architecture with security in mind, you can leverage the full power of Azure services while keeping your workloads safe from external threats. This private AKS environment provides a secure, scalable, and flexible foundation for running containerized applications.
+
+## References
+
+- [Use Azure Firewall to help protect an Azure Kubernetes Service (AKS) cluster](https://learn.microsoft.com/en-us/azure/architecture/guide/aks/aks-firewall)
 
 ---
 
