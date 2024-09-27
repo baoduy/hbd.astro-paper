@@ -17,8 +17,8 @@ In today's cloud-centric world, security is paramount. By default, many cloud se
 
 This post explains a the architecture of private AKS that we are going to setup on Azure, leveraging multiple subnets, Azure Firewall, and other essential cloud services. This architecture ensures that sensitive workloads remain isolated and protected from public internet exposure.
 
-![Private AKS Environment Architecture Diagram](/assets/az-02-private-ask-env-architecture/private-aks.png)
-_(Download original draw.io file <a href="/assets/az-02-private-ask-env-architecture/private-aks.drawio" download>here</a> )_
+![Private AKS Environment Architecture Diagram](/assets/az-02-pulumi-private-ask-env-architecture/private-aks.png)
+_(Download original draw.io file <a href="/assets/az-02-pulumi-private-ask-env-architecture/private-aks.drawio" download>here</a> )_
 
 ---
 
