@@ -117,8 +117,11 @@ The `stackEnv` module provides functions to retrieve Pulumi stack environment co
 - **Organization**: The Pulumi organization name.
 - **Project Name**: The name of the Pulumi project.
 - **Stack**: The name of the Pulumi stack.
+- **StackReference**: This helper function ensures that a project correctly references stacks within the same organization and environment.
+  For example, the `dev` stack of project `az-02-hub-vnet` will reference the `dev` stack of project `az-01-shared`.
+  This mechanism prevents cross-environment resource referencing, ensuring that resources from different environments (e.g., dev and prod) are kept isolated and properly aligned within the intended environment.
 
-> For more details, please refer to the [source code here](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-commons/README.md).
+  > For more details, please refer to the [source code here](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-commons/README.md).
 
 ---
 
