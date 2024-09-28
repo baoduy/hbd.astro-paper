@@ -55,22 +55,29 @@ This architecture includes the following major components:
 ### Azure Firewall: Securing External Access
 
 At the core of the security setup is **Azure Firewall**, deployed in the **Firewall Subnet** (`192.168.30.0/26`) and **Firewall Management Subnet** (`192.168.30.64/26`).
-This firewall is configured with a **public IP address** and acts as the only entry and exit point for internet traffic.
+This firewall is configured with a **public IP address** and acts as the only exit point for internet traffic.
 
-- **Outbound Traffic Control**: The Azure Firewall inspects all outgoing traffic, ensuring that only authorized connections reach external resources. Firewall rules are set to allow specific outbound traffic, such as to approved IP ranges or specific services.
-- **No Inbound NAT Rules**: In this setup, inbound Network Address Translation (NAT) rules are not configured. This means unsolicited inbound traffic from the internet is blocked, enhancing the security posture.
-- **Network Traffic Control**: The Azure Firewall prevents direct access to the AKS cluster and other resources within the virtual network. All traffic is tightly controlled, and only legitimate internal traffic can interact with the resources.
+- **Outbound Traffic Control**: The Azure Firewall inspects all outgoing (internal) traffic, ensuring that only authorized connections reach destination resources.
+  Firewall rules are set to allow specific outbound traffic, such as to approved IP ranges or specific services.
+- **No Inbound NAT Rules**: In this setup, inbound Network Address Translation (NAT) rules are not configured.
+  This means unsolicited inbound traffic from the internet is blocked, enhancing the security posture.
+- **Network Traffic Control**: The Azure Firewall prevents direct access to the AKS cluster and other resources within the virtual network.
+  All traffic is tightly controlled, and only legitimate internal traffic can interact with the resources.
 
 ### General Subnet: Supporting Infrastructure Services
 
-The **General Subnet** (`192.168.30.128/27`) hosts essential infrastructure services required for application operations. This subnet is entirely internal, with no public access allowed. It contains the following services:
+The **General Subnet** (`192.168.30.128/27`) this is dedicated subnet for private link Azure resources, hosts essential infrastructure services required for application operations.
+This subnet is entirely internal, with no public access allowed.
 
-- **Azure Key Vault**: Securely stores secrets, keys, and certificates. Accessed via private endpoints to prevent public exposure.
-- **Azure Storage Account**: Handles persistent storage for applications and workloads. Uses private endpoints for secure communication.
-- **Database Services**: Managed database services like Azure SQL Database or Cosmos DB. Accessed securely within the virtual network.
-- **Azure Service Bus**: Manages communication between different components, allowing for decoupled and scalable messaging.
+Below are some widely-used Azure services commonly deployed in secure environments:
 
-Each service in this subnet communicates with other components, such as the AKS cluster and VMs, through private endpoints, enhancing security by eliminating public exposure.
+- **Azure Key Vault**: Stores secrets, encryption keys, and certificates securely, accessed exclusively through private endpoints to prevent public exposure.
+- **Azure Storage Account**: Provides persistent storage for applications and workloads, using private endpoints to ensure secure, internal-only communication.
+- **Database Services**: Includes managed databases like Azure SQL Database or Cosmos DB, which operate securely within the virtual network, accessible only via private connections.
+- **Azure Service Bus (Premium Tier)**: Facilitates communication between services, enabling decoupled and scalable messaging while maintaining security with private endpoints.
+- **Other Azure Services**: Most Azure services support private links. In private environments, all resources are configured to remain as isolated and private as possible.
+
+Each of these services communicates internally with components like the AKS cluster and virtual machines through private endpoints, significantly enhancing security by preventing any direct public exposure.
 
 ### AKS Subnet: Hosting the Kubernetes Cluster
 
@@ -127,7 +134,10 @@ By carefully designing your network architecture with security in mind, you can 
 
 ## Next Steps
 
-- **[Day 03: Develop a Virtual Network Hub for Private AKS on Azure](/posts/az-03-pulumi-private-aks-hub-vnet-development)**
+**[Day 03: Develop a Virtual Network Hub for Private AKS on Azure](/posts/az-03-pulumi-private-aks-hub-vnet-development)**
+
+In this post, We're going to dive into hands-on coding for the first Hub VNet (VNet) for our private AKS environment.
+We'll walk through each step together, so even if you're new to this, you'll be able to follow along and get your environment up and running on Azure.
 
 ---
 

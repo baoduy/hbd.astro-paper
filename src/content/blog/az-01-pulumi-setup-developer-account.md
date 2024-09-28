@@ -14,7 +14,8 @@ It walks users through the setup process from account creation to deploying Azur
 
 # Introduction
 
-Pulumi is an open-source Infrastructure as Code (IaC) tool that enables developers to define cloud resources using familiar programming languages like TypeScript, Python, Go, and C#. By leveraging the full power of these languages—including loops, conditionals, and functions—you can efficiently manage your infrastructure.
+Pulumi is an open-source Infrastructure as Code (IaC) tool that enables developers to define cloud resources using familiar programming languages like TypeScript, Python, Go, and C#.
+By leveraging the full power of these tool you can efficiently manage your infrastructure on Cloud (Azure, AWS, Google, ...).
 
 In this guide, we'll walk you through:
 
@@ -33,7 +34,6 @@ In this guide, we'll walk you through:
 ## Prerequisites
 
 - **Node.js** installed on your machine
-- **Azure CLI** installed and configured
 - An **Azure account** (you can [create a free account here](https://azure.microsoft.com/free/))
 
 ---
@@ -65,9 +65,9 @@ In this guide, we'll walk you through:
 
 A Personal Access Token (PAT) is required to authenticate the Pulumi CLI with your Pulumi account.
 
-1. **Log In to the Pulumi Console**
+1. **Log In to the Pulumi Dashboard**
 
-   Visit the [Pulumi Console](https://app.pulumi.com/) and log in with your credentials.
+   Visit the [Pulumi Dashboard](https://app.pulumi.com/) and log in with your credentials.
 
 2. **Access the Tokens Page**
 
@@ -106,9 +106,9 @@ Follow the instructions [here](https://www.pulumi.com/docs/get-started/install/)
 
 ### 2.2. Install the Azure CLI
 
-Install the Azure CLI by following the instructions [here](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli).
+Next, Install the Azure CLI by following the instructions [here](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli).
 
-**Here are the current versions**
+**Here are the current versions after installed them successfully.**
 
 ```bash
 > pulumi version
@@ -131,7 +131,7 @@ pulumi org set-default YOUR_PULUMI_ORGANIZATION
 # Configure Azure settings
 pulumi config set azure-native:tenantId YOUR_AZURE_TENANT_ID
 pulumi config set azure-native:subscriptionId YOUR_AZURE_SUBSCRIPTION_ID
-pulumi config set azure-native:location YOUR_AZURE_LOCATION  # e.g., EastUS
+pulumi config set azure-native:location YOUR_AZURE_LOCATION  # e.g., SoutheastAsia
 
 # Optional: If you're using a service principal for authentication
 pulumi config set azure-native:clientId YOUR_AZURE_CLIENT_ID
@@ -203,7 +203,7 @@ The template generates several files:
 - **package.json**: Node.js project metadata.
 - **tsconfig.json**: TypeScript compiler configuration.
 
-### 5.2: Review and Modify the Sample Code
+### 5.2: Review the Sample Code
 
 Open `index.ts` in your preferred code editor and review the sample code. It typically includes the creation of a Resource Group and a Storage Account.
 
@@ -234,6 +234,8 @@ const storageAccountKeys = storage.listStorageAccountKeysOutput({
 
 export const primaryStorageKey = storageAccountKeys.keys[0].value;
 ```
+
+> Not: Exporting the key here is just for demo purposes. In the real environment all the key, connection string and credentials should be store in the Key Vault instead.
 
 ---
 
