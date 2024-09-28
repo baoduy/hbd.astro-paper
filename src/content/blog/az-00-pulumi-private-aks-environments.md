@@ -33,7 +33,11 @@ This guide walks you through creating a Pulumi account, installing the necessary
 This post explains a the architecture of private AKS that we are going to setup on Azure, leveraging multiple subnets, Azure Firewall, and other essential cloud services.
 This architecture ensures that sensitive workloads remain isolated and protected from public internet exposure.
 
-### [Day 03: Develop a Virtual Network Hub for Private AKS on Azure](/post/az-03-pulumi-private-aks-hub-vnet-development)
+### [Day 03: Automating Secret Management and Centralized Log Monitoring on Azure](/posts/az-03-pulumi-private-ask-credential-log-management)
+
+In this guide, we’ll walk you through setting up a secure and scalable infrastructure on Azure by automating secret management using Azure Key Vault and centralized log monitoring with Log Analytics and Application Insights.
+
+### [Day 04: Develop a Virtual Network Hub for Private AKS on Azure](/posts/az-04-pulumi-private-aks-hub-vnet-development)
 
 In this post, We're going to dive into hands-on coding for the first Hub VNet (VNet) for our private AKS environment.
 We'll walk through each step together, so even if you're new to this, you'll be able to follow along and get your environment up and running on Azure.

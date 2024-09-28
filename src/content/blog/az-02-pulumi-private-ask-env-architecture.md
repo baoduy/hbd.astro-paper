@@ -134,12 +134,11 @@ By carefully designing your network architecture with security in mind, you can 
 
 ## Next Steps
 
-**[Day 03: Develop a Virtual Network Hub for Private AKS on Azure](/posts/az-03-pulumi-private-aks-hub-vnet-development)**
+**[Day 03: Automating Secret Management and Centralized Log Monitoring on Azure](/posts/az-03-pulumi-private-ask-credential-log-management)**
 
-In this post, We're going to dive into hands-on coding for the first Hub VNet (VNet) for our private AKS environment.
-We'll walk through each step together, so even if you're new to this, you'll be able to follow along and get your environment up and running on Azure.
+In this guide, we’ll walk you through setting up a secure and scalable infrastructure on Azure by automating secret management using Azure Key Vault and centralized log monitoring with Log Analytics and Application Insights.
 
----
+--
 
 ## Thank You
 
