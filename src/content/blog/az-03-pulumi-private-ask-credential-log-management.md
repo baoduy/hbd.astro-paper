@@ -13,40 +13,54 @@ description: "In this guide, we’ll walk you through setting up a secure and sc
 
 ## Introduction
 
-In this guide, we will demonstrate how to implement **secret management** across your entire environment using **Azure Key Vault** and **centralized log management** for all applications on Azure with **Log Analytics** and **Application Insights**. By automating the setup with Pulumi, you will create a secure and scalable foundation for managing sensitive information and monitoring application performance.
+In this guide, we will demonstrate how to implement **secret management** across our entire environment using **Azure Key Vault**, and establish **centralized log management** for all applications on Azure with **Log Analytics** and **Application Insights**.
+This approach ensures that sensitive data is securely stored, and application performance is monitored in real time.
 
-### Key Objectives:
+### Key Objectives
 
-1. **Secret Management for the Entire Environment**:
-   We’ll use **Azure Key Vault** to securely manage and store sensitive information like credentials, certificates, and secrets. This ensures consistent and secure access across all your applications and services.
-2. **Centralized Log Management for All Applications**:
-   By leveraging **Azure Log Analytics** and **Application Insights**, we’ll set up a centralized logging system that gathers and analyzes logs from all your applications. This will enable you to monitor performance, troubleshoot issues, and maintain operational insights across your environment.
+1. **Secret Management for the Entire Environment**  
+   We will use **Azure Key Vault** to securely manage and store sensitive information like credentials, certificates, and secrets. This ensures consistent and secure access across all our applications and services.
+
+2. **Centralized Log Management for All Applications**  
+   By leveraging **Azure Log Analytics** and **Application Insights**, we will set up a centralized logging system that gathers and analyzes logs from all our applications. This enables us to monitor performance, troubleshoot issues, and maintain operational insights across our environment.
 
 This tutorial is aimed at cloud architects and developers seeking to securely automate their infrastructure management using Infrastructure-as-Code (IaC) with Pulumi.
 
 ---
 
-## The Configuration
+## Table of Contents
 
-Before we start coding, it's important to define our configuration settings.
-This involves specifying resource names and subnet address spaces that we'll use throughout the project.
+---
 
-- **Resource Groups**: We categorize our resources into groups for better organization and management. We define three main resource groups:
+## Configuration
 
-  - **Shared Resource Group**: This is where our Key Vault and Logs components will reside.
-  - **Hub VNet Resource Group**: This is where our main VNet hub will reside.
-  - **AKS VNet Resource Group**: This group will contain resources specific to the AKS.
-  - **CloudPC VNet Resource Group**: This group is for resources related to virtual desktops or cloud PCs.
+Before we start coding, it's important to define our configuration settings. This involves specifying resource names and subnet address spaces that we'll use throughout the project.
 
-- **Subnet Address Spaces**: We allocate specific IP address ranges for different subnets within our VNet. This helps in segregating network traffic and applying network policies effectively. The subnets include:
-  - **Firewall Subnet**: Dedicated for the Azure Firewall.
-  - **Firewall Management Subnet**: Used for managing the firewall.
-  - **General Subnet**: A general-purpose subnet for various resources.
-  - **AKS Subnet**: Specifically for the AKS cluster.
-  - **CloudPC Subnet**: For virtual desktop instances.
-  - **DevOps Subnet**: For resources related to DevOps activities.
+### Resource Groups
 
-Here is our `config.ts` file at the root folder of the projects
+We categorize our resources into groups for better organization and management:
+
+| Resource Group                  | Description                                             |
+| ------------------------------- | ------------------------------------------------------- |
+| **Shared Resource Group**       | Where our Key Vault and logging components reside.      |
+| **Hub VNet Resource Group**     | Contains our main VNet hub.                             |
+| **AKS VNet Resource Group**     | Contains resources specific to the AKS cluster.         |
+| **CloudPC VNet Resource Group** | For resources related to virtual desktops or cloud PCs. |
+
+### Subnet IP Address Spaces
+
+We allocate specific IP address ranges for different subnets within our VNet to segregate network traffic and apply network policies effectively.
+
+| Subnet                         | IP Address Range    | Description                                   |
+| ------------------------------ | ------------------- | --------------------------------------------- |
+| **Firewall Subnet**            | `192.168.30.0/26`   | Dedicated for the Azure Firewall.             |
+| **Firewall Management Subnet** | `192.168.30.64/26`  | Used for managing the firewall.               |
+| **General Subnet**             | `192.168.30.128/27` | General-purpose subnet for various resources. |
+| **AKS Subnet**                 | `192.168.31.0/24`   | Specifically for the AKS cluster.             |
+| **CloudPC Subnet**             | `192.168.32.0/25`   | For virtual desktop instances.                |
+| **DevOps Subnet**              | `192.168.32.128/27` | For resources related to DevOps activities.   |
+
+Here is our `config.ts` file at the root folder of the project:
 
 ```typescript
 export const azGroups = {
@@ -71,7 +85,7 @@ export const subnetSpaces = {
 };
 ```
 
-> **Note:** Adding a number as a prefix to the Azure resource group names just helps keep them sorted in sequence and making them easier to find and navigate.
+> **Note:** Adding a number as a prefix to the Azure resource group names helps keep them sorted in sequence, making them easier to find and navigate.
 
 ---
 
@@ -79,42 +93,61 @@ export const subnetSpaces = {
 
 To promote code reusability and maintainability, we create a common project named `az-commons`. This project contains utilities and helper functions that we'll use across all our Pulumi projects.
 
-### The `azEnv` module
+### The `azEnv` Module
 
-- **Purpose**: The `azEnv` module provides functions to retrieve Azure environment configurations.
-- **Key Components**:
-  - **Tenant ID**: Identifies the Azure Active Directory (AAD) tenant.
-  - **Subscription ID**: Identifies the Azure subscription where resources will be deployed.
-  - **Current Principal**: The object ID of the user or service principal executing the scripts.
-  - **Region Code**: Specifies the Azure region, defaulting to "SoutheastAsia" if not explicitly set.
+The `azEnv` module provides functions to retrieve Azure environment configurations:
 
-### The `naming` module
+- **Tenant ID**: Identifies the Azure Active Directory (Azure AD) tenant.
+- **Subscription ID**: Identifies the Azure subscription where resources will be deployed.
+- **Current Principal**: The object ID of the user or service principal executing the scripts.
+- **Region Code**: Specifies the Azure region, defaulting to `"SoutheastAsia"` if not explicitly set.
 
-- **Purpose**: The `naming` module helps generate resource names with a consistent prefix based on the Pulumi stack name.
-- **Key Functions**:
-  - **getGroupName**: Prepends the stack name to a resource group name.
-  - **getName**: Generates a resource name with an optional suffix.
+### The `naming` Module
 
-### The `stackEnv` module
+The `naming` module helps generate resource names with a consistent prefix based on the Pulumi stack name:
 
-- **Purpose**: The `stackEnv` module provides functions to retrieve Pulumi stack environment configurations.
-- **Key Components**:
-  - **isDryRun**: Indicates whether the current execution is a dry run (preview) or an actual deployment.
-  - **Organization**: The Pulumi organization name.
-  - **Project Name**: The name of the Pulumi project.
-  - **Stack**: The name of the Pulumi stack.
+- **`getGroupName`**: Prepends the stack name to a resource group name.
+- **`getName`**: Generates a resource name with an optional suffix.
 
-> For more details, please can refer to the [source code here](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-commons/README.md).
+### The `stackEnv` Module
+
+The `stackEnv` module provides functions to retrieve Pulumi stack environment configurations:
+
+- **`isDryRun`**: Indicates whether the current execution is a dry run (preview) or an actual deployment.
+- **Organization**: The Pulumi organization name.
+- **Project Name**: The name of the Pulumi project.
+- **Stack**: The name of the Pulumi stack.
+
+> For more details, please refer to the [source code here](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-commons/README.md).
 
 ---
 
-## Creating `Shared` Project
+## Creating the `Shared` Project
 
-Following the instructions from [Day 01](/posts/az-01-pulumi-setup-developer-account), let's create a new project named `az-01-shared` with the following code:
+Following the instructions from [Day 01](/posts/az-01-pulumi-setup-developer-account), we create a new project named `az-01-shared`. This project will include the following components:
 
-### the `Vault` module
+### The `Vault` Module
 
-This script for deploying an Azure Key Vault with associated Azure EntraID group access control.
+The `Vault` module is responsible for deploying an Azure Key Vault with associated Azure Active Directory (Azure AD) group access control.
+
+**Key Components:**
+
+1. **Key Vault Creation**
+
+   We configure the Key Vault with:
+
+   - **RBAC Authorization**: `enableRbacAuthorization` set to `true`, requiring authentication through Azure AD.
+   - **Soft Delete Retention**: A retention period is set to ensure deleted secrets can be recovered within a specified number of days.
+   - **Deployment Settings**: Options like `enabledForDeployment` and `enabledForDiskEncryption` are enabled to allow integration with other Azure services.
+
+2. **Vault Roles Management**
+
+   To implement the principle of least privilege, we create two Azure AD groups:
+
+   - **Read-Only Group**: For read-only access to the Key Vault.
+   - **Write Group**: For write access to the Key Vault.
+
+   We assign specific roles to these groups, ensuring services or individuals accessing the vault only have the permissions they need.
 
 ```typescript
 import * as azure from "@pulumi/azure-native";
@@ -125,7 +158,7 @@ import { interpolate } from "@pulumi/pulumi";
 export default (
   name: string,
   {
-    //it should be 90 days or more in PRD
+    //it should be 90 days in PRD
     retentionInDays = 7,
     rsGroup,
   }: {
@@ -143,6 +176,7 @@ export default (
         softDeleteRetentionInDays: retentionInDays,
         //Must be authenticated with EntraID for accessing.
         enableRbacAuthorization: true,
+        //This is required when using vault for VM encryption
         enabledForDeployment: true,
         enabledForDiskEncryption: true,
 
@@ -251,42 +285,16 @@ export default (
 };
 ```
 
-### Key Components:
+### The `Log` Module
 
-1. **Key Vault Creation**:
+This module provisions an Azure Log Analytics workspace and an Application Insights instance. Optionally, it integrates with an Azure Key Vault for storing secrets.
 
-   - The module defines a default export function that accepts a `name` for the Key Vault and configuration options, particularly:
-     - `retentionInDays`: The number of days for which deleted secrets will be retained (defaults to 7 days).
-     - `rsGroup`: The Azure Resource Group where the Key Vault will reside.
+**Key Components:**
 
-2. **Vault Configuration**:
+1. **Workspace Setup**
 
-   - The Key Vault is configured with several key properties:
-     - `softDeleteRetentionInDays`: Specifies how long deleted items (secrets, keys, etc.) are retained (between 7 to 90 days).
-     - `enableRbacAuthorization`: Enables RBAC (role-based access control) for the vault, requiring authentication through Azure AD.
-     - `enabledForDeployment`, `enabledForDiskEncryption`: These are additional configuration options for allowing deployment and disk encryption using the vault.
-
-3. **Azure AD Groups**:
-
-   - Two Azure AD groups are created to manage access to the Key Vault:
-     - A **Read-Only Group** for read-only access to the Key Vault.
-     - A **Write Group** for write access to the Key Vault.
-   - Each group has a distinct `displayName` indicating whether it has read-only or write permissions.
-
-4. **Role Assignments**:
-   - Although not fully displayed, the script is designed to assign roles to the AD groups for managing Key Vault access, using a combination of Azure roles for reading secrets, keys, and certificates.
-
-### The `Log` module
-
-This set of modules is designed to provision and manage an Azure Log Analytics workspace, an Application Insights instance, and optionally integrate with an Azure Key Vault for secret storing.
-It supports logging and monitoring of web applications, while securely storing instrumentation keys and connection strings in Key Vault.
-
-1. **Workspace.ts**:
-   - This module sets up an **Azure Log Analytics Workspace**.
-   - The workspace is configured with:
-     - `dailyQuotaGb`: The daily data ingestion quota, set to 0.1 GB (100 MB) by default, which can be adjusted based on the environment.
-     - `sku`: The pricing tier for the workspace (defaults to `PerGB2018`).
-   - The workspace is also configured to purge data after 30 days.
+   - **Log Analytics Workspace**: We create a workspace configured with a daily data ingestion quota, which can be adjusted based on the environment.
+   - **Retention Policies**: Data is purged automatically after 30 days to manage storage costs and comply with data retention policies.
 
 ```typescript
 import * as azure from "@pulumi/azure-native";
@@ -317,14 +325,10 @@ export default (
   );
 ```
 
-2. **AppInsight.ts**:
-   - This module provisions an **Application Insights** resource.
-   - It takes the `name`, `vault`, `rsGroup`, and `workspace` as arguments.
-   - It creates an Application Insights instance associated with the Log Analytics workspace for web applications (`applicationType: "web"`).
-   - The retention period for logs is set to 30 days (`retentionInDays: 30`), and data is purged automatically after that period.
-   - If a `KeyVault` is provided:
-     - It creates two secrets in the Key Vault: one for the Application Insights instrumentation key and another for the connection string.
-     - The `retainOnDelete` flag is used to retain these secrets even if the Pulumi-managed resources are deleted.
+2. **Application Insights Setup**
+
+   - **Application Insights Instance**: Associated with the Log Analytics workspace for monitoring web applications.
+   - **Secret Management**: If a Key Vault is provided, we store the instrumentation key and connection string as secrets for secure access.
 
 ```typescript
 import * as azure from "@pulumi/azure-native";
@@ -403,38 +407,31 @@ export default (
 };
 ```
 
-3. **index.ts**:
-   - This is the entry point, where the main resources are orchestrated.
-   - It imports the `Workspace` and `AppInsight` modules to create a Log Analytics workspace and an Application Insights instance.
-   - The function takes two arguments:
-     - `name`: A string used to generate resource names.
-     - `props`: An object containing the `ResourceGroup` and optionally a `KeyVault`.
-   - The `Workspace` function is called to create a Log Analytics workspace, and the `AppInsight` function creates the Application Insights resource, which uses the workspace.
-   - The function returns the workspace and Application Insights resources.
+### Main Project File `index.ts`
 
-```typescript
-import * as azure from "@pulumi/azure-native";
-import Workspace from "./Workspace";
-import AppInsight from "./AppInsight";
+In the main script of the `shared` project, we create the Resource Group, Key Vault, Log Analytics Workspace, and Application Insights. We also export resource IDs and group information that can be used by other Pulumi projects.
 
-export default (
-  name: string,
-  props: {
-    rsGroup: azure.resources.ResourceGroup;
-    vault?: azure.keyvault.Vault;
-  }
-) => {
-  const workspace = Workspace(name, props);
-  const appInsight = AppInsight(name, { ...props, workspace });
+**Key Components:**
 
-  return { workspace, appInsight };
-};
-```
+1. **Resource Group Creation**
 
-### The main file `index.ts`
+   We create an Azure Resource Group to host all our shared resources, such as the Key Vault, Log Analytics Workspace, and Application Insights.
 
-This main script create shared resources: Resource Group, Key Vault, and Log Analytics Workspace, along with Application Insights for monitoring purposes.
-It also exports resource IDs and group information that can be used by other projects or modules.
+2. **Key Vault Setup**
+
+   The Key Vault securely manages sensitive data:
+
+   - **RBAC Implementation**: Assign different roles to specific groups for fine-grained access control.
+   - **Soft Delete Policy**: Set a retention policy for deleted secrets.
+
+3. **Log Analytics and Application Insights**
+
+   - **Centralized Logging**: All logs from our applications are collected and visualized in the Log Analytics Workspace.
+   - **Secure Monitoring**: Sensitive information like the Application Insights connection string is stored securely in the Key Vault.
+
+4. **Exporting Resource Information**
+
+   We export resource IDs and group information for reuse in other projects, ensuring consistent references across our infrastructure.
 
 ```typescript
 import * as azure from "@pulumi/azure-native";
@@ -470,51 +467,15 @@ export const vault = {
 };
 ```
 
-### Key Components:
-
-1. **Resource Group**:
-
-   The first step is to create an Azure Resource Group to host all of your shared resources, such as the Key Vault, Log Analytics Workspace, and Application Insights. A Resource Group helps organize and manage resources easily, grouping them by application or environment.
-
-2. **Key Vault Setup**:
-
-   Azure Key Vault plays a crucial role in securely managing sensitive data such as credentials, certificates, and secrets.
-
-   In this setup, we are integrating Key Vault with Pulumi to automate the process of creating the vault and configuring access controls. By using Role-Based Access Control (RBAC), we can ensure that only specific groups or services have read or write access to the vault.
-
-   The Key Vault will store sensitive data like the instrumentation key and connection string from Application Insights, ensuring these credentials are securely stored and retrievable by authorized services only.
-
-   Key Points:
-   RBAC: Assign different roles (such as Key Vault Reader and Key Vault Contributor) to specific groups, ensuring fine-grained access control over your secrets.
-   Soft Delete: We set a retention policy for deleted secrets to ensure that, even if a secret is deleted accidentally, it can be recovered within a specified number of days. 3. **Log and Application Insights**:
-
-   - The **Log** module is called to set up a Log Analytics workspace and an Application Insights resource.
-   - It uses the same resource group and links the **Key Vault** (`vaultInfo.vault`) for securely storing sensitive logging information (e.g., instrumentation keys).
-   - The result (`logInfo`) contains details about both the **Log Analytics Workspace** and **Application Insights**.
-
-3. **Log Workspace and App Insight**:
-   Application Insights is a powerful monitoring service used for tracking the performance of your applications, including AKS. In this guide, we integrate Application Insights with a Log Analytics Workspace, allowing you to centralize logging and gain deeper insights into application health.
-
-   With Pulumi, we automate the setup of Application Insights, and link it to the Log Analytics workspace we create. Additionally, we store sensitive connection strings and instrumentation keys in Azure Key Vault for secure access by your applications.
-
-   **Benefits of This Setup:**
-
-   - **Centralized Logging**: All logs from your applications are collected and can be visualized in the Log Analytics Workspace.
-   - **Automated Management**: The use of Pulumi ensures that all resources, from Key Vault to Application Insights, are provisioned automatically in a repeatable and scalable manner.
-   - **Secure Monitoring**: Sensitive information like the Application Insights connection string is stored in Key Vault, ensuring that it remains protected.
-
-4. **Exporting Key Resource Information**:
-
-   After setting up the Resource Group, Key Vault, and Application Insights, We will export the resource IDs and group information.
-   These identifiers are essential for other projects will be able to reuse them.
-
-> For more details, please can refer to the [source code here](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/README.md).
+> For more details, please refer to the [source code here](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/README.md).
 
 ---
 
-## Deploy the `shared` project
+## Deploying the `Shared` Project
 
-### Run this command to deploy the stack
+### Deploy the Stack
+
+Run the following command to deploy the stack:
 
 ```bash
 pnpm run up
@@ -573,17 +534,25 @@ Duration: 1m58s
 
 ```
 
-### The resources on Azure portal after deployed successfully
+### Azure Resources After Deployment
 
-- **EntraID Groups**
+#### Azure AD Groups
 
-  ![Entra-Group](/assets/az-03-pulumi-private-ask-credential-log-management/az-01-entra-groups.png)
+The Azure AD groups for Key Vault access control are created:
 
-- **Azure Resources**
+![Entra-Group](/assets/az-03-pulumi-private-ask-credential-log-management/az-01-entra-groups.png)
+
+#### Azure Resources
+
+The Azure resources including the Resource Group, Key Vault, Log Analytics Workspace, and Application Insights are deployed:
 
 ![Entra-Group](/assets/az-03-pulumi-private-ask-credential-log-management/az-01-resources.png)
 
-### Run this command to destroy the stack
+> **Note:** Ensure that the images render correctly on the platform where this guide is published, and provide descriptive alt text for accessibility.
+
+### Destroy the Stack
+
+To destroy the stack and clean up resources, run:
 
 ```bash
 pnpm run destroy
@@ -637,10 +606,9 @@ Duration: 51s
 
 ## Conclusion
 
-By the end of this guide, We have successfully automated the deployment of a secure AKS environment that includes centralized log management and credential storage.
-Using Pulumi to manage Azure resources such as Key Vault, Application Insights, and Log Analytics Workspace, We can now securely manage sensitive data and monitor application performance in real time.
+By following this guide, we have successfully automated the deployment of secure secret management and centralized log management using Azure Key Vault, Log Analytics, and Application Insights with Pulumi. This setup ensures that sensitive data is securely stored and that we have real-time monitoring of application performance across our environment.
 
-This setup provides a scalable and secure way to manage your Azure infrastructure, and the use of RBAC ensures that only authorized users and services can access the credentials and logs.
+Implementing RBAC and the principle of least privilege enhances the security posture of our infrastructure. Centralized logging enables us to efficiently troubleshoot issues and gain operational insights.
 
 ---
 
@@ -648,8 +616,7 @@ This setup provides a scalable and secure way to manage your Azure infrastructur
 
 **[Day 04: Develop a Virtual Network Hub for Private AKS on Azure](/posts/az-04-pulumi-private-aks-hub-vnet-development)**
 
-In this post, We're going to dive into hands-on coding for the first Hub VNet (VNet) for our private AKS environment.
-We'll walk through each step together, so even if you're new to this, you'll be able to follow along and get your environment up and running on Azure.
+Now that we've established secure credential management and centralized logging, the next step is to build out the virtual network hub for a private AKS environment. In the next post, we'll dive into hands-on coding for developing the Hub VNet, which is essential for scaling our AKS infrastructure.
 
 ---
 
