@@ -458,8 +458,14 @@ const logInfo = Log(config.azGroups.shared, {
 
 // Export the information that will be used in the other projects
 export const rsGroupId = rsGroup.id;
-export const logWorkspaceId = logInfo.workspace.id;
-export const appInsightId = logInfo.appInsight.id;
+export const logWorkspace = {
+  id: logInfo.workspace.id,
+  customerId: logInfo.workspace.customerId,
+};
+export const appInsight = {
+  id: logInfo.appInsight.id,
+  key: logInfo.appInsight.instrumentationKey,
+};
 export const vault = {
   id: vaultInfo.vault.id,
   readOnlyGroupId: vaultInfo.vaultReadOnlyGroup.id,
@@ -486,27 +492,27 @@ pnpm run up
 
 Updating (dev)
 
-View in Browser (Ctrl+O): https://app.pulumi.com/drunkcoding/az-01-shared/dev/updates/16
+View in Browser (Ctrl+O): https://app.pulumi.com/drunkcoding/az-01-shared/dev/updates/21
 
-     Type                                           Name                                                 Status             Info
- +   pulumi:pulumi:Stack                            az-01-shared-dev                                     created (116s)     6 messages
- +   ├─ azuread:index:Group                         dev-shared-vlt-readOnly                              created (22s)
+     Type                                           Name                                                 Status            Info
+ +   pulumi:pulumi:Stack                            az-01-shared-dev                                     created (86s)     6 messages
  +   ├─ azuread:index:Group                         dev-shared-vlt-write                                 created (22s)
- +   ├─ azure-native:resources:ResourceGroup        dev-01-shared                                        created (1s)
- +   ├─ azure-native:keyvault:Vault                 dev-shared-vlt                                       created (71s)
- +   ├─ azure-native:operationalinsights:Workspace  dev-shared-log                                       created (32s)
+ +   ├─ azure-native:resources:ResourceGroup        dev-01-shared                                        created (2s)
+ +   ├─ azuread:index:Group                         dev-shared-vlt-readOnly                              created (23s)
+ +   ├─ azure-native:keyvault:Vault                 dev-shared-vlt                                       created (40s)
+ +   ├─ azure-native:operationalinsights:Workspace  dev-shared-log                                       created (31s)
  +   ├─ azure-native:insights:Component             dev-shared-insights                                  created (4s)
- +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-db79e9a7-68ee-4b58-9aeb-b90e7c24fcba  created (6s)
- +   ├─ azure-native:keyvault:Secret                dev-shared-insights-key                              created (3s)
- +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-21090545-7ca7-4776-b22c-e363652d74d2  created (9s)
- +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-e147488a-f6f5-4113-8e2d-b22465e65bf6  created (8s)
- +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-4633458b-17de-408a-b874-0445c86b69e6  created (5s)
- +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-f25e0fa2-a7c8-4377-a976-54943a77a395  created (11s)
- +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-12338af0-0e69-4776-bea7-57ae8d297424  created (6s)
- +   ├─ azure-native:keyvault:Secret                dev-shared-insights-conn                             created (1s)
- +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-b86a8fe4-44ce-4948-aee5-eccb2c155cd7  created (10s)
- +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-a4417e6f-fecd-4de8-b567-7b0420556985  created (6s)
- +   └─ azure-native:authorization:RoleAssignment   dev-shared-vlt-14b46e9e-c2b7-41b4-b07b-48a6ebf60603  created (11s)
+ +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-14b46e9e-c2b7-41b4-b07b-48a6ebf60603  created (3s)
+ +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-21090545-7ca7-4776-b22c-e363652d74d2  created (5s)
+ +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-db79e9a7-68ee-4b58-9aeb-b90e7c24fcba  created (7s)
+ +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-f25e0fa2-a7c8-4377-a976-54943a77a395  created (8s)
+ +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-e147488a-f6f5-4113-8e2d-b22465e65bf6  created (2s)
+ +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-4633458b-17de-408a-b874-0445c86b69e6  created (4s)
+ +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-12338af0-0e69-4776-bea7-57ae8d297424  created (7s)
+ +   ├─ azure-native:keyvault:Secret                dev-shared-insights-key                              created (2s)
+ +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-a4417e6f-fecd-4de8-b567-7b0420556985  created (5s)
+ +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-b86a8fe4-44ce-4948-aee5-eccb2c155cd7  created (8s)
+ +   └─ azure-native:keyvault:Secret                dev-shared-insights-conn                             created (7s)
 
 Diagnostics:
   pulumi:pulumi:Stack (az-01-shared-dev):
@@ -518,20 +524,25 @@ Diagnostics:
     }
 
 Outputs:
-    appInsightId  : "/subscriptions/54dbd16b-81cd-4444-b4fd-02c2dcd59d3d/resourceGroups/dev-01-shared79f10573/providers/microsoft.insights/components/dev-shared-insights00f71ffa"
-    logWorkspaceId: "/subscriptions/54dbd16b-81cd-4444-b4fd-02c2dcd59d3d/resourceGroups/dev-01-shared79f10573/providers/Microsoft.OperationalInsights/workspaces/dev-shared-loga30aa58f"
-    rsGroupId     : "/subscriptions/54dbd16b-81cd-4444-b4fd-02c2dcd59d3d/resourceGroups/dev-01-shared79f10573"
-    vault         : {
-        id             : "/subscriptions/54dbd16b-81cd-4444-b4fd-02c2dcd59d3d/resourceGroups/dev-01-shared79f10573/providers/Microsoft.KeyVault/vaults/dev-shared-vlt2fdd6d3f"
-        readOnlyGroupId: "92758d51-8f7c-4b5e-9442-5dca96965961"
-        writeGroupId   : "9ff3b17c-3d4c-4be6-bb97-4c27eb480539"
+    appInsight  : {
+        id : "/subscriptions/54dbd16b-81cd-4444-b4fd-02c2dcd59d3d/resourceGroups/dev-01-shared5cc639c5/providers/microsoft.insights/components/dev-shared-insights42ea1dd8"
+        key: "c6114e12-fe84-4b4b-a3c1-1ac036d61bd4"
+    }
+    logWorkspace: {
+        customerId: "21edf4e0-2fec-4da5-8c2a-c09a5d9dbdef"
+        id        : "/subscriptions/54dbd16b-81cd-4444-b4fd-02c2dcd59d3d/resourceGroups/dev-01-shared5cc639c5/providers/Microsoft.OperationalInsights/workspaces/dev-shared-logc34ae06a"
+    }
+    rsGroupId   : "/subscriptions/54dbd16b-81cd-4444-b4fd-02c2dcd59d3d/resourceGroups/dev-01-shared5cc639c5"
+    vault       : {
+        id             : "/subscriptions/54dbd16b-81cd-4444-b4fd-02c2dcd59d3d/resourceGroups/dev-01-shared5cc639c5/providers/Microsoft.KeyVault/vaults/dev-shared-vltad719b50"
+        readOnlyGroupId: "3d71130a-773f-45c3-99ca-cc19a29cac7d"
+        writeGroupId   : "0feed654-26fa-4ce5-b1ba-a880965e1bcb"
     }
 
 Resources:
     + 18 created
 
-Duration: 1m58s
-
+Duration: 1m28s
 ```
 
 ### Azure Resources After Deployment
@@ -599,7 +610,6 @@ Resources:
     - 18 deleted
 
 Duration: 51s
-
 ```
 
 ---
