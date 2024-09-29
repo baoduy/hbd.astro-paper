@@ -26,9 +26,18 @@ This approach ensures that sensitive data is securely stored, and application pe
 
 This tutorial is aimed at cloud architects and developers seeking to securely automate their infrastructure management using Infrastructure-as-Code (IaC) with Pulumi.
 
+![secrets-management](/assets/az-03-pulumi-private-ask-credential-log-management/secrets-management.png)
+_(Download original draw.io file <a href="/assets/az-03-pulumi-private-ask-credential-log-management/secrets-management.drawio" download>here</a> )_
+
 ---
 
 ## Table of Contents
+
+- [Introduction](#introduction)
+- [Conclusion](#conclusion)
+- [References](#references)
+- [Next Steps](#next-steps)
+- [Thank You](#thank-you)
 
 ---
 
@@ -47,18 +56,18 @@ We categorize our resources into groups for better organization and management:
 | **AKS VNet Resource Group**     | Contains resources specific to the AKS cluster.         |
 | **CloudPC VNet Resource Group** | For resources related to virtual desktops or cloud PCs. |
 
-### Subnet IP Address Spaces
+## Summary of Allocated Subnets
 
-We allocate specific IP address ranges for different subnets within our VNet to segregate network traffic and apply network policies effectively.
+Again, this is the subnet Ip address spaces that we have defined in the [previous post](/posts/az-02-pulumi-private-ask-env-architecture#summary-of-allocated-subnets).
 
-| Subnet                         | IP Address Range    | Description                                   |
-| ------------------------------ | ------------------- | --------------------------------------------- |
-| **Firewall Subnet**            | `192.168.30.0/26`   | Dedicated for the Azure Firewall.             |
-| **Firewall Management Subnet** | `192.168.30.64/26`  | Used for managing the firewall.               |
-| **General Subnet**             | `192.168.30.128/27` | General-purpose subnet for various resources. |
-| **AKS Subnet**                 | `192.168.31.0/24`   | Specifically for the AKS cluster.             |
-| **CloudPC Subnet**             | `192.168.32.0/25`   | For virtual desktop instances.                |
-| **DevOps Subnet**              | `192.168.32.128/27` | For resources related to DevOps activities.   |
+| VNet Name           | Subnet Name                    | Address Prefix      | Total | Usable |
+| ------------------- | ------------------------------ | ------------------- | ----- | ------ |
+| **1. Hub VNet**     | 1.1 Firewall Subnet            | `192.168.30.0/26`   | 64    | 59     |
+|                     | 1.2 Firewall Management Subnet | `192.168.30.64/26`  | 54    | 59     |
+|                     | 1.3 General Subnet             | `192.168.30.128/27` | 32    | 27     |
+| **2. AKS VNet**     | 2.1 AKS Subnet                 | `192.168.31.0/24`   | 256   | 251    |
+| **3. CloudPC VNet** | 3.1 CloudPC Subnet             | `192.168.32.0/25`   | 128   | 123    |
+|                     | 3.2 DevOps Subnet              | `192.168.32.128/27` | 32    | 27     |
 
 Here is our `config.ts` file at the root folder of the project:
 
@@ -410,7 +419,7 @@ export default (
 };
 ```
 
-### Main Project File `index.ts`
+### Main Project Code `index.ts`
 
 In the main script of the `shared` project, we create the Resource Group, Key Vault, Log Analytics Workspace, and Application Insights. We also export resource IDs and group information that can be used by other Pulumi projects.
 
@@ -629,7 +638,8 @@ Implementing RBAC and the principle of least privilege enhances the security pos
 
 **[Day 04: Develop a Virtual Network Hub for Private AKS on Azure](/posts/az-04-pulumi-private-aks-hub-vnet-development)**
 
-Now that we've established secure credential management and centralized logging, the next step is to build out the virtual network hub for a private AKS environment. In the next post, we'll dive into hands-on coding for developing the Hub VNet, which is essential for scaling our AKS infrastructure.
+Now that we've established secure credential management and centralized logging, the next step is to build out the virtual network hub for a private AKS environment.
+In this article, We'll walk through the process of developing the first Hub VNet for a private AKS environment using Pulumi.
 
 ---
 

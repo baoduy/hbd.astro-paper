@@ -8,14 +8,14 @@ tags:
   - aks
   - private
   - pulumi
-description: ""
+description: "In these series I would like to share an ideas/options how to setup the entire private AKS environments on Azure using pulumi includes Virtual Network, Firewall, Private AKS to private Azure DevOps agents and Private CloudPC environment and How to expose some public applications through Cloudflare Tunnels."
 ---
 
 ## Introduction
 
 As you know setting entire private environments on Cloud is not a easy jobs and especially to mange the consistence between the environments (DEV, SANDBOX and PRD) is challenging.
 In these series I would like to share an ideas/options how to setup the entire private AKS environments on Azure using pulumi includes Virtual Network, Firewall, Private AKS to private Azure DevOps agents
-and Private CloudPC environment and How to expose some public applications through Cloudflare Tunnels
+and Private CloudPC environment and How to expose some public applications through Cloudflare Tunnels.
 
 ---
 
@@ -39,8 +39,15 @@ In this guide, we’ll walk you through setting up a secure and scalable infrast
 
 ### [Day 04: Develop a Virtual Network Hub for Private AKS on Azure](/posts/az-04-pulumi-private-aks-hub-vnet-development)
 
-In this post, We're going to dive into hands-on coding for the first Hub VNet (VNet) for our private AKS environment.
-We'll walk through each step together, so even if you're new to this, you'll be able to follow along and get your environment up and running on Azure.
+Now that we've established secure credential management and centralized logging, the next step is to build out the virtual network hub for a private AKS environment.
+In this article, We'll walk through the process of developing the first Hub VNet for a private AKS environment using Pulumi.
+
+### [Day 05: Implementing Private AKS Clusters with Advanced Networking](/posts/az-05-pulumi-private-aks-cluster-env)
+
+In this tutorial, we'll build a private AKS cluster with advanced networking features.
+We'll explore how to integrate the AKS cluster with the Hub VNet and apply the firewall policies we've created.
+
+---
 
 ## Azure DevOps Private Agent and Pipeline
 

@@ -24,6 +24,12 @@ _(Download original draw.io file <a href="/assets/az-02-pulumi-private-ask-env-a
 
 ## Table of Contents
 
+- [Introduction](#introduction)
+- [Conclusion](#conclusion)
+- [References](#references)
+- [Next Steps](#next-steps)
+- [Thank You](#thank-you)
+
 ---
 
 ## Key Components
@@ -111,7 +117,11 @@ The environment is built on a **hub-and-spoke** model, with Azure Firewall actin
 - **Isolation**: Each subnet is isolated using Network Security Groups (NSGs) and Azure Firewall rules, minimizing lateral movement in case of a security breach.
 - **Private Endpoints**: Services like Azure Key Vault and Storage Account use private endpoints, ensuring that all communication stays within the Azure network.
 
-## Benefits of the Architecture
+---
+
+## Conclusion
+
+By carefully designing your network architecture with security in mind, you can leverage the full power of Azure services while keeping your workloads safe from external threats. This private AKS environment provides a secure, scalable, and flexible foundation for running containerized applications.
 
 - **Complete Isolation**: Critical resources are not exposed to the public internet. Access to services is secured via private endpoints and controlled through Azure Firewall.
 - **Centralized Security Management**: Azure Firewall provides a single point of control for managing and securing all network traffic in and out of the environment.
@@ -120,10 +130,6 @@ The environment is built on a **hub-and-spoke** model, with Azure Firewall actin
 - **Efficient Communication**: Private endpoints and internal routing ensure efficient communication between services without exposing them to external networks.
 
 ---
-
-## Conclusion
-
-By carefully designing your network architecture with security in mind, you can leverage the full power of Azure services while keeping your workloads safe from external threats. This private AKS environment provides a secure, scalable, and flexible foundation for running containerized applications.
 
 ## References
 
@@ -136,7 +142,7 @@ By carefully designing your network architecture with security in mind, you can 
 
 **[Day 03: Automating Secret Management and Centralized Log Monitoring on Azure](/posts/az-03-pulumi-private-ask-credential-log-management)**
 
-In this guide, we’ll walk you through setting up a secure and scalable infrastructure on Azure by automating secret management using Azure Key Vault and centralized log monitoring with Log Analytics and Application Insights.
+In the next tutorial, we’ll walk you through setting up a secure and scalable infrastructure on Azure by automating secret management using Azure Key Vault and centralized log monitoring with Log Analytics and Application Insights.
 
 --
 

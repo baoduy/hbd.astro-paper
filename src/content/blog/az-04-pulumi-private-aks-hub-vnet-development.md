@@ -8,237 +8,320 @@ tags:
   - AKS
   - Private
   - Pulumi
-description: "In this post, We're going to dive into hands-on coding for the first Hub VNet (VNet) for our private AKS environment.
-We'll walk through each step together, so even if you're new to this, you'll be able to follow along and get your environment up and running on Azure."
+description: "In this article, We'll walk through the process of developing the first Hub VNet for a private AKS environment using Pulumi."
 ---
 
 ## Introduction
 
-Today, we're going to dive into hands-on coding for the first Hub VNet (VNet) for our private AKS environment.
-We'll walk through each step together, so even if you're new to this, you'll be able to follow along and get your environment up and running on Azure.
+In this tutorial, we'll walk through the process of developing the first Hub VNet for a private AKS environment using Pulumi.
+This guide is designed to be accessible even if you're new to Azure or Pulumi, so we'll explain each step in detail.
 
-Security is paramount, so as we create our resources, we'll focus on optimizing security as much as possible while keeping our Azure costs reasonable.
-We'll explore how to set up network policies, firewalls, and encryption to protect our environment but still under our budgets.
+Security is our top priority. As we create our resources, we'll focus on optimizing security while keeping Azure costs reasonable.
+We'll explore how to set up network policies, firewalls, and encryption to protect our environment without exceeding our budget.
+
+---
 
 ## Table of Contents
 
 - [Introduction](#introduction)
-- [Setting Up the Configuration](#setting-up-the-configuration)
-- [Creating a Common Project](#creating-a-common-project)
-  - [Module `azEnv`](#module-azenv)
-  - [Module `naming`](#module-naming)
-  - [Module `stackEnv`](#module-stackenv)
-- [Developing the Hub VNet](#developing-the-hub-vnet)
-  - [Main Resources (`index.ts`)](#main-resources-indexts)
-  - [Explanation](#explanation)
-- [Understanding the Firewall Policy](#understanding-the-firewall-policy)
-  - [AKS Policy Group](#aks-policy-group)
-  - [DevOps Policy Group](#devops-policy-group)
-  - [CloudPC Policy Group](#cloudpc-policy-group)
-  - [Combining the Policies](#combining-the-policies)
-- [Deploying and Cleaning Up with Pulumi](#deploying-and-cleaning-up-with-pulumi)
-  - [Deploying the Stack](#deploying-the-stack)
-  - [Destroying the Stack](#destroying-the-stack)
 - [Conclusion](#conclusion)
 - [References](#references)
 - [Next Steps](#next-steps)
 - [Thank You](#thank-you)
 
-## Developing the Hub VNet
+---
 
-Now, let's move on to developing the Hub VNet, which serves as the central network hub in our architecture.
+## Setting Up the Hub VNet
 
-### Main Resources (`index.ts`)
+Our goal is to set up the main components required for the Hub VNet, which include:
 
-Following the instructions from [Day 01](#), let's create a new project named `az-01-hub-vnet` with the following code:
+1. **Resource Group**: A container for managing related Azure resources.
+2. **Virtual Network (VNet)**: The main network that hosts our subnets.
+3. **Subnets**: Segments within the VNet to isolate and organize resources.
+4. **Public IP Addresses**: For outbound internet connectivity and firewall management.
+5. **Firewall Policy**: Defines rules to control network traffic.
+6. **Azure Firewall**: A managed firewall service to protect our network.
+
+Let's dive into each component and see how we can implement them using Pulumi.
+
+### Creating the VNet Module
+
+The `VNet` module helps us create a Virtual Network with customized parameters.
+
+**Key Features:**
+
+- **Virtual Network Creation**: Sets up a VNet with specified address spaces.
+- **Subnets**: Allows the creation of multiple subnets within the VNet.
+- **Security Enhancements**:
+  - **VM Protection**: `enableVmProtection` set to `true` to protect virtual machines from undesired access.
+  - **Encryption**: Enables encryption for traffic within the VNet.
 
 ```typescript
 import * as resources from "@pulumi/azure-native/resources";
 import * as network from "@pulumi/azure-native/network";
-import { getGroupName, getName } from "@az-commons";
+import * as inputs from "@pulumi/azure-native/types/input";
+import { getName } from "@az-commons";
+
+export default (
+  name: string,
+  {
+    rsGroup,
+    subnets,
+  }: {
+    rsGroup: resources.ResourceGroup;
+    subnets: inputs.network.SubnetArgs[];
+  }
+) =>
+  new network.VirtualNetwork(
+    getName(name, "vnet"),
+    {
+      resourceGroupName: rsGroup.name,
+      //Enable VN protection
+      enableVmProtection: true,
+      //Enable Vnet encryption
+      encryption: {
+        enabled: true,
+        enforcement:
+          network.VirtualNetworkEncryptionEnforcement.AllowUnencrypted,
+      },
+      addressSpace: {
+        addressPrefixes: subnets.map(s => s.addressPrefix!),
+      },
+      subnets,
+    },
+    // Ensure the virtual network depends on the resource group
+    { dependsOn: rsGroup }
+  );
+```
+
+### Creating the Firewall Module
+
+The `Firewall` module creates an Azure Firewall along with the necessary components like IP addresses and diagnostic settings.
+
+**Key Features:**
+
+- **Public IP Addresses**:
+  - **Outbound IP**: For outbound internet traffic.
+  - **Management IP**: Specifically for managing the firewall.
+- **Azure Firewall Deployment**:
+  - Configured with the firewall policy and associated with the VNet.
+  - Specifies SKU (stock-keeping unit) tiers for performance and features.
+- **Diagnostic Settings**:
+  - Integrates with Log Analytics for monitoring and logging.
+
+```typescript
+import * as pulumi from "@pulumi/pulumi";
+import * as azure from "@pulumi/azure-native";
+import { getName } from "@az-commons";
+
+export default (
+  name: string,
+  {
+    vnet,
+    rsGroup,
+    policy,
+    policyGroup,
+    //The Policy tier and Firewall tier must be the same
+    tier = azure.network.AzureFirewallSkuTier.Basic,
+    logWorkspaceId,
+  }: {
+    vnet: azure.network.VirtualNetwork;
+    rsGroup: azure.resources.ResourceGroup;
+    policy: azure.network.FirewallPolicy;
+    policyGroup: azure.network.FirewallPolicyRuleCollectionGroup;
+    tier?: azure.network.AzureFirewallSkuTier;
+    logWorkspaceId?: pulumi.Output<string>;
+  }
+) => {
+  const firewallSubnetId = vnet.subnets!.apply(
+    s => s!.find(s => s!.name === "AzureFirewallSubnet")!.id!
+  );
+  const firewallManageSubnetId = vnet.subnets!.apply(
+    s => s!.find(s => s!.name === "AzureFirewallManagementSubnet")!.id!
+  );
+  // Create Public IP Address for outbound traffic
+  const publicIP = new azure.network.PublicIPAddress(
+    getName(`${name}-outbound`, "ip"),
+    {
+      resourceGroupName: rsGroup.name, // Resource group name
+      publicIPAllocationMethod: azure.network.IPAllocationMethod.Static, // Static IP allocation
+      sku: {
+        name: azure.network.PublicIPAddressSkuName.Standard, // Standard SKU
+        tier: azure.network.PublicIPAddressSkuTier.Regional, // Regional tier
+      },
+    },
+    { dependsOn: rsGroup } // Ensure the public IP depends on the resource group
+  );
+
+  // Create Management Public IP Address for Firewall "Basic" tier
+  const managePublicIP = new azure.network.PublicIPAddress(
+    getName(`${name}-manage`, "ip"),
+    {
+      resourceGroupName: rsGroup.name, // Resource group name
+      publicIPAllocationMethod: azure.network.IPAllocationMethod.Static, // Static IP allocation
+      sku: {
+        name: azure.network.PublicIPAddressSkuName.Standard, // Standard SKU
+        tier: azure.network.PublicIPAddressSkuTier.Regional, // Regional tier
+      },
+    },
+    { dependsOn: rsGroup } // Ensure the management public IP depends on the resource group
+  );
+
+  // Create Azure Firewall
+  const firewallName = getName(name, "firewall");
+  const firewall = new azure.network.AzureFirewall(
+    firewallName,
+    {
+      resourceGroupName: rsGroup.name,
+      firewallPolicy: { id: policy.id },
+      ipConfigurations: [
+        {
+          name: publicIP.name,
+          publicIPAddress: { id: publicIP.id },
+          subnet: { id: firewallSubnetId },
+        },
+      ],
+      managementIpConfiguration: {
+        name: managePublicIP.name,
+        publicIPAddress: { id: managePublicIP.id },
+        subnet: { id: firewallManageSubnetId },
+      },
+      sku: {
+        name: azure.network.AzureFirewallSkuName.AZFW_VNet,
+        tier,
+      },
+    },
+    {
+      // Ensure the firewall dependents
+      dependsOn: [publicIP, vnet, managePublicIP, policy, policyGroup],
+    }
+  );
+
+  //create Diagnostic
+  if (logWorkspaceId) {
+    new azure.insights.DiagnosticSetting(
+      firewallName,
+      {
+        resourceUri: firewall.id,
+        logAnalyticsDestinationType: "AzureDiagnostics",
+        workspaceId: logWorkspaceId,
+        //Logs
+        logs: [
+          "AzureFirewallApplicationRule",
+          "AzureFirewallNetworkRule",
+          "AzureFirewallDnsProxy",
+        ].map(c => ({
+          category: c,
+          retentionPolicy: { enabled: false, days: 7 },
+          enabled: true,
+        })),
+      },
+      { dependsOn: firewall }
+    );
+  }
+
+  return { firewall, publicIP };
+};
+```
+
+### Main Project Code (`index.ts`)
+
+Now, let's bring everything together in our main project file.
+
+**Steps:**
+
+1. **Import Modules and Configurations**: Import necessary modules and retrieve configurations.
+2. **Reference Shared Resources**: Use `StackReference` to access outputs from the `az-01-shared` project, such as the Log Analytics workspace ID.
+3. **Create Resource Group**: Initialize a resource group for the Hub VNet resources.
+4. **Set Up the VNet and Subnets**:
+   - Create the VNet using the `VNet` module.
+   - Define subnets for the firewall, firewall management, and general purposes.
+5. **Configure the Firewall Policy**:
+   - Use the `FirewallPolicy` module to define network and application rules.
+6. **Deploy the Azure Firewall**:
+   - Utilize the `Firewall` module to create the Azure Firewall instance.
+   - Attach the firewall policy and configure IP addresses.
+7. **Export Outputs**: Make resource IDs and properties available for other projects or scripts.
+
+```typescript
+import * as resources from "@pulumi/azure-native/resources";
+import * as pulumi from "@pulumi/pulumi";
+import * as network from "@pulumi/azure-native/network";
+import { getGroupName, StackReference } from "@az-commons";
 import * as config from "../config";
+import VNet from "./VNet";
+import Firewall from "./Firewall";
 import FirewallPolicy from "./FirewallPolicy";
+
+//Reference to the output of `az-01-shared` and link workspace to firewall for log monitoring.
+const sharedStack = StackReference("az-01-shared") as pulumi.Output<{
+  logWorkspace: { id: string };
+}>;
 
 // Create Hub Resource Group
 const rsGroup = new resources.ResourceGroup(getGroupName(config.azGroups.hub));
 
-// Create VNet with Subnets
-const vnet = new network.VirtualNetwork(
-  getName(config.azGroups.hub, "vnet"),
-  {
-    // Resource group name
-    resourceGroupName: rsGroup.name,
-    //Enable VN protection
-    enableVmProtection: true,
-    //Enable VNet encryption
-    encryption: {
-      enabled: true,
-      enforcement: network.VirtualNetworkEncryptionEnforcement.AllowUnencrypted,
+// Create Virtual Network with Subnets
+const vnet = VNet(config.azGroups.hub, {
+  rsGroup,
+  subnets: [
+    {
+      // Azure Firewall subnet name must be `AzureFirewallSubnet`
+      name: "AzureFirewallSubnet",
+      addressPrefix: config.subnetSpaces.firewall,
     },
-    addressSpace: {
-      addressPrefixes: [
-        config.subnetSpaces.firewall, // Address space for firewall subnet
-        config.subnetSpaces.general, // Address space for general subnet
-        config.subnetSpaces.firewallManage, // Address space for firewall management subnet
-      ],
+    {
+      // Azure Firewall Management subnet name must be `AzureFirewallManagementSubnet`
+      name: "AzureFirewallManagementSubnet",
+      addressPrefix: config.subnetSpaces.firewallManage,
     },
-    subnets: [
-      {
-        // Azure Firewall subnet name must be `AzureFirewallSubnet`
-        name: "AzureFirewallSubnet",
-        addressPrefix: config.subnetSpaces.firewall, // Address prefix for firewall subnet
-      },
-      {
-        // Azure Firewall Management subnet name must be `AzureFirewallManagementSubnet`
-        name: "AzureFirewallManagementSubnet",
-        addressPrefix: config.subnetSpaces.firewallManage, // Address prefix for firewall management subnet
-      },
-      {
-        name: "general",
-        addressPrefix: config.subnetSpaces.general, // Address prefix for general subnet
-        // Allows Azure Resources Private Link
-        privateEndpointNetworkPolicies:
-          network.VirtualNetworkPrivateEndpointNetworkPolicies.Enabled,
-      },
-    ],
-  },
-  { dependsOn: rsGroup } // Ensure the VNet depends on the resource group
-);
-
-// Create Public IP Address for outbound traffic
-const publicIP = new network.PublicIPAddress(
-  getName("outbound", "ip"),
-  {
-    resourceGroupName: rsGroup.name, // Resource group name
-    publicIPAllocationMethod: network.IPAllocationMethod.Static, // Static IP allocation
-    sku: {
-      name: network.PublicIPAddressSkuName.Standard, // Standard SKU
-      tier: network.PublicIPAddressSkuTier.Regional, // Regional tier
+    {
+      name: "general",
+      addressPrefix: config.subnetSpaces.general,
+      // Allows Azure Resources Private Link
+      privateEndpointNetworkPolicies:
+        network.VirtualNetworkPrivateEndpointNetworkPolicies.Enabled,
     },
-  },
-  { dependsOn: rsGroup } // Ensure the public IP depends on the resource group
-);
-
-// Create Management Public IP Address for Firewall "Basic" tier
-const managePublicIP = new network.PublicIPAddress(
-  getName("manage", "ip"),
-  {
-    resourceGroupName: rsGroup.name, // Resource group name
-    publicIPAllocationMethod: network.IPAllocationMethod.Static, // Static IP allocation
-    sku: {
-      name: network.PublicIPAddressSkuName.Standard, // Standard SKU
-      tier: network.PublicIPAddressSkuTier.Regional, // Regional tier
-    },
-  },
-  { dependsOn: rsGroup } // Ensure the management public IP depends on the resource group
-);
+  ],
+});
 
 //Firewall Policy
-const rules = FirewallPolicy(getName(config.azGroups.hub, "fw-policy"), {
+const rules = FirewallPolicy(config.azGroups.hub, {
   rsGroup,
   //The Policy tier and Firewall tier must be the same
   tier: network.FirewallPolicySkuTier.Basic,
 });
 
-// Create Azure Firewall
-const firewall = new network.AzureFirewall(
-  getName(config.azGroups.hub, "firewall"),
-  {
-    resourceGroupName: rsGroup.name, // Resource group name
-    firewallPolicy: {
-      id: rules.policy.id, // Firewall policy ID
-    },
-    ipConfigurations: [
-      {
-        name: publicIP.name, // Name of the IP configuration
-        publicIPAddress: { id: publicIP.id }, // Public IP address ID
-        subnet: {
-          id: vnet.subnets.apply(
-            s => s!.find(s => s!.name === "AzureFirewallSubnet")!.id!
-          ), // Subnet ID for the firewall
-        },
-      },
-    ],
-    managementIpConfiguration: {
-      name: managePublicIP.name, // Name of the management IP configuration
-      publicIPAddress: { id: managePublicIP.id }, // Management public IP address ID
-      subnet: {
-        id: vnet.subnets.apply(
-          s => s!.find(s => s!.name === "AzureFirewallManagementSubnet")!.id!
-        ), // Subnet ID for firewall management
-      },
-    },
-    sku: {
-      name: network.AzureFirewallSkuName.AZFW_VNet,
-      //The Policy tier and Firewall tier must be the same
-      tier: network.AzureFirewallSkuTier.Basic,
-    },
-  },
-  {
-    // Ensure the firewall dependents
-    dependsOn: [
-      publicIP,
-      vnet,
-      managePublicIP,
-      rules.policy,
-      rules.policyGroup,
-    ],
-  }
-);
+const { publicIP, firewall } = Firewall(config.azGroups.hub, {
+  ...rules,
+  rsGroup,
+  vnet,
+  //The Policy tier and Firewall tier must be the same
+  tier: network.AzureFirewallSkuTier.Basic,
+  //Link Firewall diagnostic to the log workspace resource that was created in project `az-01-shared`.
+  logWorkspaceId: sharedStack.logWorkspace.id,
+});
 
 // Export the information that will be used in the other projects
-export const rsGroupId = rsGroup.id; // Resource group ID
-export const vnetId = vnet.id; // VNet ID
-export const IPAddress = { address: publicIP.ipAddress, id: publicIP.id }; // Public IP address and ID
+export const rsGroupId = rsGroup.id;
+export const hubVnetId = vnet.id;
+export const ipAddress = { address: publicIP.ipAddress, id: publicIP.id };
 export const firewallId = {
-  address: firewall.ipConfigurations.apply(c => c![0]!.privateIPAddress!), // Firewall private IP address
-  id: firewall.id, // Firewall ID
+  address: firewall.ipConfigurations.apply(c => c![0]!.privateIPAddress!),
+  id: firewall.id,
 };
 ```
 
-Our goal here is to set up the main components required for the Hub VNet, which include:
-
-1. **Resource Group**:
-
-   - We create a resource group specifically for the Hub VNet.
-   - The name incorporates the stack name for easy identification (e.g., `dev-01-hub`).
-
-2. **VNet (VNet) Setup**:
-
-   - We establish a VNet that will host multiple subnets.
-   - The VNet uses the address spaces we defined earlier in our configuration.
-
-3. **Subnet Creation**:
-
-   - **AzureFirewallSubnet**: A dedicated subnet for deploying Azure Firewall.
-   - **AzureFirewallManagementSubnet**: Used for managing the Azure Firewall.
-   - **General Subnet**: A subnet for general-purpose resources, configured to allow private endpoints.
-
-4. **Public IP Addresses**:
-
-   - **Outbound Public IP**: Used for outbound traffic from the firewall to the internet.
-   - **Management Public IP**: Used for managing the Azure Firewall.
-
-5. **Firewall Policy**:
-
-   - We define a firewall policy that includes various network and application rules.
-   - The policy is created to match the firewall's tier (e.g., Basic or Standard).
-
-6. **Azure Firewall Deployment**:
-
-   - We deploy an Azure Firewall instance within the `AzureFirewallSubnet`.
-   - The firewall is configured with the policy and IP configurations we defined.
-
-7. **Exporting Outputs**:
-   - We export certain resource identifiers and properties (e.g., resource group ID, VNet ID, firewall ID) for use in other projects or scripts.
-
-> **Note:** Setting the `dependsOn` property correctly ensures that resources are created and destroyed in the right order.
+> **Note:**
+>
+> - Properly setting the `dependsOn` property ensures that resources are created and destroyed in the correct sequence.
+> - The code above demonstrates how to reuse the log workspace from the `az-01-shared` project for Firewall diagnostics, enabling effective tracing and monitoring of firewall rules.
 
 ---
 
-## The Firewall Policy
+## Understanding the Firewall Policy
 
-Now, let's delve deeper into the firewall policy, which is crucial for controlling network traffic and securing our environment.
+The firewall policy is crucial for controlling network traffic and securing our environment. It defines the rules that the Azure Firewall uses to allow or deny traffic.
 
 ### AKS Policy Group
 
@@ -313,7 +396,7 @@ export default { appRules, netRules };
 
 ### DevOps Policy Group
 
-**Purpose**: To allow DevOps resources to interact with Azure DevOps services and deploy to AKS.
+**Purpose**: Enables DevOps resources to interact with Azure DevOps services and deploy to AKS.
 
 ```typescript
 import { subnetSpaces } from "../../config";
@@ -339,7 +422,7 @@ export default { appRules, netRules };
 
 ### CloudPC Policy Group
 
-**Purpose**: To enable virtual desktops or cloud PCs to access internal resources for administrative or support purposes.
+Allows virtual desktops or cloud PCs to access internal resources for administrative or support purposes.
 
 ```typescript
 import { subnetSpaces } from "../../config";
@@ -373,28 +456,16 @@ const appRules: pulumi.Input<inputs.network.ApplicationRuleArgs>[] = [];
 export default { appRules, netRules };
 ```
 
-### Combining the Policies
+### Consolidating Policies
 
-After defining the individual policy groups, we combine them into a single firewall policy and associate it with the Azure Firewall.
+After defining individual policy groups, we combine them into a single firewall policy and associate it with the Azure Firewall.
 
-1. **Create a Firewall Policy**:
+**Steps**:
 
-   - This acts as a container for all the rules.
-   - Must have the same tier as the Azure Firewall.
-
-2. **Aggregate Rules**:
-
-   - Collect all network and application rules from the AKS, DevOps, and CloudPC policy groups.
-   - Ensure there are no conflicting rules.
-
-3. **Create Rule Collection Groups**:
-
-   - Organize rules into collections based on priority and action (e.g., allow or deny).
-   - Assign priorities to determine the order in which rules are evaluated.
-
-4. **Associate with Azure Firewall**:
-   - Link the firewall policy to the Azure Firewall instance.
-   - This ensures that all traffic passing through the firewall is subject to the defined rules.
+1. **Create a Firewall Policy**: Acts as a container for all rules.
+2. **Aggregate Rules**: Collect network and application rules from all policy groups.
+3. **Create Rule Collection Groups**: Organize rules based on priority and action.
+4. **Associate with Azure Firewall**: Link the policy to the firewall instance to enforce the rules.
 
 ```typescript
 import * as network from "@pulumi/azure-native/network";
@@ -504,47 +575,29 @@ export default (
 };
 ```
 
-> For more details, you can refer to the [source code here](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-hub-vnet/README.md).
+> For more details, you can refer to the [source code here](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-02-hub-vnet/README.md).
 
 ---
 
 ## Pulumi Deploying
 
-Now that we've set up our configuration and resources, let's look at how to deploy them to Azure using Pulumi and how to clean up afterward.
+Now that we've set up our configuration and resources, let's deploy them to Azure using Pulumi.
 
 ### Deploying the Stack
-
-1. **Initialize the Pulumi Project**:
-
-   - Ensure you have a Pulumi project set up with the appropriate stack (e.g., `dev`).
-
-2. **Run the Deployment Command**:
-
-   - Use the command `pulumi up` or `pnpm run up` if using a package manager script.
-   - The `--yes` flag can be used to skip the confirmation prompt.
-
-3. **Monitor the Deployment**:
-
-   - Pulumi will display the resources being created.
-   - Any errors will be shown in the output.
-
-4. **Verify the Deployment**:
-   - After successful deployment, verify the resources in the Azure Portal.
-   - Check the resource group, VNet, subnets, public IPs, firewall policy, and Azure Firewall.
 
 ```bash
 pnpm run up
 
 # Sample Output
-> az-01-hub-vnet@ up /Volumes/VMs_2T/_GIT/drunk-azure-pulumi-articles/az-01-hub-vnet
+> az-02-hub-vnet@ up /Volumes/VMs_2T/_GIT/drunk-azure-pulumi-articles/az-02-hub-vnet
 > pulumi up --yes --skip-preview
 
 Updating (dev)
 
-View in Browser (Ctrl+O): https://app.pulumi.com/drunkcoding/az-01-hub-vnet/dev/updates/27
+View in Browser (Ctrl+O): https://app.pulumi.com/drunkcoding/az-02-hub-vnet/dev/updates/27
 
      Type                                                       Name                     Status             Info
- +   pulumi:pulumi:Stack                                        az-01-hub-vnet-dev       created (528s)     6 messages
+ +   pulumi:pulumi:Stack                                        az-02-hub-vnet-dev       created (528s)     6 messages
  +   ├─ azure-native:resources:ResourceGroup                    dev-01-hub               created (1s)
  +   ├─ azure-native:network:VirtualNetwork                     dev-hub-vnet             created (4s)
  +   ├─ azure-native:network:PublicIPAddress                    dev-outbound-ip          created (3s)
@@ -554,10 +607,10 @@ View in Browser (Ctrl+O): https://app.pulumi.com/drunkcoding/az-01-hub-vnet/dev/
  +   └─ azure-native:network:AzureFirewall                      dev-hub-firewall         created (485s)
 
 Diagnostics:
-  pulumi:pulumi:Stack (az-01-hub-vnet-dev):
+  pulumi:pulumi:Stack (az-02-hub-vnet-dev):
     Pulumi Environments: {
       organization: 'drunkcoding',
-      projectName: 'az-01-hub-vnet',
+      projectName: 'az-02-hub-vnet',
       stack: 'dev',
       isDryRun: false
     }
@@ -581,40 +634,34 @@ Duration: 8m50s
 
 ```
 
-Here's how the Azure resources look in the portal after a successful deployment:
+### Verifying Azure Resources
 
-![Azure Resources](/assets/az-03-pulumi-private-aks-hub-vnet-development/az-hub-vnet-resources.png)
+After deployment, you can verify the resources in the Azure Portal.
+
+- **Resource Group**: Should contain all the resources we created.
+- **Virtual Network**: Check that the VNet and subnets are correctly configured.
+- **Azure Firewall**: Ensure the firewall is deployed and associated with the VNet.
+- **Public IP Addresses**: Verify that the IPs are allocated and attached to the firewall.
+
+![Azure Resources](/assets/az-04-pulumi-private-aks-hub-vnet-development/az-hub-vnet-resources.png)
 
 ### Destroying the Stack
 
-**Steps**:
-
-1. **Run the Destroy Command**:
-
-   - Use the command `pulumi destroy` or `pnpm run destroy` if using a package manager script.
-   - The `--yes` flag can be used to skip the confirmation prompt.
-
-2. **Monitor the Destruction**:
-
-   - Pulumi will display the resources being deleted.
-   - Dependencies are handled automatically to ensure resources are deleted in the correct order.
-
-3. **Verify the Cleanup**:
-   - After the command completes, verify in the Azure Portal that the resources have been removed.
+To clean up and remove all the resources, run:
 
 ```bash
 pnpm run destroy
 
 # Sample Output
-> az-01-hub-vnet@ destroy /Volumes/VMs_2T/_GIT/drunk-azure-pulumi-articles/az-01-hub-vnet
+> az-02-hub-vnet@ destroy /Volumes/VMs_2T/_GIT/drunk-azure-pulumi-articles/az-02-hub-vnet
 > pulumi destroy --yes --skip-preview
 
 Destroying (dev)
 
-View in Browser (Ctrl+O): https://app.pulumi.com/drunkcoding/az-01-hub-vnet/dev/updates/28
+View in Browser (Ctrl+O): https://app.pulumi.com/drunkcoding/az-02-hub-vnet/dev/updates/28
 
      Type                                                       Name                     Status
- -   pulumi:pulumi:Stack                                        az-01-hub-vnet-dev       deleted (0.87s)
+ -   pulumi:pulumi:Stack                                        az-02-hub-vnet-dev       deleted (0.87s)
  -   ├─ azure-native:network:AzureFirewall                      dev-hub-firewall         deleted (385s)
  -   ├─ azure-native:network:FirewallPolicyRuleCollectionGroup  dev-hub-fw-policy-group  deleted (12s)
  -   ├─ azure-native:network:PublicIPAddress                    dev-manage-ip            deleted (11s)
@@ -645,22 +692,22 @@ Duration: 7m12s
 
 ## Conclusion
 
-Congratulations! You've successfully built and understood a Hub VNet for a private AKS environment on Azure using Pulumi. We covered:
+Congratulations! You've successfully built a Hub VNet for a private AKS environment on Azure using Pulumi. Throughout this tutorial, we've:
 
-- Setting up configurations for resource groups and subnet address spaces.
-- Creating a common project for shared utilities.
-- Developing the main resources, including the VNet, subnets, public IPs, firewall policy, and Azure Firewall.
-- Understanding and combining firewall policies to control network traffic effectively.
-- Deploying and destroying resources using Pulumi commands.
+- **Set Up Configurations**: Defined resource groups and subnet address spaces.
+- **Created Reusable Modules**: Developed `VNet` and `Firewall` modules for resource creation.
+- **Defined Firewall Policies**: Established network and application rules to secure our environment.
+- **Deployed Resources**: Used Pulumi to deploy and manage Azure resources.
+- **Cleaned Up Resources**: Learned how to destroy resources when they're no longer needed.
 
-This foundational knowledge sets you up to tackle more complex infrastructure projects on Azure and automate deployments using infrastructure as code principles.
+This foundational knowledge equips you to handle more complex infrastructure projects on Azure and automate deployments using Infrastructure as Code (IaC) principles.
 
 ---
 
 ## References
 
 - [az-commons Source Code](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-commons/README.md)
-- [az-01-hub-vnet Source Code](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-hub-vnet/README.md)
+- [az-02-hub-vnet Source Code](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-02-hub-vnet/README.md)
 - [Outbound Network and FQDN Rules for AKS Clusters](https://learn.microsoft.com/en-us/azure/aks/outbound-rules-control-egress)
 - [Azure DevOps IPs and FQDNs](https://learn.microsoft.com/en-us/azure/devops/organizations/security/allow-list-ip-url)
 - [Pulumi for Azure](https://www.pulumi.com/docs/intro/cloud-providers/azure/)
@@ -669,8 +716,10 @@ This foundational knowledge sets you up to tackle more complex infrastructure pr
 
 ## Next Steps
 
-- **Day 04: Setting Up the AKS VNet**
-  - In the next installment, we'll focus on setting up the VNet for the AKS cluster, integrating it with the Hub VNet, and configuring network peering.
+**[Day 05: Implementing Private AKS Clusters with Advanced Networking](/posts/az-05-pulumi-private-aks-cluster-env)**
+
+In the next tutorial, we'll build a private AKS cluster with advanced networking features.
+We'll explore how to integrate the AKS cluster with the Hub VNet and apply the firewall policies we've created.
 
 ---
 

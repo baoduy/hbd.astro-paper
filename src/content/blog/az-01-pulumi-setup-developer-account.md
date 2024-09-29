@@ -29,6 +29,12 @@ In this guide, we'll walk you through:
 
 ## Table of Contents
 
+- [Introduction](#introduction)
+- [Conclusion](#conclusion)
+- [References](#references)
+- [Next Steps](#next-steps)
+- [Thank You](#thank-you)
+
 ---
 
 ## Prerequisites
@@ -187,7 +193,10 @@ No     Subscription name    Subscription ID                       Tenant
 
 ```
 
-> Note: Pulumi now supports multiple package managers, including `npm`, `yarn`, and `pnpm`. For consistency, I will be using `pnpm` across all Pulumi projects.
+> **Note**:
+>
+> - Pulumi supports various package managers, including `npm`, `yarn`, and `pnpm`. For consistency, this guide will use `pnpm` for all Pulumi projects.
+> - In Pulumi, each stack represents a different environment, and by default, all stacks are encrypted with a randomly generated key. If you prefer to use a custom encryption key, refer to the [Pulumi documentation](https://www.pulumi.com/docs/iac/concepts/secrets/#configuring-secrets-encryption) for instructions.
 
 ---
 
@@ -361,7 +370,7 @@ Pulumi simplifies cloud resource management by allowing you to use familiar prog
 
 **[Day 02: Private Aks Environment Architecture.](/posts/az-02-pulumi-private-ask-env-architecture)**
 
-This post explains a the architecture of private AKS that we are going to setup on Azure, leveraging multiple subnets, Azure Firewall, and other essential cloud services.
+In the next tutorial will explains a the architecture of private AKS that we are going to setup on Azure, leveraging multiple subnets, Azure Firewall, and other essential cloud services.
 This architecture ensures that sensitive workloads remain isolated and protected from public internet exposure.
 
 ---
