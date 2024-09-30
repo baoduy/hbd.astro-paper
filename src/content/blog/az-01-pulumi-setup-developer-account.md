@@ -355,7 +355,12 @@ Congratulations! You've successfully:
 
 Pulumi simplifies cloud resource management by allowing you to use familiar programming languages and tools. You can now explore adding more complex resources and configurations to your project.
 
-- [Refer here for the source code](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/day-0/day00_pulumi-azure-start/README.md#day-0)
+---
+
+## References
+
+- [Sample source code](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/day-0/day00_pulumi-azure-start#day-0)
+- [Pulumi get started](https://www.pulumi.com/docs/iac/get-started/)
 
 ---
 
@@ -363,7 +368,7 @@ Pulumi simplifies cloud resource management by allowing you to use familiar prog
 
 **[Day 02: Private Aks Environment Architecture.](/posts/az-02-pulumi-private-ask-env-architecture)**
 
-In the next tutorial will explains a the architecture of private AKS that we are going to setup on Azure, leveraging multiple subnets, Azure Firewall, and other essential cloud services.
+In the next tutorial, We will discuss the architecture of private AKS that we are going to provision on Azure, leveraging multiple subnets, Azure Firewall, and other essential cloud services.
 This architecture ensures that sensitive workloads remain isolated and protected from public internet exposure.
 
 ---

@@ -113,7 +113,7 @@ The `stackEnv` module provides functions to retrieve Pulumi stack environment co
   For example, the `dev` stack of project `az-02-hub-vnet` will reference the `dev` stack of project `az-01-shared`.
   This mechanism prevents cross-environment resource referencing, ensuring that resources from different environments (e.g., dev and prod) are kept isolated and properly aligned within the intended environment.
 
-  > For more details, please refer to the [source code here](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-commons/README.md).
+  > For more details, please refer to the [source code here](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-commons).
 
 ---
 
@@ -174,7 +174,7 @@ This module provisions an Azure Log Analytics workspace and an Application Insig
 
 <details><summary>Here is our <code>AppInsight.ts</code> file:</summary>
 
-  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/Log/AppInsight.ts#L1-L174)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/Log/AppInsight.ts#L1-L174)
 
 </details>
 
@@ -206,11 +206,11 @@ In the main script of the `shared` project, we create the Resource Group, Key Va
 
 <details><summary>Here is our <code>index.ts</code> file:</summary>
 
-  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/index.ts#L1-L37)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/index.ts#L1-L37)
 
 </details>
 
-> For more details, please refer to the [source code here](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/README.md).
+> For more details, please refer to the [source code here](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared).
 
 ---
 
@@ -366,6 +366,13 @@ Duration: 51s
 By following this guide, we have successfully automated the deployment of secure secret management and centralized log management using Azure Key Vault, Log Analytics, and Application Insights with Pulumi. This setup ensures that sensitive data is securely stored and that we have real-time monitoring of application performance across our environment.
 
 Implementing RBAC and the principle of least privilege enhances the security posture of our infrastructure. Centralized logging enables us to efficiently troubleshoot issues and gain operational insights.
+
+---
+
+## References
+
+- [az-01-shared](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared).
+- [az-commons](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-commons).
 
 ---
 
