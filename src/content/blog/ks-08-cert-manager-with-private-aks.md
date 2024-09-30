@@ -254,4 +254,4 @@ I hope you found this walkthrough helpful or at least interesting. If you have a
 Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
 
 **Steven**
-[GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)
+[GitHub](https://github.com/baoduy)

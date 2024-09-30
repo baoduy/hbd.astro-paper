@@ -218,33 +218,9 @@ Open `index.ts` in your preferred code editor and review the sample code. It typ
 
 **Sample Code:**
 
-```typescript
-import * as pulumi from "@pulumi/pulumi";
-import * as resources from "@pulumi/azure-native/resources";
-import * as storage from "@pulumi/azure-native/storage";
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/day-0/day00_pulumi-azure-start/index.ts#L1-L23)
 
-// Create an Azure Resource Group
-const resourceGroup = new resources.ResourceGroup("resourceGroup");
-
-// Create an Azure Storage Account
-const storageAccount = new storage.StorageAccount("storageaccount", {
-  resourceGroupName: resourceGroup.name,
-  sku: {
-    name: storage.SkuName.Standard_LRS,
-  },
-  kind: storage.Kind.StorageV2,
-});
-
-// Export the primary key of the Storage Account
-const storageAccountKeys = storage.listStorageAccountKeysOutput({
-  resourceGroupName: resourceGroup.name,
-  accountName: storageAccount.name,
-});
-
-export const primaryStorageKey = storageAccountKeys.keys[0].value;
-```
-
-> Not: Exporting the key here is just for demo purposes. In the real environment all the key, connection string and credentials should be store in the Key Vault instead.
+> Note: Exporting the key here is just for demo purposes. In the real environment all the key, connection string and credentials should be store in the Key Vault instead.
 
 ---
 
@@ -380,4 +356,4 @@ This architecture ensures that sensitive workloads remain isolated and protected
 Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
 
 **Steven**
-[GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)
+[GitHub](https://github.com/baoduy)

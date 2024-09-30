@@ -277,4 +277,4 @@ Visit our documentation at https://longhorn.io/docs/
 Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
 
 **Steven**
-[GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)
+[GitHub](https://github.com/baoduy)

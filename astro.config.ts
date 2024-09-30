@@ -3,6 +3,10 @@ import tailwind from "@astrojs/tailwind";
 import react from "@astrojs/react";
 import remarkToc from "remark-toc";
 import remarkCollapse from "remark-collapse";
+import remarkGfm from "remark-gfm";
+import remarkRehype from "remark-rehype";
+import rehypeStringify from "rehype-stringify";
+import remarkInlineGithubCodeSnippet from "remark-inline-github-code-snippets";
 import sitemap from "@astrojs/sitemap";
 import partytown from "@astrojs/partytown";
 import { SITE } from "./src/config";
@@ -24,6 +28,10 @@ export default defineConfig({
   ],
   markdown: {
     remarkPlugins: [
+      remarkGfm,
+      remarkInlineGithubCodeSnippet,
+      remarkRehype,
+      rehypeStringify,
       remarkToc,
       [
         remarkCollapse,
