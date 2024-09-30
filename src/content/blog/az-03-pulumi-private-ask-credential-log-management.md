@@ -27,7 +27,7 @@ This approach ensures that sensitive data is securely stored, and application pe
 This tutorial is aimed at cloud architects and developers seeking to securely automate their infrastructure management using Infrastructure-as-Code (IaC) with Pulumi.
 
 ![secrets-management](/assets/az-03-pulumi-private-ask-credential-log-management/secrets-management.png)
-_(Download original draw.io file <a href="/assets/az-03-pulumi-private-ask-credential-log-management/secrets-management.drawio" download>here</a> )_
+_(Download original file <a href="/assets/az-03-pulumi-private-ask-credential-log-management/secrets-management.drawio" download>here</a> )_
 
 ---
 
@@ -69,32 +69,15 @@ Again, this is the subnet Ip address spaces that we have defined in the [previou
 | **3. CloudPC VNet** | 3.1 CloudPC Subnet             | `192.168.32.0/25`   | 128   | 123    |
 |                     | 3.2 DevOps Subnet              | `192.168.32.128/27` | 32    | 27     |
 
-Here is our `config.ts` file at the root folder of the project:
+<details><summary>Here is our <code>config.ts</code> file:</summary>
 
-```typescript
-export const azGroups = {
-  //The name of Shared resource group
-  shared: "01-shared",
-  //The name of Hub VNet resource group
-  hub: "02-hub",
-  //The name of AKS VNet resource group
-  ask: "03-ask",
-  //The name of CloudPC VNet resource group
-  cloudPC: "04-cloudPC",
-};
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/config.ts#L1-L21)
 
-//The subnet IP address spaces
-export const subnetSpaces = {
-  firewall: "192.168.30.0/26",
-  firewallManage: "192.168.30.64/26",
-  general: "192.168.30.128/27",
-  aks: "192.168.31.0/24",
-  cloudPC: "192.168.32.0/25",
-  devOps: "192.168.32.128/27",
-};
-```
+</details>
 
 > **Note:** Adding a number as a prefix to the Azure resource group names helps keep them sorted in sequence, making them easier to find and navigate.
+>
+> The `getName` method will remove the number before creating the resources inside Resource Group.
 
 ---
 
@@ -116,7 +99,7 @@ The `azEnv` module provides functions to retrieve Azure environment configuratio
 The `naming` module helps generate resource names with a consistent prefix based on the Pulumi stack name:
 
 - **`getGroupName`**: Prepends the stack name to a resource group name.
-- **`getName`**: Generates a resource name with an optional suffix.
+- **`getName`**: Generates a resource name without the number with an optional suffix.
 
 ### The `stackEnv` Module
 
@@ -161,141 +144,11 @@ The `Vault` module is responsible for deploying an Azure Key Vault with associat
 
    We assign specific roles to these groups, ensuring services or individuals accessing the vault only have the permissions they need.
 
-```typescript
-import * as azure from "@pulumi/azure-native";
-import * as ad from "@pulumi/azuread";
-import { getName, tenantId, subscriptionId } from "@az-commons";
-import { interpolate } from "@pulumi/pulumi";
+<details><summary>Here is our <code>Vault.ts</code> file:</summary>
 
-export default (
-  name: string,
-  {
-    //it should be 90 days in PRD
-    retentionInDays = 7,
-    rsGroup,
-  }: {
-    retentionInDays?: number;
-    rsGroup: azure.resources.ResourceGroup;
-  }
-) => {
-  const vaultName = getName(name, "vlt");
-  const vault = new azure.keyvault.Vault(
-    vaultName,
-    {
-      resourceGroupName: rsGroup.name,
-      properties: {
-        //soft delete min value is '7' and max is '90'
-        softDeleteRetentionInDays: retentionInDays,
-        //Must be authenticated with EntraID for accessing.
-        enableRbacAuthorization: true,
-        //This is required when using vault for VM encryption
-        enabledForDeployment: true,
-        enabledForDiskEncryption: true,
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/Vault.ts#L1-L132)
 
-        tenantId,
-        sku: {
-          name: azure.keyvault.SkuName.Standard,
-          family: azure.keyvault.SkuFamily.A,
-        },
-      },
-    },
-    { dependsOn: rsGroup }
-  );
-
-  /** As the key vault is require Rbac authentication.
-   * So We will create 2 EntraID groups for ReadOnly and Write access to this Key Vault
-   */
-  const vaultReadOnlyGroup = new ad.Group(`${vaultName}-readOnly`, {
-    displayName: `AZ ROL ${vaultName.toUpperCase()} READONLY`,
-    securityEnabled: true,
-  });
-  const vaultWriteGroup = new ad.Group(`${vaultName}-write`, {
-    displayName: `AZ ROL ${vaultName.toUpperCase()} WRITE`,
-    securityEnabled: true,
-  });
-
-  /**
-   * These roles allow read access to the secrets in the Key Vault, including keys, certificates, and secrets.
-   * The role names and IDs are provided here for reference, but only the ID is used in the code.
-   * All roles are combined into a single Entra ID group in this implementation. However, you can split them
-   * into separate groups depending on your environment's requirements.
-   *
-   * To retrieve all available roles in Azure, you can use the following REST API:
-   * https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-list-rest
-   */
-
-  //ReadOnly Roles
-  [
-    {
-      name: "Key Vault Crypto Service Encryption User",
-      id: "e147488a-f6f5-4113-8e2d-b22465e65bf6",
-    },
-    {
-      name: "Key Vault Secrets User",
-      id: "4633458b-17de-408a-b874-0445c86b69e6",
-    },
-    {
-      name: "Key Vault Crypto User",
-      id: "12338af0-0e69-4776-bea7-57ae8d297424",
-    },
-    {
-      name: "Key Vault Certificate User",
-      id: "db79e9a7-68ee-4b58-9aeb-b90e7c24fcba",
-    },
-    { name: "Key Vault Reader", id: "21090545-7ca7-4776-b22c-e363652d74d2" },
-  ].map(
-    r =>
-      //Grant the resources roles to the group above.
-      new azure.authorization.RoleAssignment(
-        `${vaultName}-${r.id}`,
-        {
-          principalType: "Group",
-          principalId: vaultReadOnlyGroup.objectId,
-          roleAssignmentName: r.id,
-          roleDefinitionId: interpolate`/subscriptions/${subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/${r.id}`,
-          scope: vault.id,
-        },
-        { dependsOn: [vault, vaultReadOnlyGroup] }
-      )
-  );
-
-  //Write Roles
-  [
-    {
-      name: "Key Vault Certificates Officer",
-      id: "a4417e6f-fecd-4de8-b567-7b0420556985",
-    },
-    {
-      name: "Key Vault Crypto Officer",
-      id: "14b46e9e-c2b7-41b4-b07b-48a6ebf60603",
-    },
-    {
-      name: "Key Vault Secrets Officer",
-      id: "b86a8fe4-44ce-4948-aee5-eccb2c155cd7",
-    },
-    {
-      name: "Key Vault Contributor",
-      id: "f25e0fa2-a7c8-4377-a976-54943a77a395",
-    },
-  ].map(
-    r =>
-      //Grant the resources roles to the group above.
-      new azure.authorization.RoleAssignment(
-        `${vaultName}-${r.id}`,
-        {
-          principalType: "Group",
-          principalId: vaultWriteGroup.objectId,
-          roleAssignmentName: r.id,
-          roleDefinitionId: interpolate`/subscriptions/${subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/${r.id}`,
-          scope: vault.id,
-        },
-        { dependsOn: [vault, vaultWriteGroup] }
-      )
-  );
-
-  return { vault, vaultReadOnlyGroup, vaultWriteGroup };
-};
-```
+</details>
 
 ### The `Log` Module
 
@@ -308,116 +161,22 @@ This module provisions an Azure Log Analytics workspace and an Application Insig
    - **Log Analytics Workspace**: We create a workspace configured with a daily data ingestion quota, which can be adjusted based on the environment.
    - **Retention Policies**: Data is purged automatically after 30 days to manage storage costs and comply with data retention policies.
 
-```typescript
-import * as azure from "@pulumi/azure-native";
-import { getName } from "@az-commons";
+<details><summary>Here is our <code>Workspace.ts</code> file:</summary>
 
-export default (
-  name: string,
-  {
-    rsGroup,
-    //For demo purpose I config capacity here is 100Mb. Adjust this according to your env.
-    dailyQuotaGb = 0.1,
-    sku = azure.operationalinsights.WorkspaceSkuNameEnum.PerGB2018,
-  }: {
-    dailyQuotaGb?: number;
-    rsGroup: azure.resources.ResourceGroup;
-    sku?: azure.operationalinsights.WorkspaceSkuNameEnum;
-  }
-) =>
-  new azure.operationalinsights.Workspace(
-    getName(name, "log"),
-    {
-      resourceGroupName: rsGroup.name,
-      features: { immediatePurgeDataOn30Days: true },
-      workspaceCapping: { dailyQuotaGb },
-      sku: { name: sku },
-    },
-    { dependsOn: rsGroup }
-  );
-```
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/Log/Workspace.ts#L1-L126)
+
+</details>
 
 2. **Application Insights Setup**
 
    - **Application Insights Instance**: Associated with the Log Analytics workspace for monitoring web applications.
    - **Secret Management**: If a Key Vault is provided, we store the instrumentation key and connection string as secrets for secure access.
 
-```typescript
-import * as azure from "@pulumi/azure-native";
-import { getName } from "@az-commons";
+<details><summary>Here is our <code>AppInsight.ts</code> file:</summary>
 
-export default (
-  name: string,
-  {
-    vault,
-    rsGroup,
-    workspace,
-  }: {
-    rsGroup: azure.resources.ResourceGroup;
-    workspace: azure.operationalinsights.Workspace;
-    vault?: azure.keyvault.Vault;
-  }
-) => {
-  const appInsightName = getName(name, "insights");
-  const appInsight = new azure.insights.Component(
-    appInsightName,
-    {
-      resourceGroupName: rsGroup.name,
-      workspaceResourceId: workspace.id,
-      kind: "web",
-      applicationType: "web",
-      retentionInDays: 30,
-      immediatePurgeDataOn30Days: true,
-      ingestionMode: azure.insights.IngestionMode.LogAnalytics,
-    },
-    { dependsOn: workspace }
-  );
+  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/Log/AppInsight.ts#L1-L174)
 
-  if (vault) {
-    //Add appInsight key to vault
-    new azure.keyvault.Secret(
-      `${appInsightName}-key`,
-      {
-        resourceGroupName: rsGroup.name,
-        vaultName: vault.name,
-        secretName: `${appInsightName}-key`,
-        properties: {
-          value: appInsight.instrumentationKey,
-          contentType: "AppInsight",
-        },
-      },
-      {
-        dependsOn: appInsight,
-        //The option `retainOnDelete` allows to retain the resources on Azure when deleting pulumi resources.
-        //In this case the secret will be retained on Key Vault when deleting.
-        retainOnDelete: true,
-      }
-    );
-
-    //Add App insight connection string to vault
-    new azure.keyvault.Secret(
-      `${appInsightName}-conn`,
-      {
-        resourceGroupName: rsGroup.name,
-        vaultName: vault.name,
-        secretName: `${appInsightName}-conn`,
-        properties: {
-          value: appInsight.connectionString,
-          contentType: "AppInsight",
-        },
-      },
-      {
-        dependsOn: appInsight,
-        //The option `retainOnDelete` allows to retain the resources on Azure when deleting pulumi resources.
-        //In this case the secret will be retained on Key Vault when deleting.
-        retainOnDelete: true,
-      }
-    );
-  }
-
-  return appInsight;
-};
-```
+</details>
 
 ### Main Project Code `index.ts`
 
@@ -443,47 +202,13 @@ In the main script of the `shared` project, we create the Resource Group, Key Va
 
 4. **Exporting Resource Information**
 
-   We export resource IDs and group information for reuse in other projects, ensuring consistent references across our infrastructure.
+   We export resource `name, ID` for every created resources for reuse in other projects, ensuring consistent references across our infrastructure.
 
-```typescript
-import * as azure from "@pulumi/azure-native";
-import { getGroupName } from "@az-commons";
-import * as config from "../config";
-import Vault from "./Vault";
-import Log from "./Log";
+<details><summary>Here is our <code>index.ts</code> file:</summary>
 
-// Create Shared Resource Group
-const rsGroup = new azure.resources.ResourceGroup(
-  getGroupName(config.azGroups.shared)
-);
+  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/index.ts#L1-L37)
 
-const vaultInfo = Vault(config.azGroups.shared, {
-  rsGroup,
-  //This should be 90 days in PRD.
-  retentionInDays: 7,
-});
-
-const logInfo = Log(config.azGroups.shared, {
-  rsGroup,
-  vault: vaultInfo.vault,
-});
-
-// Export the information that will be used in the other projects
-export const rsGroupId = rsGroup.id;
-export const logWorkspace = {
-  id: logInfo.workspace.id,
-  customerId: logInfo.workspace.customerId,
-};
-export const appInsight = {
-  id: logInfo.appInsight.id,
-  key: logInfo.appInsight.instrumentationKey,
-};
-export const vault = {
-  id: vaultInfo.vault.id,
-  readOnlyGroupId: vaultInfo.vaultReadOnlyGroup.id,
-  writeGroupId: vaultInfo.vaultWriteGroup.id,
-};
-```
+</details>
 
 > For more details, please refer to the [source code here](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/README.md).
 
@@ -497,8 +222,11 @@ Run the following command to deploy the stack:
 
 ```bash
 pnpm run up
+```
 
-# Sample Output
+<details><summary>Sample Output:</summary>
+
+```bash
 > az-01-hub-vnet@ up /Volumes/VMs_2T/_GIT/drunk-azure-pulumi-articles/az-01-shared
 > pulumi up --yes --skip-preview
 
@@ -557,6 +285,8 @@ Resources:
 Duration: 1m28s
 ```
 
+</details>
+
 ### Azure Resources After Deployment
 
 #### Azure AD Groups
@@ -579,8 +309,11 @@ To destroy the stack and clean up resources, run:
 
 ```bash
 pnpm run destroy
+```
 
-# Sample Output
+<details><summary>Sample Output:</summary>
+
+```bash
 > az-01-hub-vnet@ destroy /Volumes/VMs_2T/_GIT/drunk-azure-pulumi-articles/az-01-shared
 > pulumi destroy --yes --skip-preview
 
@@ -623,6 +356,8 @@ Resources:
 
 Duration: 51s
 ```
+
+</details>
 
 ---
 

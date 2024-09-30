@@ -58,7 +58,7 @@ This architecture includes the following major components:
 
 ## Component Details
 
-### Azure Firewall: Securing External Access
+### Azure Firewall
 
 At the core of the security setup is **Azure Firewall**, deployed in the **Firewall Subnet** (`192.168.30.0/26`) and **Firewall Management Subnet** (`192.168.30.64/26`).
 This firewall is configured with a **public IP address** and acts as the only exit point for internet traffic.
@@ -70,7 +70,7 @@ This firewall is configured with a **public IP address** and acts as the only ex
 - **Network Traffic Control**: The Azure Firewall prevents direct access to the AKS cluster and other resources within the virtual network.
   All traffic is tightly controlled, and only legitimate internal traffic can interact with the resources.
 
-### General Subnet: Supporting Infrastructure Services
+### General Subnet:
 
 The **General Subnet** (`192.168.30.128/27`) this is dedicated subnet for private link Azure resources, hosts essential infrastructure services required for application operations.
 This subnet is entirely internal, with no public access allowed.
@@ -85,7 +85,7 @@ Below are some widely-used Azure services commonly deployed in secure environmen
 
 Each of these services communicates internally with components like the AKS cluster and virtual machines through private endpoints, significantly enhancing security by preventing any direct public exposure.
 
-### AKS Subnet: Hosting the Kubernetes Cluster
+### AKS Subnet:
 
 The **AKS Subnet** (`192.168.31.0/24`) houses the Azure Kubernetes Service (AKS) cluster, where all containerized workloads are deployed and orchestrated.
 
@@ -93,7 +93,7 @@ The **AKS Subnet** (`192.168.31.0/24`) houses the Azure Kubernetes Service (AKS)
 - **Pod Networking**: Pod networking is managed within this subnet, allowing the AKS cluster to securely communicate with other services like databases or storage located in the General Subnet.
 - **Azure Firewall Integration**: The Azure Firewall restricts any external traffic from directly accessing the AKS nodes. Only authorized internal traffic can interact with Kubernetes resources.
 
-### CloudPC and DevOps Subnets: Managing Infrastructure
+### CloudPC and DevOps Subnets
 
 These subnets host specific workloads related to cloud desktops and DevOps operations.
 
@@ -144,7 +144,7 @@ By carefully designing your network architecture with security in mind, you can 
 
 In the next tutorial, we’ll walk you through setting up a secure and scalable infrastructure on Azure by automating secret management using Azure Key Vault and centralized log monitoring with Log Analytics and Application Insights.
 
---
+---
 
 ## Thank You
 

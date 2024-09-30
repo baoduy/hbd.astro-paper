@@ -216,11 +216,13 @@ The template generates several files:
 
 Open `index.ts` in your preferred code editor and review the sample code. It typically includes the creation of a Resource Group and a Storage Account.
 
-**Sample Code:**
+<details><summary>Here is our Sample Code:</summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/day-0/day00_pulumi-azure-start/index.ts#L1-L23)
 
-> Note: Exporting the key here is just for demo purposes. In the real environment all the key, connection string and credentials should be store in the Key Vault instead.
+</details>
+
+> Note: Exporting the key here is just for demo purposes. In the real environment all the connection string and credentials should be store in the Key Vault instead.
 
 ---
 
@@ -232,8 +234,11 @@ Before deploying, preview the changes to ensure everything is set up correctly:
 
 ```bash
 pulumi up
+```
 
-# Sample Output
+<details><summary>Sample Output:</summary>
+
+```bash
 Previewing update (dev)
 
 View in Browser (Ctrl+O): https://app.pulumi.com/drunkcoding/day00_pulumi-azure-start/dev/previews/xxxxxxxx-1f60-4ed9-bb35-xxxxxxxxxxxx
@@ -255,6 +260,8 @@ Do you want to perform this update?  [Use arrows to move, type to filter]
   details
 ```
 
+</details>
+
 You should see a plan indicating that new resources will be created.
 
 ### 6.2. Deploy the Stack
@@ -263,8 +270,11 @@ Deploy your resources to Azure:
 
 ```bash
 pulumi up -y
+```
 
-# Sample Output
+<details><summary>Sample Output:</summary>
+
+```bash
 Updating (dev)
 
 View Live: https://app.pulumi.com/YOUR_ORGANIZATION/day00_pulumi-azure-start/dev/updates/1
@@ -282,6 +292,8 @@ Resources:
 
 Duration: 35s
 ```
+
+</details>
 
 ### 6.3: Verify the Deployment
 
@@ -301,8 +313,11 @@ To avoid incurring unnecessary costs, destroy the resources when they're no long
 
 ```bash
 pulumi destroy -y
+```
 
-# Sample Output
+<details><summary>Sample Output:</summary>
+
+```bash
 Destroying (dev)
 
 View Live: https://app.pulumi.com/YOUR_ORGANIZATION/day00_pulumi-azure-start/dev/updates/2
@@ -323,6 +338,8 @@ Duration: 25s
 The resources in the stack have been deleted, but the history and configuration are still maintained.
 If you want to remove the stack completely, run `pulumi stack rm dev`.
 ```
+
+</details>
 
 ---
 

@@ -28,10 +28,6 @@ export default defineConfig({
   ],
   markdown: {
     remarkPlugins: [
-      remarkGfm,
-      remarkInlineGithubCodeSnippet,
-      remarkRehype,
-      rehypeStringify,
       remarkToc,
       [
         remarkCollapse,
@@ -39,6 +35,10 @@ export default defineConfig({
           test: "Table of contents",
         },
       ],
+      remarkGfm,
+      remarkInlineGithubCodeSnippet,
+      remarkRehype,
+      rehypeStringify,
     ],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
