@@ -8,7 +8,7 @@ tags:
   - aks
   - private
   - pulumi
-description: "In these series I would like to share an ideas/options how to setup the entire private AKS environments on Azure using pulumi includes Virtual Network, Firewall, Private AKS to private Azure DevOps agents and Private CloudPC environment and How to expose some public applications through Cloudflare Tunnels."
+description: "In these series, I would like to share an ideas/options how to setup the entire private AKS environments on Azure using pulumi includes Virtual Network, Firewall, Private AKS to private Azure DevOps agents and Private CloudPC environment and How to expose some public applications through Cloudflare Tunnels."
 ---
 
 ## Introduction
