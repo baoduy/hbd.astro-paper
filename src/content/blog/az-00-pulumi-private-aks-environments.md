@@ -44,7 +44,7 @@ In this article, We'll walk through the process of developing the first Hub VNet
 
 ### [Day 05: Implementing Private AKS Clusters with Advanced Networking](/posts/az-05-pulumi-private-aks-cluster-env)
 
-In this tutorial, we'll build a private AKS cluster with advanced networking features.
+In this tutorial, We'll build a private AKS cluster with advanced networking features.
 We'll explore how to integrate the AKS cluster with the Hub VNet and apply the firewall policies we've created.
 
 ---
@@ -65,4 +65,4 @@ We'll explore how to integrate the AKS cluster with the Hub VNet and apply the f
 
 Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
 
-**Steven** | *[GitHub](https://github.com/baoduy)*
+**Steven** | _[GitHub](https://github.com/baoduy)_
