@@ -32,12 +32,6 @@ This tutorial is aimed at cloud architects and developers seeking to securely au
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [Conclusion](#conclusion)
-- [References](#references)
-- [Next Steps](#next-steps)
-- [Thank You](#thank-you)
-
 ---
 
 ## Configuration
@@ -68,7 +62,7 @@ Again, this is the subnet Ip address spaces that we have defined in the [previou
 | **3. CloudPC VNet** | 3.1 CloudPC Subnet             | `192.168.32.0/25`   | 128   | 123    |
 |                     | 3.2 DevOps Subnet              | `192.168.32.128/27` | 32    | 27     |
 
-<details><summary>Here is the <code>config.ts</code> file:</summary>
+<details><summary>View code:</summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/config.ts#L1-L21)
 
@@ -82,7 +76,7 @@ Again, this is the subnet Ip address spaces that we have defined in the [previou
 
 ## The `Common` Library
 
-To promote code reusability and maintainability, we create a common project named `az-commons`. 
+To promote code reusability and maintainability, we create a common project named `az-commons`.
 This library contains utilities and helper functions that we'll use across all our Pulumi projects.
 
 ### The `azEnv` Module
@@ -119,7 +113,7 @@ The `stackEnv` module provides functions to retrieve Pulumi stack environment co
 
 ## The `Shared` Project
 
-Following the instructions from [Day 01](/posts/az-01-pulumi-setup-developer-account), we create a new project named `az-01-shared`. 
+Following the instructions from [Day 01](/posts/az-01-pulumi-setup-developer-account), we create a new project named `az-01-shared`.
 This project will include the following components:
 
 ### The `Vault` Module
@@ -127,6 +121,7 @@ This project will include the following components:
 Creating a `Azure Key Vault` is a secure storage solution for managing secrets, keys, and certificates. It helps safeguard cryptographic keys and secrets used by cloud applications and services. The vault ensures that sensitive information is protected and can be accessed securely by authorized applications and users.
 
 - **Vault Options**:
+
   - **enablePurgeProtection**: This option enables purge protection for the Key Vault. When enabled, it prevents the permanent deletion of the vault and its contents for a specified retention period, even if a delete operation is performed. This is crucial for compliance and recovery scenarios.
   - **enabledForDiskEncryption**: This setting allows the Key Vault to be used for Azure Disk Encryption. It is necessary for encrypting virtual machine disks, ensuring that data at rest is protected.
   - **softDeleteRetentionInDays**: This specifies the number of days that deleted vault items (like keys, secrets, and certificates) are retained in a "soft deleted" state. During this period, they can be recovered. The minimum value is 7 days, and the maximum is 90 days.
@@ -136,7 +131,7 @@ Creating a `Azure Key Vault` is a secure storage solution for managing secrets, 
   - **Read-Only Group**: For read-only access to the Key Vault.
   - **Write Group**: For write access to the Key Vault.
 
-<details><summary> The <code>Vault.ts</code> file:</summary>
+<details><summary> View code:</summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/Vault.ts#L1-L132)
 
@@ -151,7 +146,7 @@ This module provisions a Log Analytics Workspace, which is used for collecting a
   - **workspaceCapping**: Sets a daily data ingestion quota to control costs and manage data volume.
   - **sku**: Defines the pricing tier for the workspace, which affects cost and features.
 
-<details><summary> The <code>Workspace.ts</code> file:</summary>
+<details><summary> View code:</summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/Log/Workspace.ts#L1-L126)
 
@@ -167,41 +162,23 @@ this module is setup an Application Insights component for monitoring web applic
   - **immediatePurgeDataOn30Days**: Allows data to be purged immediately after 30 days.
   - **ingestionMode**: Specifies that data ingestion is done through Log Analytics.
 
-<details><summary>The <code>AppInsight.ts</code> file:</summary>
+<details><summary>View code:</summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/Log/AppInsight.ts#L1-L174)
 
 </details>
 
-### Main Project Code `index.ts`
+### Core Project module: `index.ts`
 
-In the main script of the `shared` project, we create the Resource Group, Key Vault, Log Analytics Workspace, and Application Insights. We also export resource IDs and group information that can be used by other Pulumi projects.
+The `index.ts` file acts as the central hub for the `shared` project, and a similar structure is maintained across all related projects. This file is tasked with:
 
-**Key Components:**
+- Establishing Resource Groups.
+- Deploying all the Azure Resources above.
+- Providing essential resource details for future use by other projects.
 
-1. **Resource Group Creation**
+<details><summary>View code:</summary>
 
-   We create an Azure Resource Group to host all our shared resources, such as the Key Vault, Log Analytics Workspace, and Application Insights.
-
-2. **Key Vault Setup**
-
-   The Key Vault securely manages sensitive data:
-
-   - **RBAC Implementation**: Assign different roles to specific groups for fine-grained access control.
-   - **Soft Delete Policy**: Set a retention policy for deleted secrets.
-
-3. **Log Analytics and Application Insights**
-
-   - **Centralized Logging**: All logs from our applications are collected and visualized in the Log Analytics Workspace.
-   - **Secure Monitoring**: Sensitive information like the Application Insights connection string is stored securely in the Key Vault.
-
-4. **Exporting Resource Information**
-
-   We export resource `name, ID` for every created resources for reuse in other projects, ensuring consistent references across our infrastructure.
-
-<details><summary>🔖 The <code>index.ts</code> file:</summary>
-
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/index.ts#L1-L37)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/index.ts#L1-L55)
 
 </details>
 
@@ -209,156 +186,28 @@ In the main script of the `shared` project, we create the Resource Group, Key Va
 
 ---
 
-## Deploying the `Shared` Project
+## Deployment and Cleanup
 
-### Deploy the Stack
+### Deploying the Stack
 
-Run the following command to deploy the stack:
+To deploy the stack, execute the `pnpm run up` command. This provisions the necessary Azure resources. We can verify the deployment as follows:
 
-```bash
-pnpm run up
-```
+- EntraID groups configured for Key Vault access control:
+  ![Entra-Group](/assets/az-03-pulumi-private-ask-credential-log-management/az-01-entra-groups.png)
 
-<details><summary>Sample Output:</summary>
+- Successfully deployed Azure resources:
+  ![Azure-Resources](/assets/az-03-pulumi-private-ask-credential-log-management/az-01-resources.png)
 
-```bash
-> az-01-hub-vnet@ up /Volumes/VMs_2T/_GIT/drunk-azure-pulumi-articles/az-01-shared
-> pulumi up --yes --skip-preview
+### Cleaning Up the Stack
 
-Updating (dev)
-
-View in Browser (Ctrl+O): https://app.pulumi.com/drunkcoding/az-01-shared/dev/updates/21
-
-     Type                                           Name                                                 Status            Info
- +   pulumi:pulumi:Stack                            az-01-shared-dev                                     created (86s)     6 messages
- +   ├─ azuread:index:Group                         dev-shared-vlt-write                                 created (22s)
- +   ├─ azure-native:resources:ResourceGroup        dev-01-shared                                        created (2s)
- +   ├─ azuread:index:Group                         dev-shared-vlt-readOnly                              created (23s)
- +   ├─ azure-native:keyvault:Vault                 dev-shared-vlt                                       created (40s)
- +   ├─ azure-native:operationalinsights:Workspace  dev-shared-log                                       created (31s)
- +   ├─ azure-native:insights:Component             dev-shared-insights                                  created (4s)
- +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-14b46e9e-c2b7-41b4-b07b-48a6ebf60603  created (3s)
- +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-21090545-7ca7-4776-b22c-e363652d74d2  created (5s)
- +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-db79e9a7-68ee-4b58-9aeb-b90e7c24fcba  created (7s)
- +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-f25e0fa2-a7c8-4377-a976-54943a77a395  created (8s)
- +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-e147488a-f6f5-4113-8e2d-b22465e65bf6  created (2s)
- +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-4633458b-17de-408a-b874-0445c86b69e6  created (4s)
- +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-12338af0-0e69-4776-bea7-57ae8d297424  created (7s)
- +   ├─ azure-native:keyvault:Secret                dev-shared-insights-key                              created (2s)
- +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-a4417e6f-fecd-4de8-b567-7b0420556985  created (5s)
- +   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-b86a8fe4-44ce-4948-aee5-eccb2c155cd7  created (8s)
- +   └─ azure-native:keyvault:Secret                dev-shared-insights-conn                             created (7s)
-
-Diagnostics:
-  pulumi:pulumi:Stack (az-01-shared-dev):
-    Pulumi Environments: {
-      organization: 'drunkcoding',
-      projectName: 'az-01-shared',
-      stack: 'dev',
-      isDryRun: false
-    }
-
-Outputs:
-    appInsight  : {
-        id : "/subscriptions/54dbd16b-81cd-4444-b4fd-02c2dcd59d3d/resourceGroups/dev-01-shared5cc639c5/providers/microsoft.insights/components/dev-shared-insights42ea1dd8"
-        key: "c6114e12-fe84-4b4b-a3c1-1ac036d61bd4"
-    }
-    logWorkspace: {
-        customerId: "21edf4e0-2fec-4da5-8c2a-c09a5d9dbdef"
-        id        : "/subscriptions/54dbd16b-81cd-4444-b4fd-02c2dcd59d3d/resourceGroups/dev-01-shared5cc639c5/providers/Microsoft.OperationalInsights/workspaces/dev-shared-logc34ae06a"
-    }
-    rsGroupId   : "/subscriptions/54dbd16b-81cd-4444-b4fd-02c2dcd59d3d/resourceGroups/dev-01-shared5cc639c5"
-    vault       : {
-        id             : "/subscriptions/54dbd16b-81cd-4444-b4fd-02c2dcd59d3d/resourceGroups/dev-01-shared5cc639c5/providers/Microsoft.KeyVault/vaults/dev-shared-vltad719b50"
-        readOnlyGroupId: "3d71130a-773f-45c3-99ca-cc19a29cac7d"
-        writeGroupId   : "0feed654-26fa-4ce5-b1ba-a880965e1bcb"
-    }
-
-Resources:
-    + 18 created
-
-Duration: 1m28s
-```
-
-</details>
-
-### Azure Resources After Deployment
-
-#### EntraID Groups
-
-The EntraID groups for Key Vault access control are created:
-
-![Entra-Group](/assets/az-03-pulumi-private-ask-credential-log-management/az-01-entra-groups.png)
-
-#### Azure Resources
-
-The Azure resources including the Resource Group, Key Vault, Log Analytics Workspace, and Application Insights are deployed:
-
-![Entra-Group](/assets/az-03-pulumi-private-ask-credential-log-management/az-01-resources.png)
-
-> **Note:** Ensure that the images render correctly on the platform where this guide is published, and provide descriptive alt text for accessibility.
-
-### Destroy the Stack
-
-To destroy the stack and clean up resources, run:
-
-```bash
-pnpm run destroy
-```
-
-<details><summary>Sample Output:</summary>
-
-```bash
-> az-01-hub-vnet@ destroy /Volumes/VMs_2T/_GIT/drunk-azure-pulumi-articles/az-01-shared
-> pulumi destroy --yes --skip-preview
-
-Destroying (dev)
-
-View in Browser (Ctrl+O): https://app.pulumi.com/drunkcoding/az-01-shared/dev/updates/20
-
-     Type                                           Name                                                 Status
- -   pulumi:pulumi:Stack                            az-01-shared-dev                                     deleted (1s)
- -   ├─ azure-native:keyvault:Secret                dev-shared-insights-conn                             deleted (5s)[retain]
- -   ├─ azure-native:keyvault:Secret                dev-shared-insights-key                              deleted (6s)[retain]
- -   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-14b46e9e-c2b7-41b4-b07b-48a6ebf60603  deleted (5s)
- -   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-e147488a-f6f5-4113-8e2d-b22465e65bf6  deleted (5s)
- -   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-db79e9a7-68ee-4b58-9aeb-b90e7c24fcba  deleted (2s)
- -   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-b86a8fe4-44ce-4948-aee5-eccb2c155cd7  deleted (3s)
- -   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-f25e0fa2-a7c8-4377-a976-54943a77a395  deleted (4s)
- -   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-12338af0-0e69-4776-bea7-57ae8d297424  deleted (3s)
- -   ├─ azure-native:insights:Component             dev-shared-insights                                  deleted (5s)
- -   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-a4417e6f-fecd-4de8-b567-7b0420556985  deleted (4s)
- -   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-4633458b-17de-408a-b874-0445c86b69e6  deleted (5s)
- -   ├─ azure-native:authorization:RoleAssignment   dev-shared-vlt-21090545-7ca7-4776-b22c-e363652d74d2  deleted (7s)
- -   ├─ azure-native:keyvault:Vault                 dev-shared-vlt                                       deleted (8s)
- -   ├─ azure-native:operationalinsights:Workspace  dev-shared-log                                       deleted (1s)
- -   ├─ azuread:index:Group                         dev-shared-vlt-readOnly                              deleted (21s)
- -   ├─ azure-native:resources:ResourceGroup        dev-01-shared                                        deleted (15s)
- -   └─ azuread:index:Group                         dev-shared-vlt-write                                 deleted (21s)
-
-Outputs:
-  - appInsightId  : "/subscriptions/54dbd16b-81cd-4444-b4fd-02c2dcd59d3d/resourceGroups/dev-01-shared79f10573/providers/microsoft.insights/components/dev-shared-insights00f71ffa"
-  - logWorkspaceId: "/subscriptions/54dbd16b-81cd-4444-b4fd-02c2dcd59d3d/resourceGroups/dev-01-shared79f10573/providers/Microsoft.OperationalInsights/workspaces/dev-shared-loga30aa58f"
-  - rsGroupId     : "/subscriptions/54dbd16b-81cd-4444-b4fd-02c2dcd59d3d/resourceGroups/dev-01-shared79f10573"
-  - vault         : {
-      - id             : "/subscriptions/54dbd16b-81cd-4444-b4fd-02c2dcd59d3d/resourceGroups/dev-01-shared79f10573/providers/Microsoft.KeyVault/vaults/dev-shared-vlt2fdd6d3f"
-      - readOnlyGroupId: "92758d51-8f7c-4b5e-9442-5dca96965961"
-      - writeGroupId   : "9ff3b17c-3d4c-4be6-bb97-4c27eb480539"
-    }
-
-Resources:
-    - 18 deleted
-
-Duration: 51s
-```
-
-</details>
+To remove the stack and clean up all associated Azure resources, run the `pnpm run destroy` command. This ensures that any resources no longer needed are properly deleted.
 
 ---
 
 ## Conclusion
 
-By following this guide, we have successfully automated the deployment of secure secret management and centralized log management using Azure Key Vault, Log Analytics, and Application Insights with Pulumi. This setup ensures that sensitive data is securely stored and that we have real-time monitoring of application performance across our environment.
+By following this guide, we have successfully automated the deployment of secure `secret management` and centralized `log management` using Azure Key Vault, Log Analytics, and Application Insights with Pulumi.
+This setup ensures that sensitive data is securely stored and that we have real-time monitoring of application performance across our environment.
 
 Implementing RBAC and the principle of least privilege enhances the security posture of our infrastructure. Centralized logging enables us to efficiently troubleshoot issues and gain operational insights.
 
@@ -384,4 +233,4 @@ In this article, We'll walk through the process of developing the first Hub VNet
 
 Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
 
-**Steven** | *[GitHub](https://github.com/baoduy)*
+**Steven** | _[GitHub](https://github.com/baoduy)_
