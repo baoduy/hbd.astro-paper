@@ -69,5 +69,4 @@ Longhorn is known for its lightweight, reliable, and open-source nature, which s
 
 Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
 
-**Steven**
-[GitHub](https://github.com/baoduy)
+**Steven** | *[GitHub](https://github.com/baoduy)*

@@ -1,7 +1,7 @@
 ---
 author: Steven Hoang
 pubDatetime: 2025-01-01T12:00:00Z
-title: "[Az] Day 02: Private AKS Environment Architecture."
+title: "[Az] Day 02: Private Azure Kubernetes (AKS) Environment Architecture."
 featured: false
 draft: false
 tags:
@@ -13,7 +13,7 @@ description: "This post explains a the architecture of private AKS that we are g
 
 ## Introduction
 
-In today's cloud-centric world, security is paramount. By default, many cloud services are publicly accessible over the internet, which can pose significant risks for sensitive workloads. When deploying a private Azure Kubernetes Service (AKS) environment, it's essential to protect all components while maintaining efficient network communication.
+In today's cloud-centric world, security is paramount. By default, many cloud services are publicly accessible over the internet, which can pose significant risks for sensitive workloads. When deploying a private AKS (AKS) environment, it's essential to protect all components while maintaining efficient network communication.
 
 This post explains a the architecture of private AKS that we are going to setup on Azure, leveraging multiple subnets, Azure Firewall, and other essential cloud services. This architecture ensures that sensitive workloads remain isolated and protected from public internet exposure.
 
@@ -27,21 +27,44 @@ _(Download original draw.io file <a href="/assets/az-02-pulumi-private-ask-env-a
 - [Introduction](#introduction)
 - [Conclusion](#conclusion)
 - [References](#references)
-- [Next Steps](#next-steps)
+- [Next](#next)
 - [Thank You](#thank-you)
 
 ---
 
-## Key Components
+## Architecture Overview
 
-This architecture includes the following major components:
+This architecture is designed to ensure secure and efficient communication across various components by leveraging multiple VNets and subnets. Below is a detailed explanation of the key components and their configurations:
 
-- **Azure Firewall**: Acts as the central point of security, controlling all inbound and outbound traffic.
-- **AKS Subnet**: Hosts the private Azure Kubernetes Service cluster.
-- **General Subnet**: Contains critical infrastructure services like Key Vault and Storage Account.
-- **CloudPC and DevOps Subnets**: Isolated subnets for cloud PCs and DevOps operations.
+### Hub VNet
 
-## Summary of Allocated Subnets
+The Hub VNet acts as the central point for network security and communication management, utilizing a **hub-and-spoke** architecture. It includes:
+
+- **Azure Firewall**: Positioned in dedicated subnets, it serves as the main security gateway, regulating all inbound and outbound network traffic. It consolidates outbound traffic through a single public IP address for easier control and third-party whitelisting. Security measures include:
+  - **Outbound Traffic Control**: Inspects and authorizes outgoing traffic to approved IP ranges or services.
+  - **No Inbound NAT Rules**: Blocks unsolicited inbound internet traffic, enhancing security.
+  - **Network Traffic Control**: Restricts direct access to the AKS cluster and other resources, allowing only legitimate internal interactions.
+
+- **General Subnet**: Allocated for Azure resources with private links, such as Key Vault, SQL Server, and Storage Account. It is entirely internal with no public access, ensuring secure operations.
+
+### AKS VNet
+
+The AKS VNet is designed to host the private AKS cluster, ensuring secure and efficient communication with other network components. It includes:
+
+- **AKS Subnet**: Hosts the AKS cluster within a dedicated subnet. The Kubernetes API server is accessible only via a private endpoint, and pod networking manages secure communication with services in the General Subnet. Azure Firewall restricts external access, allowing only authorized internal traffic.
+
+### CloudPC VNet
+
+The CloudPC VNet provides secure environments for virtual desktops and DevOps operations, maintaining isolation from critical infrastructure. It includes:
+
+- **CloudPC Subnet**: Provides secure virtual desktops for internal resource access, eliminating public exposure.
+- **DevOps Subnet**: Hosts resources for DevOps private agents, including CI/CD pipelines and management servers, isolated from critical infrastructure.
+
+---
+
+## Subnet IP Allocation
+
+Here is the summary of the private IP address allocation for each subnet:
 
 | VNet Name           | Subnet Name                    | Address Prefix      | Total | Usable |
 | ------------------- | ------------------------------ | ------------------- | ----- | ------ |
@@ -56,78 +79,15 @@ This architecture includes the following major components:
 
 ---
 
-## Component Details
-
-### Azure Firewall
-
-At the core of the security setup is **Azure Firewall**, deployed in the **Firewall Subnet** (`192.168.30.0/26`) and **Firewall Management Subnet** (`192.168.30.64/26`).
-This firewall is configured with a **public IP address** and acts as the only exit point for internet traffic.
-
-- **Outbound Traffic Control**: The Azure Firewall inspects all outgoing (internal) traffic, ensuring that only authorized connections reach destination resources.
-  Firewall rules are set to allow specific outbound traffic, such as to approved IP ranges or specific services.
-- **No Inbound NAT Rules**: In this setup, inbound Network Address Translation (NAT) rules are not configured.
-  This means unsolicited inbound traffic from the internet is blocked, enhancing the security posture.
-- **Network Traffic Control**: The Azure Firewall prevents direct access to the AKS cluster and other resources within the virtual network.
-  All traffic is tightly controlled, and only legitimate internal traffic can interact with the resources.
-
-### General Subnet:
-
-The **General Subnet** (`192.168.30.128/27`) this is dedicated subnet for private link Azure resources, hosts essential infrastructure services required for application operations.
-This subnet is entirely internal, with no public access allowed.
-
-Below are some widely-used Azure services commonly deployed in secure environments:
-
-- **Azure Key Vault**: Stores secrets, encryption keys, and certificates securely, accessed exclusively through private endpoints to prevent public exposure.
-- **Azure Storage Account**: Provides persistent storage for applications and workloads, using private endpoints to ensure secure, internal-only communication.
-- **Database Services**: Includes managed databases like Azure SQL Database or Cosmos DB, which operate securely within the virtual network, accessible only via private connections.
-- **Azure Service Bus (Premium Tier)**: Facilitates communication between services, enabling decoupled and scalable messaging while maintaining security with private endpoints.
-- **Other Azure Services**: Most Azure services support private links. In private environments, all resources are configured to remain as isolated and private as possible.
-
-Each of these services communicates internally with components like the AKS cluster and virtual machines through private endpoints, significantly enhancing security by preventing any direct public exposure.
-
-### AKS Subnet:
-
-The **AKS Subnet** (`192.168.31.0/24`) houses the Azure Kubernetes Service (AKS) cluster, where all containerized workloads are deployed and orchestrated.
-
-- **Private Cluster Configuration**: The AKS cluster is configured as a **private cluster**, meaning the Kubernetes API server is not accessible from the public internet. Communication with the API server is handled via a private endpoint within the virtual network.
-- **Pod Networking**: Pod networking is managed within this subnet, allowing the AKS cluster to securely communicate with other services like databases or storage located in the General Subnet.
-- **Azure Firewall Integration**: The Azure Firewall restricts any external traffic from directly accessing the AKS nodes. Only authorized internal traffic can interact with Kubernetes resources.
-
-### CloudPC and DevOps Subnets
-
-These subnets host specific workloads related to cloud desktops and DevOps operations.
-
-#### CloudPC Subnet (`192.168.32.0/25`)
-
-- Contains virtual desktops that allow secure access to internal resources.
-- Provides a secure environment for users needing access to internal tools and services.
-- Eliminates the need for exposing resources to the public internet.
-
-#### DevOps Subnet (`192.168.32.128/27`)
-
-- Houses virtual machines and other resources required for DevOps operations.
-- Can include CI/CD pipelines, automation tools, and management servers.
-- Isolated from the AKS cluster and other critical infrastructure to provide an extra layer of security.
-
-## Internal Network Communication
-
-The environment is built on a **hub-and-spoke** model, with Azure Firewall acting as the central point for controlling traffic. Internal communication between the subnets occurs over private IP addresses.
-
-- **Routing**: Traffic between subnets is routed through the virtual network, and the Azure Firewall controls any necessary traffic filtering.
-- **Isolation**: Each subnet is isolated using Network Security Groups (NSGs) and Azure Firewall rules, minimizing lateral movement in case of a security breach.
-- **Private Endpoints**: Services like Azure Key Vault and Storage Account use private endpoints, ensuring that all communication stays within the Azure network.
-
----
-
 ## Conclusion
 
-By carefully designing your network architecture with security in mind, you can leverage the full power of Azure services while keeping your workloads safe from external threats. This private AKS environment provides a secure, scalable, and flexible foundation for running containerized applications.
+Designing the network architecture with a strong focus on security allows us to fully utilize Azure services while safeguarding our workloads from external threats. This private AKS environment offers a robust, scalable, and adaptable platform for deploying containerized applications.
 
-- **Complete Isolation**: Critical resources are not exposed to the public internet. Access to services is secured via private endpoints and controlled through Azure Firewall.
-- **Centralized Security Management**: Azure Firewall provides a single point of control for managing and securing all network traffic in and out of the environment.
-- **Scalability and Flexibility**: Each subnet can be independently scaled based on workload needs, providing flexibility in expanding the AKS cluster or adding more services.
-- **Reduced Attack Surface**: By isolating services into different subnets and using Azure Firewall as a gatekeeper, the attack surface is drastically reduced, minimizing the risk of unauthorized access.
-- **Efficient Communication**: Private endpoints and internal routing ensure efficient communication between services without exposing them to external networks.
+- **Complete Isolation**: Essential resources remain shielded from the public internet. Service access is secured through private endpoints and managed by Azure Firewall.
+- **Centralized Security Management**: Azure Firewall acts as a unified control point for overseeing and securing all network traffic entering and leaving the environment.
+- **Scalability and Flexibility**: Each subnet can be scaled independently according to workload demands, offering flexibility in expanding the AKS cluster or integrating additional services.
+- **Reduced Attack Surface**: By segmenting services into distinct subnets and employing Azure Firewall as a protective barrier, the attack surface is significantly minimized, reducing the risk of unauthorized access.
+- **Efficient Communication**: Private endpoints and internal routing facilitate seamless communication between services without exposing them to external networks.
 
 ---
 
@@ -138,9 +98,9 @@ By carefully designing your network architecture with security in mind, you can 
 
 ---
 
-## Next Steps
+## Next
 
-**[Day 03: Automating Secret Management and Centralized Log Monitoring on Azure](/posts/az-03-pulumi-private-ask-credential-log-management)**
+**[Day 03: Secret Management and Centralized Log Monitoring on Azure](/posts/az-03-pulumi-private-ask-credential-log-management)**
 
 In the next tutorial, we’ll walk you through setting up a secure and scalable infrastructure on Azure by automating secret management using Azure Key Vault and centralized log monitoring with Log Analytics and Application Insights.
 
@@ -150,5 +110,4 @@ In the next tutorial, we’ll walk you through setting up a secure and scalable 
 
 Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
 
-**Steven**
-[GitHub](https://github.com/baoduy)
+**Steven** | *[GitHub](https://github.com/baoduy)*

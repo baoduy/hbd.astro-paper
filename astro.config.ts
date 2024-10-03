@@ -36,7 +36,13 @@ export default defineConfig({
         },
       ],
       remarkGfm,
-      remarkInlineGithubCodeSnippet,
+      [
+        remarkInlineGithubCodeSnippet,
+        {
+          inlineMarker: "inline",
+          //originComment: "source: <url>"
+        },
+      ],
       remarkRehype,
       rehypeStringify,
     ],

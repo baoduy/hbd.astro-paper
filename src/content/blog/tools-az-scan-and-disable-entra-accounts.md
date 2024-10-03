@@ -494,5 +494,4 @@ Automating the management of inactive Azure Entra ID accounts enhances your orga
 
 Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
 
-**Steven**
-[GitHub](https://github.com/baoduy)
+**Steven** | *[GitHub](https://github.com/baoduy)*

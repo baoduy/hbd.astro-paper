@@ -12,18 +12,17 @@ description: "A guide on how to set up a Pulumi developer account and deploy Azu
 It walks users through the setup process from account creation to deploying Azure Resources using Pulumi and TypeScript."
 ---
 
-# Introduction
+## Introduction
 
-Pulumi is an open-source Infrastructure as Code (IaC) tool that enables developers to define cloud resources using familiar programming languages like TypeScript, Python, Go, and C#.
-By leveraging the full power of these tool you can efficiently manage your infrastructure on Cloud (Azure, AWS, Google, ...).
+Pulumi is an open-source Infrastructure as Code (IaC) tool that enables developers to define cloud resources using familiar programming languages like TypeScript, Python, Go, and C#. By leveraging the full power of these tools, we can efficiently manage our infrastructure on the cloud (Azure, AWS, Google Cloud, etc.).
 
-In this guide, we'll walk you through:
+In this guide, we’ll walk through:
 
 - Registering for a Pulumi account
 - Generating a Personal Access Token (PAT)
 - Setting up the Pulumi and Azure CLI tools
-- Creating your first Pulumi project using the TypeScript template for Azure
-- Deploying your first Azure Resource Group and Storage Account
+- Creating our first Pulumi project using the TypeScript template for Azure
+- Deploying our first Azure Resource Group and Storage Account
 
 ---
 
@@ -39,7 +38,7 @@ In this guide, we'll walk you through:
 
 ## Prerequisites
 
-- **Node.js** installed on your machine
+- **Node.js** installed on the machine
 - An **Azure account** (you can [create a free account here](https://azure.microsoft.com/free/))
 
 ---
@@ -152,7 +151,7 @@ pulumi config set azure-native:clientSecret YOUR_AZURE_CLIENT_SECRET --secret
 
 ### 4.1. Set Up a Git Repository
 
-Create a new directory for your Pulumi project and initialize a Git repository:
+Create a new directory for our Pulumi project and initialize a Git repository:
 
 ```bash
 mkdir day00_pulumi-azure-start
@@ -168,7 +167,7 @@ Run the following command to create a new Pulumi project using the Azure TypeScr
 pulumi new azure-typescript
 ```
 
-You'll be prompted to provide:
+We'll be prompted to provide:
 
 - **Login**: Authenticate using the PAT token generated earlier.
 - **Project name**: Accept the default or enter a custom name.
@@ -207,16 +206,14 @@ No     Subscription name    Subscription ID                       Tenant
 The template generates several files:
 
 - **Pulumi.yaml**: Contains project metadata.
-- **Pulumi.dev.yaml**: Contains stack-specific configuration.
+- **Pulumi.dev.yaml**: Contains stack-specific configuration and secrets.
 - **index.ts**: The main program file where you'll define your infrastructure.
-- **package.json**: Node.js project metadata.
-- **tsconfig.json**: TypeScript compiler configuration.
 
 ### 5.2: Review the Sample Code
 
 Open `index.ts` in your preferred code editor and review the sample code. It typically includes the creation of a Resource Group and a Storage Account.
 
-<details><summary>Here is our Sample Code:</summary>
+<details><summary>🔖 The Sample Code:</summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/day-0/day00_pulumi-azure-start/index.ts#L1-L23)
 
@@ -262,8 +259,6 @@ Do you want to perform this update?  [Use arrows to move, type to filter]
 
 </details>
 
-You should see a plan indicating that new resources will be created.
-
 ### 6.2. Deploy the Stack
 
 Deploy your resources to Azure:
@@ -297,7 +292,7 @@ Duration: 35s
 
 ### 6.3: Verify the Deployment
 
-After deployment, you can verify the resources in the Azure Portal:
+After deployment, We can verify the resources in the Azure Portal:
 
 - Log in to the [Azure Portal](https://portal.azure.com/).
 - Navigate to **Resource Groups** and locate your newly created resource group.
@@ -343,6 +338,19 @@ If you want to remove the stack completely, run `pulumi stack rm dev`.
 
 ---
 
+## Pulumi CLI commands
+
+The most common commands in the CLI that you’ll be using are as follows:
+
+- `pulumi new`: creates a new project using a template
+- `pulumi stack select`: switching between the stacks (at least one is required to perform an update)
+- `pulumi config`: configure variables such as keys, regions, and so on
+- `pulumi up`: preview and deploy changes to your program and/or infrastructure
+- `pulumi preview`: preview your changes explicitly before deploying
+- `pulumi destroy`: destroy your program and its infrastructure when you’re done
+
+> Refer [here for the details](https://www.pulumi.com/docs/iac/cli/commands/) of Pulumi commands
+
 ## Conclusion
 
 Congratulations! You've successfully:
@@ -353,7 +361,7 @@ Congratulations! You've successfully:
 - Created your first Pulumi project using TypeScript for Azure
 - Deployed an Azure Resource Group and Storage Account
 
-Pulumi simplifies cloud resource management by allowing you to use familiar programming languages and tools. You can now explore adding more complex resources and configurations to your project.
+Pulumi simplifies cloud resource management by allowing you to use familiar programming languages and tools. We can now explore adding more complex resources and configurations on the projects.
 
 ---
 
@@ -361,10 +369,12 @@ Pulumi simplifies cloud resource management by allowing you to use familiar prog
 
 - [Sample source code](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/day-0/day00_pulumi-azure-start#day-0)
 - [Pulumi get started](https://www.pulumi.com/docs/iac/get-started/)
+- [Pulumi Commands](https://www.pulumi.com/docs/iac/cli/commands/)
+- [Pulumi Secret Config](https://www.pulumi.com/docs/iac/concepts/secrets/#configuring-secrets-encryption) 
 
 ---
 
-## Next Steps
+## Next
 
 **[Day 02: Private Aks Environment Architecture.](/posts/az-02-pulumi-private-ask-env-architecture)**
 
@@ -377,5 +387,4 @@ This architecture ensures that sensitive workloads remain isolated and protected
 
 Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
 
-**Steven**
-[GitHub](https://github.com/baoduy)
+**Steven** | *[GitHub](https://github.com/baoduy)*

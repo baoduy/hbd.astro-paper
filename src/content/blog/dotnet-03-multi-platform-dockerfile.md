@@ -410,5 +410,4 @@ both images were put to the test on my iMac (which has an Intel chip) and a K3s 
 
 Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
 
-**Steven**
-[GitHub](https://github.com/baoduy)
+**Steven** | *[GitHub](https://github.com/baoduy)*
