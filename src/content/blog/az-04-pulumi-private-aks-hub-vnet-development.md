@@ -70,7 +70,13 @@ This module is designed to set up an Azure Firewall, including essential compone
 
 ### Core Project Module: `index.ts`
 
-Now, let's bring everything together in our main project file.
+In this module, we consolidate all components within our primary project file.
+
+- **Resource Group Creation**: Establishes a container to efficiently manage Azure resources.
+- **Virtual Network (VNet) Setup**: Configures a network with designated subnets, including those necessary for Azure Firewall integration.
+- **Firewall Policy Configuration**: Defines comprehensive security rules and policies for the firewall.
+- **Azure Firewall Deployment**: Enhances network security by regulating traffic flow.
+- **Resource Information Export**: Provides access to details of the created resources for use in other project areas or external projects.
 
 <details><summary>View code:</summary>
 
@@ -97,10 +103,6 @@ To deploy the stack, execute the `pnpm run up` command. This provisions the nece
 ### Cleaning Up the Stack
 
 To remove the stack and clean up all associated Azure resources, run the `pnpm run destroy` command. This ensures that any resources no longer needed are properly deleted.
-
----
-
-Here is a revised version of the conclusion from your article:
 
 ---
 
