@@ -14,10 +14,10 @@ description: "In this article, We'll walk through the process of developing the 
 ## Introduction
 
 In this tutorial, we'll walk through the process of developing the first Hub VNet for a private AKS environment using Pulumi.
+
 This guide is designed to be accessible even if you're new to Azure or Pulumi, so we'll explain each step in detail.
 
-Security is our top priority. As we create our resources, we'll focus on optimizing security while keeping Azure costs reasonable.
-We'll explore how to set up network policies, firewalls, and encryption to protect our environment without exceeding our budget.
+Security is our top priority. We'll focus on optimizing security to set up network policies, firewalls, and encryption to protect our environment while still keeping Azure costs reasonable.
 
 ---
 

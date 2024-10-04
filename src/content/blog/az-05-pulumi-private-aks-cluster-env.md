@@ -15,7 +15,9 @@ We’ll explore how to integrate the AKS cluster with the Hub VNet and apply the
 ## Introduction
 
 Building a private AKS cluster offers enhanced network security and complete control over ingress and egress traffic.
+
 This tutorial will guide you through the setup of a private AKS cluster with advanced networking capabilities, integrating it into a sophisticated network architecture using Pulumi.
+
 By the end of this guide, you'll know how to integrate the AKS cluster with a Hub VNet and apply firewall policies established in the [previous `az-02-hub-vnet` project](az-04-pulumi-private-aks-hub-vnet-development).
 
 ---
@@ -147,11 +149,27 @@ To remove the stack and clean up all associated Azure resources, run the `pnpm r
 
 ---
 
+## Conclusion
+
+In this tutorial, we've successfully implemented a private AKS cluster with advanced networking features using Pulumi.
+By setting up a private Container Registry, configuring firewall rules, and integrating the cluster with a Hub VNet, we have enhanced the security and manageability of our Kubernetes environment.
+These steps ensure that the AKS cluster is well-secured and capable of meeting the demands of a production-grade infrastructure.
+
+---
+
 ## References
 
 - [Outbound network and FQDN rules for AKS clusters](https://learn.microsoft.com/en-us/azure/aks/outbound-rules-control-egress)
 - [Dynamic resource providers](https://www.pulumi.com/docs/iac/concepts/resources/dynamic-providers/)
 - [Use EntraID role-based access control for AKS](https://learn.microsoft.com/en-us/azure/aks/manage-azure-rbac?tabs=azure-cli)
+
+---
+
+## Next Steps
+
+**[Day 06: Implement a Secure CloudPC and DevOps Agent Hub with Pulumi for AKS environment](/posts/az-06-pulumi-private-aks-cloudpc-hub)**
+
+In the next tutorial, it will guides us through setting up a secure CloudPC and DevOps agent hub, aimed at improving the management and operational capabilities of your private AKS environment using Pulumi.
 
 ---
 

@@ -28,10 +28,10 @@ This guide walks you through creating a Pulumi account, installing the necessary
 
 ## Private AKS Environments
 
-### [Day 02: Private AKS Environment Architecture.](/posts/az-02-pulumi-private-ask-env-architecture)
+### [Day 02: Designing the Private AKS Environment Architecture](/posts/az-02-pulumi-private-ask-env-architecture)
 
-This post explains a the architecture of private AKS that we are going to setup on Azure, leveraging multiple subnets, Azure Firewall, and other essential cloud services.
-This architecture ensures that sensitive workloads remain isolated and protected from public internet exposure.
+In this tutorial, we will explore the design of a private AKS environment on Azure. We'll utilize multiple subnets, Azure Firewall, and other critical cloud services to construct a secure architecture.
+This setup is designed to keep sensitive workloads isolated and shielded from exposure to the public internet.
 
 ### [Day 03: Secret Management and Centralized Log Monitoring on Azure](/posts/az-03-pulumi-private-ask-credential-log-management)
 
@@ -39,13 +39,17 @@ In this guide, we’ll walk you through setting up a secure and scalable infrast
 
 ### [Day 04: Develop a Virtual Network Hub for Private AKS on Azure](/posts/az-04-pulumi-private-aks-hub-vnet-development)
 
-Now that we've established secure credential management and centralized logging, the next step is to build out the virtual network hub for a private AKS environment.
+In this tutorial, We've established secure credential management and centralized logging, the next step is to build out the virtual network hub for a private AKS environment.
 In this article, We'll walk through the process of developing the first Hub VNet for a private AKS environment using Pulumi.
 
 ### [Day 05: Implementing Private AKS Clusters with Advanced Networking](/posts/az-05-pulumi-private-aks-cluster-env)
 
 In this tutorial, We'll build a private AKS cluster with advanced networking features.
 We'll explore how to integrate the AKS cluster with the Hub VNet and apply the firewall policies we've created.
+
+### [Day 06: Implement a Secure CloudPC and DevOps Agent Hub with Pulumi for AKS environment](/posts/az-06-pulumi-private-aks-cloudpc-hub)
+
+This tutorial guides us through setting up a secure CloudPC and DevOps agent hub, aimed at improving the management and operational capabilities of your private AKS environment using Pulumi.
 
 ---
 
