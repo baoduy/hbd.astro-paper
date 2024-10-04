@@ -14,7 +14,9 @@ We’ll explore how to integrate the AKS cluster with the Hub VNet and apply the
 
 ## Introduction
 
-In this guide, we will construct a private AKS cluster featuring advanced networking capabilities. We will delve into the integration of the AKS cluster with the Hub VNet and the application of firewall policies established in the [previous `az-02-hub-vnet` project](az-04-pulumi-private-aks-hub-vnet-development).
+Building a private AKS cluster offers enhanced network security and complete control over ingress and egress traffic.
+This tutorial will guide you through the setup of a private AKS cluster with advanced networking capabilities, integrating it into a sophisticated network architecture using Pulumi.
+By the end of this guide, you'll know how to integrate the AKS cluster with a Hub VNet and apply firewall policies established in the [previous `az-02-hub-vnet` project](az-04-pulumi-private-aks-hub-vnet-development).
 
 ---
 
@@ -26,15 +28,15 @@ In this guide, we will construct a private AKS cluster featuring advanced networ
 
 Our objective is to configure all necessary components for the AKS Cluster, which include:
 
-1. **Resource Group**: A container for organizing related Azure resources.
-2. **Container Registry**: This serves as the main repository for all Docker images utilized by our private AKS.
-3. **AKS Firewall Rules**: To enable outbound internet connectivity, we must configure firewall rules allowing AKS nodes to communicate with essential Azure resources.
-4. **Virtual Network (VNet)**: The primary network hosting our AKS subnets.
-5. **AKS Cluster**: An Azure-managed Kubernetes service.
+1. **Resource Group**: A container for organizing related Azure resources, simplifying management and cost tracking.
+2. **Container Registry**: The main repository for all Docker images used by our private AKS, ensuring secure image deployment.
+3. **AKS Firewall Rules**: To enable outbound internet connectivity, we must configure firewall rules that allow AKS nodes to communicate securely with essential Azure services.
+4. **Virtual Network (VNet)**: The primary network hosting our AKS subnets, integrated with our Hub VNet to ensure secure and managed traffic flow.
+5. **AKS Cluster**: An Azure-managed Kubernetes service, configured with advanced security and connectivity options.
 
 ### The `ContainerRegistry.ts` Module
 
-To enhance security and ensure that all Docker images deployed to our AKS cluster are verified, this module establishes a private Container Registry. Instead of opening the firewall to allow AKS to download images from the internet, AKS will be restricted to pulling images exclusively from this private Container Registry.
+To enhance security and ensure that all Docker images deployed to our AKS cluster are verified, this module establishes a private Container Registry. By restricting AKS to pull images exclusively from this private registry, we eliminate the need to open firewalls to the public internet.
 
 <details><summary>View code:</summary>
 
@@ -44,7 +46,7 @@ To enhance security and ensure that all Docker images deployed to our AKS cluste
 
 ### The `AksFirewallRules.ts` Module
 
-This module sets up a **FirewallPolicyRuleCollectionGroup** with specific outbound firewall rules, enabling AKS to communicate with essential Azure resources. For more details, please refer to [this documentation](https://learn.microsoft.com/en-us/azure/aks/outbound-rules-control-egress).
+This module sets up a **FirewallPolicyRuleCollectionGroup** with policies that enable controlled outbound communication for AKS nodes. The rules ensure that only necessary traffic is permitted, thus enhancing the security posture of our AKS cluster.
 
 <details><summary>View code:</summary>
 
@@ -54,7 +56,8 @@ This module sets up a **FirewallPolicyRuleCollectionGroup** with specific outbou
 
 ### The `VNet.ts` Module
 
-This module will be a enhanced version of the hub VNet, focusing on improved security and routing:
+The Virtual Network (VNet) serves as the backbone for our AKS cluster. It provides the primary network environment that includes subnets dedicated to AKS nodes.
+The VNet is peered with the Hub VNet to enable seamless integration with other services and to route all traffic through the Hub's firewall, ensuring all egress traffic is controlled.
 
 - **Security Group**: By default, the VNet allows resources in all subnets to access the internet. To enhance security, a security group is created with the following default rules:
 
@@ -86,21 +89,24 @@ This module will be a enhanced version of the hub VNet, focusing on improved sec
 
 ### The `AKS.ts` Module
 
-- **SSH Key Generation**: SSH keys are crucial for configuring an AKS cluster. Due to Pulumi's lack of native SSH support, I utilize **[Dynamic Resource Providers](https://www.pulumi.com/docs/iac/concepts/resources/dynamic-providers/)** to craft a custom component that dynamically generates SSH keys with the `node-forge` library. This component also demonstrates how to securely store secrets within the Pulumi state.
-  <details><summary>View SSH generator code:</summary>
+- **SSH Key Generation**: SSH keys are crucial for configuring an AKS cluster. Due to Pulumi's lack of native SSH support, I utilize **[Dynamic Resource Providers](https://www.pulumi.com/docs/iac/concepts/resources/dynamic-providers/)** to craft a custom component that dynamically generates SSH keys with the `node-forge` library.
+
+  This component also demonstrates how to securely store secrets securely within the Pulumi state.
+   <details><summary>View SSH generator code:</summary>
 
   [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/SshGenerator.ts#L1-L129)
 
-  </details>
+   </details>
 
-  Furthermore, a helper class uses the SSH generator alongside a random password to create an SSH public and private key pair, which are securely stored in Key Vault.
-  <details><summary>View code:</summary>
+  Furthermore, a helper class uses the SSH generator alongside a random password to create an SSH public and private key pair and stored them in Key Vault for later uses.
+   <details><summary>View code:</summary>
 
   [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/Aks.ts#L36-L80)
 
-  </details>
+   </details>
 
-- **AKS Identity Creation**: AKS can be configured to utilize Microsoft Entra ID for user authentication. This setup allows users to sign in to an AKS cluster using a Microsoft Entra authentication token. Once authenticated, Kubernetes role-based access control (Kubernetes RBAC) can be employed to manage access to namespaces and cluster resources based on user identity or group membership.
+- **AKS Identity Creation**: AKS can be configured to utilize Microsoft Entra ID for user authentication.
+  This setup allows users to sign in to an AKS cluster using a Microsoft Entra authentication to manage access to namespaces and cluster resources.
   <details><summary>View code:</summary>
 
   [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/Aks.ts#8-34)
@@ -116,14 +122,7 @@ This module will be a enhanced version of the hub VNet, focusing on improved sec
 
 ### Core Project Module: `index.ts`
 
-Let's consolidate all components in our primary project file, which is tasked with deploying an AKS cluster on Azure using Pulumi. This file orchestrates the creation of essential resources like a resource group, virtual network, container registry, and the application of firewall rules, while also configuring the AKS cluster with specific parameters.
-
-- **Stack References**: These are used to access outputs from other Pulumi stacks (`az-01-shared` and `az-02-hub-vnet`), which likely handle the setup of shared resources and a hub virtual network.
-- **Resource Group**: Establishes a new Azure resource group for the AKS cluster, with its name derived from the configuration settings.
-- **Container Registry**: Configures a private Azure Container Registry (ACR) within the resource group to store container images for the AKS cluster.
-- **Firewall Rules**: Implements firewall rules for the AKS cluster, associating them with a firewall policy from the `az-02-hub` stack to ensure secure and managed network traffic.
-- **Virtual Network (VNet)**: Sets up a virtual network with a dedicated subnet for the AKS cluster, incorporating security rules to permit outbound traffic to the hub firewall and routing all traffic through it. It also establishes VNet peering with the hub VNet.
-- **AKS Cluster**: Deploys the AKS cluster with defined configurations, including the resource group, admin username, Azure Key Vault integration, logging workspace, VM size, and connections to the ACR and VNet.
+This module integrates all the components mentioned above into our main project to achieve our goal.
 
 <details><summary>View code:</summary>
 
