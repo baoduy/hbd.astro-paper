@@ -27,11 +27,10 @@ In this guide, we will construct a private AKS cluster featuring advanced networ
 Our objective is to configure all necessary components for the AKS Cluster, which include:
 
 1. **Resource Group**: A container for organizing related Azure resources.
-2. **Virtual Network (VNet)**: The primary network hosting our subnets.
-3. **Subnets**: Divisions within the VNet to segregate and manage resources.
-4. **AKS Firewall Rules**: To enable outbound internet connectivity, we must configure firewall rules allowing AKS nodes to communicate with essential Azure resources.
-5. **Container Registry**: This serves as the main repository for all Docker images utilized by our private AKS.
-6. **AKS Cluster**: An Azure-managed Kubernetes service.
+2. **Container Registry**: This serves as the main repository for all Docker images utilized by our private AKS.
+3. **AKS Firewall Rules**: To enable outbound internet connectivity, we must configure firewall rules allowing AKS nodes to communicate with essential Azure resources.
+4. **Virtual Network (VNet)**: The primary network hosting our AKS subnets.
+5. **AKS Cluster**: An Azure-managed Kubernetes service.
 
 ### The `ContainerRegistry.ts` Module
 
@@ -53,13 +52,39 @@ This module sets up a **FirewallPolicyRuleCollectionGroup** with specific outbou
 
 </details>
 
-### The `VNet.ts` module
+### The `VNet.ts` Module
 
-<details><summary>View code:</summary>
+This module will be a enhanced version of the hub VNet, focusing on improved security and routing:
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#L1-L173)
+- **Security Group**: By default, the VNet allows resources in all subnets to access the internet. To enhance security, a security group is created with the following default rules:
 
-</details>
+  - Block all internet access from all subnets.
+  - Allow VNet-to-VNet communication to enable hub-spoke connectivity.
+  - Additional security rules can be added through parameters.
+
+  <details><summary>View code:</summary>
+
+  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#L10-L56)
+
+  </details>
+
+- **Route Table**: This VNet will peer with the hub, necessitating a route table to direct all traffic to the private IP address of the firewall.
+
+  <details><summary>View code:</summary>
+
+  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#L59-L76)
+
+  </details>
+
+- **VNet**: Finally, the VNet is configured to create the route table and security group, injecting them into all provided subnets. Additionally, it establishes VNet peering with the hub VNet.
+
+  <details><summary>View code:</summary>
+
+  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#78-L173)
+
+  </details>
+
+### The `AKS.ts` module
 
 ---
 
