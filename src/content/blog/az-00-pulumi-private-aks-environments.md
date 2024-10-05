@@ -55,19 +55,24 @@ This tutorial guides us through setting up a secure CloudPC and DevOps agent hub
 
 ## Progress Review
 
-Let's take a moment to review our achievements. After completing six tutorials, we have successfully deployed our private AKS environment. The illustration below provides a visual representation of our setup:
+Let's take a moment to review our achievements. After completing six tutorials, we have successfully deployed our private AKS environment.
+The illustration below provides a visual representation of our setup:
 ![aks-env](/assets/az-02-pulumi-private-ask-env-architecture/private-aks.png)
 _Overview of private AKS env._
 
 ---
 
-## CloudPC environment (Windows 365 enterprise)
-
-### [Day 07: Setup Windows 365 Enterprise as a private VDI](/posts/az-06-pulumi-private-aks-cloudpc-hub)
-
 ## Azure DevOps Pipelines
 
-### [Day 08: Setup Pulumi Deployment Pipeline](/posts/az-06-pulumi-private-aks-cloudpc-hub)
+### [Day 07: Setup Pulumi Deployment Pipeline](/posts/az-06-pulumi-private-aks-cloudpc-hub)
+
+### [Day 08: Docker Image Sync-up](/posts/az-06-pulumi-private-aks-cloudpc-hub)
+
+### [Day 09: Helm Deployment Pipeline](/posts/az-06-pulumi-private-aks-cloudpc-hub)
+
+## CloudPC environment (Windows 365 enterprise)
+
+### [Day 10: Setup Windows 365 Enterprise as a private VDI](/posts/az-06-pulumi-private-aks-cloudpc-hub)
 
 ## Public Apps with Cloudflare Tunnels
 
