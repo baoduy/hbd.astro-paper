@@ -13,7 +13,9 @@ description: "This tutorial guides us through setting up a secure CloudPC and De
 
 ## Introduction
 
-Creating a secure private VNet for CloudPC (Windows 365 Enterprise) and Azure DevOps agent allows for an isolated network environment, enabling secure access, management, and control of cloud resources. This guide will walk you through the process of setting up a private VNet using Pulumi, integrating it with the necessary components to support both CloudPC instances and a private Azure DevOps agent. By the end of this tutorial, you will have a well-defined network architecture that ensures security, privacy, and streamlined access to Azure resources.
+Creating a secure private VNet for CloudPC (Windows 365 Enterprise) and Azure DevOps agent allows for an isolated network environment, enabling secure access, management, and control of cloud resources.
+
+This guide will walk you through the process of setting up a private VNet using Pulumi, integrating it with the Hub VNet was created in the previous article.
 
 ---
 
@@ -21,70 +23,71 @@ Creating a secure private VNet for CloudPC (Windows 365 Enterprise) and Azure De
 
 ---
 
-## Developing the Private VNet Environment
+## The project modules
 
-The core objective is to establish a private VNet environment with various components to support CloudPC and Azure DevOps agent infrastructure. We will use Pulumi to provision all the required Azure resources.
+### The `CloudPcFirewallRules` Module
 
-1. **Resource Group**: Organizes related resources into a manageable container, ensuring efficient cost tracking and administration.
-2. **Private Virtual Network (VNet)**: The main network that will house subnets for CloudPC and the Azure DevOps agent.
-3. **Firewall Configuration**: To enforce security policies for ingress and egress traffic.
-4. **Azure Bastion**: For secure management access to virtual machines in the private VNet without needing a public IP.
-5. **Private Endpoints**: Allow secure access to Azure services from within the private VNet.
+This module defines the firewall policies for:
 
-### Resource Group Setup (`ResourceGroup.ts`)
+- **CloudPC**: Grants all machines within the CloudPC subnet access to AKS, DevOps, and other Azure resources.
+  <details><summary>View code:</summary>
 
-We begin by creating a dedicated Resource Group to contain all of the resources we will provision for this project. This helps with effective resource management and simplifies cost tracking.
+  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/CloudPcFirewallRules/cloudpcPolicyGroup.ts#1-29)
 
-<details><summary>View code:</summary>
+  </details>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-06-vnet/ResourceGroup.ts#L1-L20)
+- **DevOps**: Permits all machines in the DevOps subnet to access all resources, including those on the internet.
+  <details><summary>View code:</summary>
 
-</details>
+  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/CloudPcFirewallRules/devopsPolicyGroup.ts#1-20)
 
-### Private VNet Configuration (`PrivateVNet.ts`)
+  </details>
 
-The Private Virtual Network serves as the foundation for the secure communication environment. The VNet includes multiple subnets: one for CloudPC instances and another for Azure DevOps agents. We will also configure VNet peering to enable connectivity with a Hub VNet.
+> Caution: This rule poses a security risk as it allows DevOps agents extensive internet access. It is not advisable for production workloads and should be reviewed to restrict access to only necessary resources for the production environment.
 
-<details><summary>View code:</summary>
+- **Index File**: Combines CloudPC and DevOps rules into a unified `FirewallPolicyRuleCollectionGroup`, linking them to the root policy established in the `az-02-hub-vnet` project.
+  <details><summary>View code:</summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-06-vnet/PrivateVNet.ts#L1-L45)
+  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/CloudPcFirewallRules/index.ts#1-55)
 
-</details>
+  </details>
 
-### Firewall Configuration (`FirewallRules.ts`)
+### The `VNet.ts` Module
 
-Setting up appropriate firewall rules ensures that only the required traffic flows in and out of the private VNet. This module creates a **FirewallPolicyRuleCollectionGroup** to regulate traffic securely.
-
-<details><summary>View code:</summary>
-
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-06-vnet/FirewallRules.ts#L1-L40)
-
-</details>
-
-### Azure Bastion Configuration (`AzureBastion.ts`)
-
-Azure Bastion is configured to provide secure and seamless RDP and SSH access to the VMs within the private VNet, eliminating the need for public IPs and minimizing exposure to the public internet.
+This module is responsible for creating a virtual network (VNet) with two subnets.
+It also establishes peering with the Hub VNet that was set up in the previous project, similar to the VNet component used for AKS in `az-03-aks-cluster` project.
 
 <details><summary>View code:</summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-06-vnet/AzureBastion.ts#L1-L25)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/VNet.ts#78-172)
 
 </details>
 
----
+### The `DiskEncryptionSet.ts` Module
 
-## VNet Integration with CloudPC
+This module demonstrates how to encrypt Azure resources using a custom encryption key stored in Azure Key Vault. It includes the following components:
 
-The CloudPC instances require a secure and well-isolated network environment for effective communication and management. By configuring subnets specifically for CloudPC, we ensure that each instance has restricted yet necessary access to the wider network.
+- **User Assigned Identity**: This identity is used to grant access to the Key Vault, allowing it to read the encryption key.
+  <details><summary>View code:</summary>
 
-- **Subnet Configuration**: A dedicated subnet for CloudPC instances ensures that all communication is isolated within the private VNet, reducing risks of exposure.
-- **Private Endpoints**: Using private endpoints for essential Azure services ensures that CloudPC instances can access them securely without needing to traverse the public internet.
+  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/DiskEncryptionSet.ts#17-44)
 
-<details><summary>View code:</summary>
+  </details>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-06-vnet/CloudPCIntegration.ts#L1-L38)
+- **Vault Encryption Key**: A custom encryption key with a size of 4096 bits, configured for automatic rotation every year within the Key Vault.
+  <details><summary>View code:</summary>
 
-</details>
+  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/DiskEncryptionSet.ts#49-88)
+
+  </details>
+
+- **Disk Encryption Set**: This component creates a `DiskEncryptionSet` using the User Assigned Identity and the custom encryption key mentioned above.
+
+  <details><summary>View code:</summary>
+
+  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/DiskEncryptionSet.ts#90-119)
+
+  </details>
 
 ---
 
@@ -104,6 +107,24 @@ The **Azure DevOps Agent Pool** is deployed to a dedicated subnet within the VNe
 
 ---
 
+## Developing the Private VNet Environment
+
+The core objective is to establish a private VNet environment with various components to support CloudPC and Azure DevOps agent infrastructure. We will use Pulumi to provision all the required Azure resources.
+
+1. **Firewall Policy**: To enforce security policies for CouldPC and DevOps agent egress traffic.
+2. **VNet and Peering**: The main network that will house subnets for CloudPC and the Azure DevOps agent.
+3. **Disk encryption set**: The disk encryption component for Virtual Machine.
+4. **AzureDevOps configuration**: The PAT generation and preparation to develop DevOps agent VM.
+5. **Deploy a private DevOps agent**: Setup a Linux VM and Install `TeamServicesAgentLinux` using pulumi.
+
+<details><summary>View code:</summary>
+
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/index.ts#1-106)
+
+</details>
+
+---
+
 ## Deployment and Cleanup
 
 ### Deploying the Stack
@@ -111,9 +132,8 @@ The **Azure DevOps Agent Pool** is deployed to a dedicated subnet within the VNe
 To deploy the stack, execute the `pnpm run up` command. This provisions all necessary Azure resources, including the VNet, subnets, firewall, and private endpoints. Ensure that you have logged in to your Azure account via Azure CLI and set up Pulumi with the appropriate backend and credentials.
 
 - Successfully deployed Azure resources:
-  ![Azure-Resources](/assets/az-06-private-vnet-cloudpc/az-06-vnet.png)
-
-  _Figure 1: Overview of successfully deployed Azure resources for the private VNet._
+  ![Azure-Resources](/assets/az-06-pulumi-private-aks-cloudpc-hub/az-04-cloudpc.png)
+  _Overview of successfully deployed Azure resources._
 
 ### Cleaning Up the Stack
 

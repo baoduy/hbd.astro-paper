@@ -26,15 +26,7 @@ By the end of this guide, you'll know how to integrate the AKS cluster with a Hu
 
 ---
 
-## Developing the Private AKS Cluster
-
-Our objective is to configure all necessary components for the AKS Cluster, which include:
-
-1. **Resource Group**: A container for organizing related Azure resources, simplifying management and cost tracking.
-2. **Container Registry**: The main repository for all Docker images used by our private AKS, ensuring secure image deployment.
-3. **AKS Firewall Rules**: To enable outbound internet connectivity, we must configure firewall rules that allow AKS nodes to communicate securely with essential Azure services.
-4. **Virtual Network (VNet)**: The primary network hosting our AKS subnets, integrated with our Hub VNet to ensure secure and managed traffic flow.
-5. **AKS Cluster**: An Azure-managed Kubernetes service, configured with advanced security and connectivity options.
+## The project modules
 
 ### The `ContainerRegistry.ts` Module
 
@@ -122,9 +114,17 @@ The VNet is peered with the Hub VNet to enable seamless integration with other s
 
   </details>
 
-### Core Project Module: `index.ts`
+---
 
-This module integrates all the components mentioned above into our main project to achieve our goal.
+## Developing a Private AKS Cluster
+
+Our objective is to configure all necessary components for the AKS Cluster, which include:
+
+1. **Resource Group**: A container for organizing related Azure resources, simplifying management and cost tracking.
+2. **Container Registry**: The main repository for all Docker images used by our private AKS, ensuring secure image deployment.
+3. **AKS Firewall Policy**: To enable outbound internet connectivity, we must configure firewall rules that allow AKS nodes to communicate securely with essential Azure services.
+4. **Virtual Network (VNet)**: The primary network hosting our AKS subnets, integrated with our Hub VNet to ensure secure and managed traffic flow.
+5. **AKS Cluster**: An Azure-managed Kubernetes service, configured with advanced security and connectivity options.
 
 <details><summary>View code:</summary>
 
@@ -142,6 +142,7 @@ To deploy the stack, execute the `pnpm run up` command. This provisions the nece
 
 - Successfully deployed Azure resources:
   ![Azure-Resources](/assets/az-05-pulumi-private-aks-cluster-env/az-03-aks-cluster.png)
+  _Overview of successfully deployed Azure resources._
 
 ### Cleaning Up the Stack
 

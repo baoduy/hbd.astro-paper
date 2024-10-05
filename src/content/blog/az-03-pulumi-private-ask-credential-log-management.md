@@ -194,9 +194,11 @@ To deploy the stack, execute the `pnpm run up` command. This provisions the nece
 
 - EntraID groups configured for Key Vault access control:
   ![Entra-Group](/assets/az-03-pulumi-private-ask-credential-log-management/az-01-entra-groups.png)
+  _Overview EntraID Groups resources._
 
 - Successfully deployed Azure resources:
   ![Azure-Resources](/assets/az-03-pulumi-private-ask-credential-log-management/az-01-resources.png)
+  _Overview of successfully deployed Azure resources._
 
 ### Cleaning Up the Stack
 

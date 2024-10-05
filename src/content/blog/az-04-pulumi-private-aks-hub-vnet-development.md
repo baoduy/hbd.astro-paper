@@ -25,18 +25,7 @@ Security is our top priority. We'll focus on optimizing security to set up netwo
 
 ---
 
-## The Hub VNet development
-
-Our goal is to set up the main components required for the Hub VNet, which include:
-
-1. **Resource Group**: A container for managing related Azure resources.
-2. **Virtual Network (VNet)**: The main network that hosts our subnets.
-3. **Subnets**: Segments within the VNet to isolate and organize resources.
-4. **Public IP Addresses**: For outbound internet connectivity and firewall management.
-5. **Firewall Policy**: Defines rules to control network traffic.
-6. **Azure Firewall**: A managed firewall service to protect our network.
-
-Let's dive into each component and see how we can implement them using Pulumi.
+## The Hub VNet modules
 
 ### The `VNet` Module
 
@@ -68,9 +57,18 @@ This module is designed to set up an Azure Firewall, including essential compone
 
 </details>
 
-### Main Project Module: `index.ts`
+---
 
-This module integrates all the components mentioned above into our main project to achieve our goal.
+### Developing a Hub VNET
+
+Our goal is to set up the main components required for the Hub VNet, which include:
+
+1. **Resource Group**: A container for managing related Azure resources.
+2. **Virtual Network (VNet)**: The main network that hosts our subnets.
+3. **Subnets**: Segments within the VNet to isolate and organize resources.
+4. **Public IP Addresses**: For outbound internet connectivity and firewall management.
+5. **Firewall Policy**: Defines rules to control network traffic.
+6. **Azure Firewall**: A managed firewall service to protect our network.
 
 <details><summary>View code:</summary>
 
@@ -93,6 +91,7 @@ To deploy the stack, execute the `pnpm run up` command. This provisions the nece
 
 - Successfully deployed Azure resources:
   ![Azure-Resources](/assets/az-04-pulumi-private-aks-hub-vnet-development/az-02-hub-vnet.png)
+  _Overview of successfully deployed Azure resources._
 
 ### Cleaning Up the Stack
 
