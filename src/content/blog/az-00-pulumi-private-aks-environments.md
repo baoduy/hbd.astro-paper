@@ -76,7 +76,7 @@ _Overview of private AKS env._
 
 ## Public Apps with Cloudflare Tunnels
 
-## Remote Development Environments with Intune (MDM) and Cloudflare
+## Remote Development Environments with Microsoft Intune (MDM) and Cloudflare
 
 ## Conclusions
 
