@@ -47,17 +47,29 @@ In this article, We'll walk through the process of developing the first Hub VNet
 In this tutorial, We'll build a private AKS cluster with advanced networking features.
 We'll explore how to integrate the AKS cluster with the Hub VNet and apply the firewall policies we've created.
 
-### [Day 06: Implement a Secure CloudPC and DevOps Agent Hub with Pulumi for AKS environment](/posts/az-06-pulumi-private-aks-cloudpc-hub)
+### [Day 06: Implement a private CloudPC and DevOps Agent Hub with Pulumi](/posts/az-06-pulumi-private-aks-cloudpc-hub)
 
 This tutorial guides us through setting up a secure CloudPC and DevOps agent hub, aimed at improving the management and operational capabilities of your private AKS environment using Pulumi.
 
 ---
 
-## Azure DevOps Private Agent and Pipeline
+## Progress Review
 
-## Public Apps with Cloudflare Tunnels
+Let's take a moment to review our achievements. After completing six tutorials, we have successfully deployed our private AKS environment. The illustration below provides a visual representation of our setup:
+![aks-env](/assets/az-02-pulumi-private-ask-env-architecture/private-aks.png)
+_Overview of private AKS env._
+
+---
 
 ## CloudPC environment (Windows 365 enterprise)
+
+### [Day 07: Setup Windows 365 Enterprise as a private VDI](/posts/az-06-pulumi-private-aks-cloudpc-hub)
+
+## Azure DevOps Pipelines
+
+### [Day 08: Setup Pulumi Deployment Pipeline](/posts/az-06-pulumi-private-aks-cloudpc-hub)
+
+## Public Apps with Cloudflare Tunnels
 
 ## Remote Development Environments with Intune (MDM) and Cloudflare
 

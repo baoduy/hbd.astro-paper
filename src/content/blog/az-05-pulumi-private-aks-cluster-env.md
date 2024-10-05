@@ -168,7 +168,7 @@ These steps ensure that the AKS cluster is well-secured and capable of meeting t
 
 ## Next Steps
 
-**[Day 06: Implement a Secure CloudPC and DevOps Agent Hub with Pulumi for AKS environment](/posts/az-06-pulumi-private-aks-cloudpc-hub)**
+**[Day 06: Implement a private CloudPC and DevOps Agent Hub with Pulumi](/posts/az-06-pulumi-private-aks-cloudpc-hub)**
 
 In the next tutorial, it will guides us through setting up a secure CloudPC and DevOps agent hub, aimed at improving the management and operational capabilities of your private AKS environment using Pulumi.
 

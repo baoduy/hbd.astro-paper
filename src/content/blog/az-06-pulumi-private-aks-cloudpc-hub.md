@@ -1,7 +1,7 @@
 ---
 author: Steven Hoang
 pubDatetime: 2025-01-01T12:00:00Z
-title: "[Az] Day 06: Implement a Secure CloudPC and DevOps Agent Hub with Pulumi for AKS environment."
+title: "[Az] Day 06: Implement a private CloudPC and DevOps Agent Hub with Pulumi."
 featured: false
 draft: false
 tags:
@@ -89,33 +89,56 @@ This module demonstrates how to encrypt Azure resources using a custom encryptio
 
   </details>
 
----
+### The `VM.ts` Module
 
-## Setting Up Private Azure DevOps Agents
+This module facilitates the provisioning of a Linux virtual machine (VM) on Azure with automatically generated login credentials and disk encryption.
 
-Azure DevOps agents are needed to run build and deployment jobs securely. Setting up these agents within a private subnet allows us to keep sensitive data secure while maintaining efficient access to Azure resources.
+It connects the VM to a subnet within the virtual network and installs the **[TeamServicesAgentLinux](https://learn.microsoft.com/en-us/azure/devops/pipelines/release/deployment-groups/howto-provision-deployment-group-agents?view=azure-devops)**. The installation requires the following parameters:
 
-### Agent Pool Configuration (`AzureDevOpsAgentPool.ts`)
-
-The **Azure DevOps Agent Pool** is deployed to a dedicated subnet within the VNet, configured with secure outbound internet connectivity via firewall rules to access necessary Azure DevOps services.
+- **VSTSAccountName**: Specify the URL of your Azure DevOps organization, for example, https://dev.azure.com/contoso.
+- **TeamProject**: Provide the name of your project, such as myProject.
+- **DeploymentGroup**: Indicate the name of the deployment group you have created.
+- **AgentName**: Optionally, assign a name to the agent. If left blank, the agent will default to the VM name with a -DG suffix.
+- **Personal Access Token**: Input the Personal Access Token (PAT) for authenticating with Azure Pipelines.
+- **Tags**: Optionally, provide a comma-separated list of tags to assign to the agent. Each tag can be up to 256 characters, is case insensitive, and there is no limit to the number of tags.
 
 <details><summary>View code:</summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-06-vnet/AzureDevOpsAgentPool.ts#L1-L50)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/VM.ts#1-221)
 
 </details>
 
 ---
 
-## Developing the Private VNet Environment
+## Setting Up Private Azure DevOps Agents
 
-The core objective is to establish a private VNet environment with various components to support CloudPC and Azure DevOps agent infrastructure. We will use Pulumi to provision all the required Azure resources.
+Before provisioning a private DevOps agent, it's essential to set up several resources in Azure DevOps:
+
+- **Personal Access Token (PAT)**: The private agent requires a PAT with specific permissions to install and configure the agent on a VM. You can create a `az-PAT-token` via the Azure DevOps User Settings portal with the following permissions:
+
+  - `Read` access to the Deployment group.
+  - `Read` access to Code.
+  - `Expiration`: Set to 1 year from the creation date.
+
+  Once created, add the token as a secret named `devops-pat` in the Pulumi project `az-04-cloudPC` using the following command. This command encrypts the PAT token and stores it in the project state for later use during VM provisioning and agent installation.
+
+  ```bash
+  pulumi config set devops-pat YOUR_PAT_HERE --secret
+  ```
+
+- **Deployment Group Creation**: Navigate to _Pipelines_ > _Deployment group_ in Azure DevOps and create a deployment group with a name of your choice, such as `cloud-agents`.
+
+---
+
+## Developing the CloudPC Stack
+
+Our goal is to create a private VNet for CloudPC and Azure DevOps agents using Pulumi to provision necessary Azure resources.
 
 1. **Firewall Policy**: To enforce security policies for CouldPC and DevOps agent egress traffic.
 2. **VNet and Peering**: The main network that will house subnets for CloudPC and the Azure DevOps agent.
 3. **Disk encryption set**: The disk encryption component for Virtual Machine.
 4. **AzureDevOps configuration**: The PAT generation and preparation to develop DevOps agent VM.
-5. **Deploy a private DevOps agent**: Setup a Linux VM and Install `TeamServicesAgentLinux` using pulumi.
+5. **Deploy a private DevOps agent**: Setup a Linux VM and Install `TeamServicesAgentLinux` extension using the parameters We have prepared above.
 
 <details><summary>View code:</summary>
 
@@ -129,23 +152,19 @@ The core objective is to establish a private VNet environment with various compo
 
 ### Deploying the Stack
 
-To deploy the stack, execute the `pnpm run up` command. This provisions all necessary Azure resources, including the VNet, subnets, firewall, and private endpoints. Ensure that you have logged in to your Azure account via Azure CLI and set up Pulumi with the appropriate backend and credentials.
+To deploy the stack, run the `pnpm run up` command. This will provision all the necessary Azure resources, such as the Virtual Network (VNet), subnets, firewall, and private endpoints. Before executing the command, ensure you are logged into your Azure account using the Azure CLI and have configured Pulumi with the correct backend and credentials.
 
-- Successfully deployed Azure resources:
+- Overview of the deployed Azure resources:
   ![Azure-Resources](/assets/az-06-pulumi-private-aks-cloudpc-hub/az-04-cloudpc.png)
-  _Overview of successfully deployed Azure resources._
+  _Successfully deployed Azure resources._
+
+After the `TeamServicesAgentLinux` extension is installed, an agent should appear in Azure DevOps under the `cloud-agents` deployment group. This agent will be used in future projects to deploy Helm charts into the AKS cluster.
+![AzureDevOps-Agent](/assets/az-06-pulumi-private-aks-cloudpc-hub/private-ado-agent.png)
+_Overview of the private agent in Azure DevOps._
 
 ### Cleaning Up the Stack
 
-To clean up and remove all associated Azure resources, run the `pnpm run destroy` command. This prevents any unnecessary costs and ensures that all provisioned resources are properly deleted after testing or development.
-
----
-
-## Conclusion
-
-In this tutorial, we have successfully developed a private VNet environment using Pulumi to support Windows 365 CloudPC instances and private Azure DevOps agents. By implementing secure subnets, firewall configurations, and Azure Bastion, we have created an efficient and secure network infrastructure suitable for enterprise-grade cloud services. These steps ensure that both CloudPC instances and DevOps agents operate within a well-protected and isolated environment, minimizing risks and maintaining privacy.
-
-Thank you for following along! I hope this guide has been informative and helpful. If you have any questions or want to explore further, feel free to reach out. Happy coding! 🌟✨
+To remove all associated Azure resources and clean up the stack, execute the `pnpm run destroy` command. This will help avoid unnecessary costs and ensure that all resources are properly deleted after testing or development.
 
 ---
 
@@ -154,6 +173,7 @@ Thank you for following along! I hope this guide has been informative and helpfu
 - [Azure Virtual Network Documentation](https://learn.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview)
 - [Firewall Policies and Rule Collection Groups](https://learn.microsoft.com/en-us/azure/firewall/policy-overview)
 - [Azure Bastion Configuration](https://learn.microsoft.com/en-us/azure/bastion/bastion-overview)
+- [TeamServicesAgentLinux Extension](https://learn.microsoft.com/en-us/azure/devops/pipelines/release/deployment-groups/howto-provision-deployment-group-agents?view=azure-devops)
 
 ---
 
