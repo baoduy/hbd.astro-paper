@@ -13,20 +13,18 @@ description: "In this guide, we’ll walk you through setting up a secure and sc
 
 ## Introduction
 
-In this guide, we will demonstrate how to implement **secret management** across our entire environment using **Azure Key Vault**, and establish **centralized log management** for all applications on Azure with **Log Analytics** and **Application Insights**.
-This approach ensures that sensitive data is securely stored, and application performance is monitored in real time.
+This guide will walk you through implementing some of core components for our environment:
 
 ### Key Objectives
 
-1. **Secret Management for the Entire Environment**  
-   We will use **Azure Key Vault** to securely manage and store sensitive information like credentials, certificates, and secrets. This ensures consistent and secure access across all our applications and services.
+1. **Comprehensive Secret Management**  
+   Utilize **Azure Key Vault** to securely manage and store sensitive information such as credentials, certificates, and secrets. This guarantees consistent and secure access across all applications and services.
 
-2. **Centralized Log Management for All Applications**  
-   By leveraging **Azure Log Analytics** and **Application Insights**, we will set up a centralized logging system that gathers and analyzes logs from all our applications. This enables us to monitor performance, troubleshoot issues, and maintain operational insights across our environment.
-
-This tutorial is aimed at cloud architects and developers seeking to securely automate their infrastructure management using Infrastructure-as-Code (IaC) with Pulumi.
+2. **Centralized Application Log Management**  
+   Implement a centralized logging system using **Azure Log Analytics** and **Application Insights** to collect and analyze logs from all applications. This setup allows for effective performance monitoring, issue troubleshooting, and operational insight maintenance across the environment.
 
 ![secrets-management](/assets/az-03-pulumi-private-ask-credential-log-management/secrets-management.png)
+_Illustration of the software CI/CD flow_
 
 ---
 
@@ -62,7 +60,7 @@ Again, this is the subnet Ip address spaces that we have defined in the [previou
 | **3. CloudPC VNet** | 3.1 CloudPC Subnet             | `192.168.32.0/25`   | 128   | 123    |
 |                     | 3.2 DevOps Subnet              | `192.168.32.128/27` | 32    | 27     |
 
-<details><summary>View code:</summary>
+<details><summary><em>View code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/config.ts#L1-L21)
 
@@ -81,7 +79,7 @@ This library contains utilities and helper functions that we'll use across all o
 
 ### The `azEnv` Module
 
-The `azEnv` module provides functions to retrieve Azure environment configurations:
+This module provides functions to retrieve Azure environment configurations:
 
 - **Tenant ID**: Identifies the Azure Active Directory (EntraID) tenant.
 - **Subscription ID**: Identifies the Azure subscription where resources will be deployed.
@@ -90,14 +88,14 @@ The `azEnv` module provides functions to retrieve Azure environment configuratio
 
 ### The `naming` Module
 
-The `naming` module helps generate resource names with a consistent prefix based on the Pulumi stack name:
+This module helps generate resource names with a consistent prefix based on the Pulumi stack name:
 
 - **`getGroupName`**: Prepends the stack name to a resource group name.
 - **`getName`**: Generates a resource name without the number with an optional suffix.
 
 ### The `stackEnv` Module
 
-The `stackEnv` module provides functions to retrieve Pulumi stack environment configurations:
+This module provides functions to retrieve Pulumi stack environment configurations:
 
 - **`isDryRun`**: Indicates whether the current execution is a dry run (preview) or an actual deployment.
 - **Organization**: The Pulumi organization name.
@@ -131,7 +129,7 @@ Creating a `Azure Key Vault` is a secure storage solution for managing secrets, 
   - **Read-Only Group**: For read-only access to the Key Vault.
   - **Write Group**: For write access to the Key Vault.
 
-<details><summary> View code:</summary>
+<details><summary><em>View code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/Vault.ts#L1-L132)
 
@@ -146,7 +144,7 @@ This module provisions a Log Analytics Workspace, which is used for collecting a
   - **workspaceCapping**: Sets a daily data ingestion quota to control costs and manage data volume.
   - **sku**: Defines the pricing tier for the workspace, which affects cost and features.
 
-<details><summary> View code:</summary>
+<details><summary><em>View code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/Log/Workspace.ts#L1-L126)
 
@@ -162,7 +160,7 @@ this module is setup an Application Insights component for monitoring web applic
   - **immediatePurgeDataOn30Days**: Allows data to be purged immediately after 30 days.
   - **ingestionMode**: Specifies that data ingestion is done through Log Analytics.
 
-<details><summary>View code:</summary>
+<details><summary><em>View code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/Log/AppInsight.ts#L1-L174)
 
@@ -176,7 +174,7 @@ The `index.ts` file acts as the central hub for the `shared` project, and a simi
 - Deploying all the Azure Resources above.
 - Providing essential resource details for future use by other projects.
 
-<details><summary>View code:</summary>
+<details><summary><em>View code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/index.ts#L1-L55)
 

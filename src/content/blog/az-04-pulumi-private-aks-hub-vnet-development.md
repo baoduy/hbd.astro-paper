@@ -32,7 +32,7 @@ Security is paramount. Our focus will be on enhancing security by implementing n
 
 This module facilitates the creation of a Virtual Network, allowing for the specification of subnets as parameters. It also enables VNet encryption by default to enhance security.
 
-<details><summary>View code:</summary>
+<details><summary><em>View code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-02-hub-vnet/VNet.ts#L1-L44)
 
@@ -42,7 +42,7 @@ This module facilitates the creation of a Virtual Network, allowing for the spec
 
 This module is responsible for creating a FirewallPolicy resource, which serves as the root policy for the Azure Firewall. This root policy will be the foundation for linking additional policy groups in subsequent Pulumi projects.
 
-<details><summary>View code:</summary>
+<details><summary><em>View code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-02-hub-vnet/FirewallPolicy.ts#L1-L25)
 
@@ -52,7 +52,7 @@ This module is responsible for creating a FirewallPolicy resource, which serves 
 
 This module is designed to set up an Azure Firewall, including essential components such as IP addresses and diagnostic settings. It ensures the firewall is connected to the designated subnet within the VNet and is associated with the root policy resources.
 
-<details><summary>View code:</summary>
+<details><summary><em>View code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-02-hub-vnet/Firewall.ts#L1-L114)
 
@@ -71,7 +71,7 @@ Our goal is to set up the main components required for the Hub VNet, which inclu
 5. **Firewall Policy**: Defines rules to control network traffic.
 6. **Azure Firewall**: A managed firewall service to protect our network.
 
-<details><summary>View code:</summary>
+<details><summary><em>View code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-02-hub-vnet/index.ts#L1-L73)
 

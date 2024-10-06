@@ -30,14 +30,14 @@ This guide will walk you through the process of setting up a private VNet using 
 This module defines the firewall policies for:
 
 - **CloudPC**: Grants all machines within the CloudPC subnet access to AKS, DevOps, and other Azure resources.
-  <details><summary>View code:</summary>
+  <details><summary><em>View code:</em></summary>
 
   [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/CloudPcFirewallRules/cloudpcPolicyGroup.ts#1-29)
 
   </details>
 
 - **DevOps**: Permits all machines in the DevOps subnet to access all resources, including those on the internet.
-  <details><summary>View code:</summary>
+  <details><summary><em>View code:</em></summary>
 
   [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/CloudPcFirewallRules/devopsPolicyGroup.ts#1-20)
 
@@ -46,7 +46,7 @@ This module defines the firewall policies for:
 > Caution: This rule poses a security risk as it allows DevOps agents extensive internet access. It is not advisable for production workloads and should be reviewed to restrict access to only necessary resources for the production environment.
 
 - **Index File**: Combines CloudPC and DevOps rules into a unified `FirewallPolicyRuleCollectionGroup`, linking them to the root policy established in the `az-02-hub-vnet` project.
-  <details><summary>View code:</summary>
+  <details><summary><em>View code:</em></summary>
 
   [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/CloudPcFirewallRules/index.ts#1-55)
 
@@ -57,7 +57,7 @@ This module defines the firewall policies for:
 This module is responsible for creating a virtual network (VNet) with two subnets.
 It also establishes peering with the Hub VNet that was set up in the previous project, similar to the VNet component used for AKS in `az-03-aks-cluster` project.
 
-<details><summary>View code:</summary>
+<details><summary><em>View code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/VNet.ts#78-172)
 
@@ -68,14 +68,14 @@ It also establishes peering with the Hub VNet that was set up in the previous pr
 This module demonstrates how to encrypt Azure resources using a custom encryption key stored in Azure Key Vault. It includes the following components:
 
 - **User Assigned Identity**: This identity is used to grant access to the Key Vault, allowing it to read the encryption key.
-  <details><summary>View code:</summary>
+  <details><summary><em>View code:</em></summary>
 
   [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/DiskEncryptionSet.ts#17-44)
 
   </details>
 
 - **Vault Encryption Key**: A custom encryption key with a size of 4096 bits, configured for automatic rotation every year within the Key Vault.
-  <details><summary>View code:</summary>
+  <details><summary><em>View code:</em></summary>
 
   [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/DiskEncryptionSet.ts#49-88)
 
@@ -83,7 +83,7 @@ This module demonstrates how to encrypt Azure resources using a custom encryptio
 
 - **Disk Encryption Set**: This component creates a `DiskEncryptionSet` using the User Assigned Identity and the custom encryption key mentioned above.
 
-  <details><summary>View code:</summary>
+  <details><summary><em>View code:</em></summary>
 
   [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/DiskEncryptionSet.ts#90-119)
 
@@ -102,7 +102,7 @@ It connects the VM to a subnet within the virtual network and installs the **[Te
 - **Personal Access Token**: Input the Personal Access Token (PAT) for authenticating with Azure Pipelines.
 - **Tags**: Optionally, provide a comma-separated list of tags to assign to the agent. Each tag can be up to 256 characters, is case insensitive, and there is no limit to the number of tags.
 
-<details><summary>View code:</summary>
+<details><summary><em>View code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/VM.ts#1-221)
 
@@ -140,7 +140,7 @@ Our goal is to create a private VNet for CloudPC and Azure DevOps agents using P
 4. **AzureDevOps configuration**: The PAT generation and preparation to develop DevOps agent VM.
 5. **Deploy a private DevOps agent**: Setup a Linux VM and Install `TeamServicesAgentLinux` extension using the parameters We have prepared above.
 
-<details><summary>View code:</summary>
+<details><summary><em>View code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/index.ts#1-106)
 

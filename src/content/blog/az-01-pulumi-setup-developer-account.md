@@ -213,7 +213,7 @@ The template generates several files:
 
 Open `index.ts` in your preferred code editor and review the sample code. It typically includes the creation of a Resource Group and a Storage Account.
 
-<details><summary>🔖 The Sample Code:</summary>
+<details><summary><em>View Code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/day-0/day00_pulumi-azure-start/index.ts#L1-L23)
 
@@ -233,7 +233,7 @@ Before deploying, preview the changes to ensure everything is set up correctly:
 pulumi up
 ```
 
-<details><summary>Sample Output:</summary>
+<details><summary><em>Sample Output:</em></summary>
 
 ```bash
 Previewing update (dev)
@@ -267,7 +267,7 @@ Deploy your resources to Azure:
 pulumi up -y
 ```
 
-<details><summary>Sample Output:</summary>
+<details><summary><em>Sample Output:</em></summary>
 
 ```bash
 Updating (dev)
@@ -310,7 +310,7 @@ To avoid incurring unnecessary costs, destroy the resources when they're no long
 pulumi destroy -y
 ```
 
-<details><summary>Sample Output:</summary>
+<details><summary><em>Sample Output:</em></summary>
 
 ```bash
 Destroying (dev)
@@ -370,7 +370,7 @@ Pulumi simplifies cloud resource management by allowing you to use familiar prog
 - [Sample source code](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/day-0/day00_pulumi-azure-start#day-0)
 - [Pulumi get started](https://www.pulumi.com/docs/iac/get-started/)
 - [Pulumi Commands](https://www.pulumi.com/docs/iac/cli/commands/)
-- [Pulumi Secret Config](https://www.pulumi.com/docs/iac/concepts/secrets/#configuring-secrets-encryption) 
+- [Pulumi Secret Config](https://www.pulumi.com/docs/iac/concepts/secrets/#configuring-secrets-encryption)
 
 ---
 
@@ -387,4 +387,4 @@ This architecture ensures that sensitive workloads remain isolated and protected
 
 Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
 
-**Steven** | *[GitHub](https://github.com/baoduy)*
+**Steven** | _[GitHub](https://github.com/baoduy)_
