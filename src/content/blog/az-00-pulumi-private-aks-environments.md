@@ -39,8 +39,8 @@ In this guide, we’ll walk you through setting up a secure and scalable infrast
 
 ### [Day 04: Develop a Virtual Network Hub for Private AKS on Azure](/posts/az-04-pulumi-private-aks-hub-vnet-development)
 
-In this tutorial, We've established secure credential management and centralized logging, the next step is to build out the virtual network hub for a private AKS environment.
 In this article, We'll walk through the process of developing the first Hub VNet for a private AKS environment using Pulumi.
+We will demonstrate how to seamlessly integrate a VNet with an Azure Firewall, along with configuring outbound public IP addresses.
 
 ### [Day 05: Implementing Private AKS Clusters with Advanced Networking](/posts/az-05-pulumi-private-aks-cluster-env)
 
@@ -64,7 +64,9 @@ _Overview of private AKS env._
 
 ## Azure DevOps Pipelines
 
-### [Day 07: Setup Pulumi Deployment Pipeline](/posts/az-06-pulumi-private-aks-cloudpc-hub)
+### [Day 07: Setting Up a Deployment Pipeline for Pulumi Private AKS Environment on Azure.](/posts/az-07-pulumi-setup-deploy-cicd-pipeline)
+
+In the next tutorial, it will guides us through setting up a secure CloudPC and DevOps agent hub, aimed at improving the management and operational capabilities of your private AKS environment using Pulumi.
 
 ### [Day 08: Docker Image Sync-up](/posts/az-06-pulumi-private-aks-cloudpc-hub)
 

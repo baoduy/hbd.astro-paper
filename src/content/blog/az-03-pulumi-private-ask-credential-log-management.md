@@ -226,8 +226,8 @@ Implementing RBAC and the principle of least privilege enhances the security pos
 
 **[Day 04: Develop a Virtual Network Hub for Private AKS on Azure](/posts/az-04-pulumi-private-aks-hub-vnet-development)**
 
-Now that we've established secure credential management and centralized logging, the next step is to build out the virtual network hub for a private AKS environment.
-In this article, We'll walk through the process of developing the first Hub VNet for a private AKS environment using Pulumi.
+In the next article, We'll walk through the process of developing the first Hub VNet for a private AKS environment using Pulumi.
+We will demonstrate how to seamlessly integrate a VNet with an Azure Firewall, along with configuring outbound public IP addresses.
 
 ---
 

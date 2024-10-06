@@ -177,6 +177,14 @@ To remove all associated Azure resources and clean up the stack, execute the `pn
 
 ---
 
+## Next Steps
+
+**[Day 07: Setting Up a Deployment Pipeline for Pulumi Private AKS Environment on Azure.](/posts/az-07-pulumi-setup-deploy-cicd-pipeline)**
+
+In the next tutorial, it will guides us through setting up a secure CloudPC and DevOps agent hub, aimed at improving the management and operational capabilities of your private AKS environment using Pulumi.
+
+---
+
 ## Thank You
 
 Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
