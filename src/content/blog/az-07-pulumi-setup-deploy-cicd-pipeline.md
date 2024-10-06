@@ -178,6 +178,7 @@ By following this guide, you now have a CI/CD pipeline that allows you to automa
 ## References
 
 - [Pulumi extensions](https://marketplace.visualstudio.com/items?itemName=pulumi.build-and-release-task)
+- [Pnpm Pipeline Config](https://pnpm.io/continuous-integration#azure-pipelines)
 
 ---
 
