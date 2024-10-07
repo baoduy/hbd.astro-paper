@@ -80,7 +80,17 @@ In the next tutorial, it will guides us through setting up a secure CloudPC and 
 
 ## Remote Development Environments with Microsoft Intune (MDM) and Cloudflare
 
+---
+
 ## Conclusions
+
+---
+
+## Improvement
+
+### Architect Improvement
+
+## Project improvement
 
 ---
 
