@@ -29,21 +29,19 @@ This guide will walk you through the process of setting up a private VNet using 
 
 This module defines the firewall policies for:
 
-- **CloudPC**: Grants all machines within the CloudPC subnet access to AKS, DevOps, and other Azure resources.
+- **CloudPC**: We adhere to the recommended network rules for [Windows 365 Enterprise](https://learn.microsoft.com/en-us/windows-365/enterprise/requirements-network?tabs=enterprise%2Cent). Additionally, we ensure that all machines within the CloudPC subnet have access to AKS, DevOps subnets, and other Azure resources.
   <details><summary><em>View code:</em></summary>
 
-  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/CloudPcFirewallRules/cloudpcPolicyGroup.ts#1-29)
+  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/CloudPcFirewallRules/cloudpcPolicyGroup.ts#1-85)
 
   </details>
 
-- **DevOps**: Permits all machines in the DevOps subnet to access all resources, including those on the internet.
+- **DevOps**: The current setup allows all machines in the DevOps subnet unrestricted access to all resources, including those on the internet. To improve security, it is recommended to restrict access to only necessary resources and implement more granular firewall rules.
   <details><summary><em>View code:</em></summary>
 
   [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/CloudPcFirewallRules/devopsPolicyGroup.ts#1-20)
 
   </details>
-
-> Caution: This rule poses a security risk as it allows DevOps agents extensive internet access. It is not advisable for production workloads and should be reviewed to restrict access to only necessary resources for the production environment.
 
 - **Index File**: Combines CloudPC and DevOps rules into a unified `FirewallPolicyRuleCollectionGroup`, linking them to the root policy established in the `az-02-hub-vnet` project.
   <details><summary><em>View code:</em></summary>
@@ -108,6 +106,20 @@ It connects the VM to a subnet within the virtual network and installs the **[Te
 
 </details>
 
+### The `PrivateDNS.ts` module
+
+To streamline internal network communication, we will configure a DNS resolver. Our NGINX will be deployed on AKS as a private ingress with an internal IP address of `192.168.31.250`, which must reside within the AKS subnet.
+
+To facilitate SSL certificate generation using [`Cert-Manager`](https://cert-manager.io/) on our AKS, we will utilize the Cloudflare domain `drunkcoding.net` for internal DNS communication.
+
+The private DNS will be linked to all VNETs in the environment, directing all DNS requests to the IP address `192.168.31.250`.
+
+<details><summary><em>View code:</em></summary>
+
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/PrivateDNS.ts#1-70)
+
+</details>
+
 ---
 
 ## Setting Up Private Azure DevOps Agents
@@ -152,15 +164,15 @@ Our goal is to create a private VNet for CloudPC and Azure DevOps agents using P
 
 ### Deploying the Stack
 
-To deploy the stack, run the `pnpm run up` command. This will provision all the necessary Azure resources, such as the Virtual Network (VNet), subnets, firewall, and private endpoints. Before executing the command, ensure you are logged into your Azure account using the Azure CLI and have configured Pulumi with the correct backend and credentials.
+- To deploy the stack, run the `pnpm run up` command. This will provision all the necessary Azure resources, such as the Virtual Network (VNet), subnets, firewall, and private endpoints. Before executing the command, ensure you are logged into your Azure account using the Azure CLI and have configured Pulumi with the correct backend and credentials.
 
-- Overview of the deployed Azure resources:
-  ![Azure-Resources](/assets/az-06-pulumi-private-aks-cloudpc-hub/az-04-cloudpc.png)
-  _Successfully deployed Azure resources._
+![Azure-Resources](/assets/az-06-pulumi-private-aks-cloudpc-hub/az-04-cloudpc.png)
+<p class="ml-44"><em>The deployed Azure resources</em></p>
 
-After the `TeamServicesAgentLinux` extension is installed, an agent should appear in Azure DevOps under the `cloud-agents` deployment group. This agent will be used in future projects to deploy Helm charts into the AKS cluster.
-![AzureDevOps-Agent](/assets/az-06-pulumi-private-aks-cloudpc-hub/private-ado-agent.png)
-_Overview of the private agent in Azure DevOps._
+- After the `TeamServicesAgentLinux` extension is installed, an agent should appear in Azure DevOps under the `cloud-agents` deployment group. This agent will be used in future projects to deploy Helm charts into the AKS cluster.
+
+<img alt="private-ado-agent" src="/assets/az-06-pulumi-private-aks-cloudpc-hub/private-ado-agent.png" width="500px">
+<p class="ml-44"><em>The private agent on Azure DevOps</em></p>
 
 ### Cleaning Up the Stack
 
@@ -174,12 +186,13 @@ To remove all associated Azure resources and clean up the stack, execute the `pn
 - [Firewall Policies and Rule Collection Groups](https://learn.microsoft.com/en-us/azure/firewall/policy-overview)
 - [Azure Bastion Configuration](https://learn.microsoft.com/en-us/azure/bastion/bastion-overview)
 - [TeamServicesAgentLinux Extension](https://learn.microsoft.com/en-us/azure/devops/pipelines/release/deployment-groups/howto-provision-deployment-group-agents?view=azure-devops)
+- [Network requirements For Windows 365 Enterprise](https://learn.microsoft.com/en-us/windows-365/enterprise/requirements-network?tabs=enterprise%2Cent)
 
 ---
 
 ## Next Steps
 
-**[Day 07: Setting Up a Deployment Pipeline for Pulumi Private AKS Environment on Azure.](/posts/az-07-pulumi-setup-deploy-cicd-pipeline)**
+**[Day 07: Setting Up a Deployment Pipeline for Pulumi Projects.](/posts/az-07-pulumi-setup-deploy-cicd-pipeline)**
 
 In the next tutorial, it will guides us through setting up a secure CloudPC and DevOps agent hub, aimed at improving the management and operational capabilities of your private AKS environment using Pulumi.
 

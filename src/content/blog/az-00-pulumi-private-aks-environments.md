@@ -64,7 +64,7 @@ _Overview of private AKS env._
 
 ## Azure DevOps Pipelines
 
-### [Day 07: Setting Up a Deployment Pipeline for Pulumi Private AKS Environment on Azure.](/posts/az-07-pulumi-setup-deploy-cicd-pipeline)
+### [Day 07: Setting Up a Deployment Pipeline for Pulumi Projects.](/posts/az-07-pulumi-setup-deploy-cicd-pipeline)
 
 In the next tutorial, it will guides us through setting up a secure CloudPC and DevOps agent hub, aimed at improving the management and operational capabilities of your private AKS environment using Pulumi.
 

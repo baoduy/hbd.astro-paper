@@ -1,7 +1,7 @@
 ---
 author: Steven Hoang
 pubDatetime: 2025-01-01T12:00:00Z
-title: "[Az] Day 07: Setting Up a Deployment Pipeline for Pulumi Private AKS Environment on Azure."
+title: "[Az] Day 07: Setting Up a Deployment Pipeline for Pulumi Projects."
 featured: false
 draft: false
 tags:
@@ -35,21 +35,22 @@ Ensure you have:
 ### Pulumi Variable Group
 
 Create a variable group in Azure DevOps **Libraries** named `pulumi`, including the Pulumi PAT token:
-<img src="/assets/az-07-pulumi-setup-deploy-cicd-pipeline/pulumi-variable-group.png" width="450px">
+<img alt="pulumi-variable-group" src="/assets/az-07-pulumi-setup-deploy-cicd-pipeline/pulumi-variable-group.png" width="450px">
 
 ### Setting Up Azure Resource Management Connection
 
 1. Navigate to **Service connections** in Azure DevOps and create a new connection named `az-pulumi` for **Azure Resource Management**:
-   <img src="/assets/az-07-pulumi-setup-deploy-cicd-pipeline/az-federation.png" width="450px">
+   <img alt="az-federation" src="/assets/az-07-pulumi-setup-deploy-cicd-pipeline/az-federation.png" width="450px">
 
    > Note: Specifying a resource group is optional. This can be used to restrict the connection's access to a specific resource group if needed.
 
-2. Once the service connection is established, verify its presence in the Azure Portal. Here are the details:
+2. Once the service connection is established, verify the app registration presence in the Azure Portal here:
    ![Azure-Connection-Details](/assets/az-07-pulumi-setup-deploy-cicd-pipeline/az-federation-details.png)
+   <p class="ml-44"><em>The app registration on Azure Portal</em></p>
 
-3. Grant the service connection `Owner` and `Key Vault Administrator` roles at the **subscription** level.
-   Additionally, configure the necessary Graph permissions to ensure it has sufficient privileges for complete deployment operations:
+3. Ensure the app registration has sufficient permissions to deploy all resources by assigning it the `Owner` and `Key Vault Administrator` roles at the **subscription** level. Additionally, configure the required Graph permissions to provide it with the necessary privileges for comprehensive deployment operations.
    ![api-permission](/assets/az-07-pulumi-setup-deploy-cicd-pipeline/az-app-permission.png)
+   <p class="ml-40"><em>The API permission of the app registration</em></p>
 
 ## Deployment Templates
 
@@ -99,28 +100,30 @@ Create a variable group in Azure DevOps **Libraries** named `pulumi`, including 
 
 ## Pulumi Deployment Pipeline
 
-To set up a deployment pipeline in Azure DevOps, use the `deploy.azure-pipelines.yml` file.
+To configure a deployment pipeline in Azure DevOps, utilize the `deploy.azure-pipelines.yml` file.
 
 ### YAML Configuration
 
-- **Trigger**: Automatically initiates on branches matching _releases/\*_.
-- **Agent Pool**: Utilizes the _ubuntu-latest_ agent pool.
-- **Variables**: Includes `pulumi`, `azureSubscription`, and `pnpm_config_cache`. The `env_name` is derived from the branch name.
+- **Trigger**: Automatically activates for branches that match the pattern _releases/\*_.
+- **Agent Pool**: Employs the _ubuntu-latest_ agent pool for execution.
+- **Variables**: Comprises `pulumi`, `azureSubscription`, and `pnpm_config_cache`. The `env_name` is dynamically generated from the branch name.
 
 ### Pipeline Stages
 
-1. **deploy_shared**: Deploys the `az-01-shared` module.
-2. **deploy_hub**: Deploys the `az-02-hub-vnet` module, following the completion of `deploy_shared`.
-3. **deploy_aks**: Deploys the `az-03-aks-cluster` module, subsequent to `deploy_hub`.
-4. **deploy_cloudpc**: Deploys the `az-04-cloudPC` module, after `deploy_hub`.
+1. **deploy_shared**: Initiates the deployment of the `az-01-shared` module.
+2. **deploy_hub**: Proceeds with deploying the `az-02-hub-vnet` module after `deploy_shared` is complete.
+3. **deploy_aks**: Continues with the deployment of the `az-03-aks-cluster` module, following `deploy_hub`.
+4. **deploy_cloudpc**: Finalizes with the deployment of the `az-04-cloudPC` module, subsequent to `deploy_hub`.
 
-Each stage utilizes the `build-and-deploy.yml` file with the necessary parameters.
+Each stage leverages the `build-and-deploy.yml` file, supplying the required parameters.
 
 <details><summary><em>View Code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/deploy.azure-pipelines.yml#1-64)
 
 </details>
+
+To execute the pipeline, create a branch named `releases/dev` and initiate the run:
 
 ![deploy-pipeline-flow](/assets/az-07-pulumi-setup-deploy-cicd-pipeline/deploy-pipeline-flow.png)
 _Visualization of the Deployment Pipeline_
