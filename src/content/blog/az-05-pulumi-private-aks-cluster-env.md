@@ -163,6 +163,7 @@ These steps ensure that the AKS cluster is well-secured and capable of meeting t
 - [Outbound network and FQDN rules for AKS clusters](https://learn.microsoft.com/en-us/azure/aks/outbound-rules-control-egress)
 - [Dynamic resource providers](https://www.pulumi.com/docs/iac/concepts/resources/dynamic-providers/)
 - [Use EntraID role-based access control for AKS](https://learn.microsoft.com/en-us/azure/aks/manage-azure-rbac?tabs=azure-cli)
+- [Use a service principal with AKS](https://learn.microsoft.com/en-us/azure/aks/kubernetes-service-principal?tabs=azure-cli)
 
 ---
 
