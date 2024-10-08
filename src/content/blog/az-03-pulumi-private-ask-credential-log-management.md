@@ -220,7 +220,7 @@ Implementing RBAC and the principle of least privilege enhances the security pos
 
 ---
 
-## Next Steps
+## Next Topic
 
 **[Day 04: Develop a Virtual Network Hub for Private AKS on Azure](/posts/az-04-pulumi-private-aks-hub-vnet-development)**
 

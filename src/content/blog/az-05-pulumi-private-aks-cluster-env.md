@@ -167,7 +167,7 @@ These steps ensure that the AKS cluster is well-secured and capable of meeting t
 
 ---
 
-## Next Steps
+## Next Topic
 
 **[Day 06: Implement a private CloudPC and DevOps Agent Hub with Pulumi](/posts/az-06-pulumi-private-aks-cloudpc-hub)**
 

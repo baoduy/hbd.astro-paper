@@ -1,19 +1,19 @@
 ---
 author: Steven Hoang
 pubDatetime: 2025-01-01T12:00:00Z
-title: "[Az] Day 07: Setting Up a Deployment Pipeline for Pulumi Projects."
+title: "[Az] Day 08: Setting Up a Deployment Pipeline for Pulumi Projects."
 featured: false
 draft: false
 tags:
   - AKS
   - Private
   - Pulumi
-description: "In this article, we'll walk through creating a Continuous Integration and Continuous Deployment (CI/CD) pipeline on Azure DevOps for setting up a private AKS environment on Azure using Pulumi."
+description: "In this article, we'll walk through creating a Continuous Integration and Continuous Deployment (CI/CD) pipeline on Azure DevOps for our Pulumi projects."
 ---
 
 ## Introduction
 
-In this article, we will guide you through the process of establishing a Continuous Integration and Continuous Deployment (CI/CD) pipeline using Azure DevOps.
+In this article, will guide us through the process of establishing a Continuous Integration and Continuous Deployment (CI/CD) pipeline using Azure DevOps.
 This pipeline will facilitate the deployment of the previously developed Pulumi projects.
 
 ---
@@ -35,21 +35,21 @@ Ensure you have:
 ### Pulumi Variable Group
 
 Create a variable group in Azure DevOps **Libraries** named `pulumi`, including the Pulumi PAT token:
-<img alt="pulumi-variable-group" src="/assets/az-07-pulumi-setup-deploy-cicd-pipeline/pulumi-variable-group.png" width="450px">
+<img alt="pulumi-variable-group" src="/assets/az-08-pulumi-setup-deploy-cicd-pipeline/pulumi-variable-group.png" width="450px">
 
 ### Setting Up Azure Resource Management Connection
 
 1. Navigate to **Service connections** in Azure DevOps and create a new connection named `az-pulumi` for **Azure Resource Management**:
-   <img alt="az-federation" src="/assets/az-07-pulumi-setup-deploy-cicd-pipeline/az-federation.png" width="450px">
+   <img alt="az-federation" src="/assets/az-08-pulumi-setup-deploy-cicd-pipeline/az-federation.png" width="450px">
 
    > Note: Specifying a resource group is optional. This can be used to restrict the connection's access to a specific resource group if needed.
 
 2. Once the service connection is established, verify the app registration presence in the Azure Portal here:
-   ![Azure-Connection-Details](/assets/az-07-pulumi-setup-deploy-cicd-pipeline/az-federation-details.png)
+   ![Azure-Connection-Details](/assets/az-08-pulumi-setup-deploy-cicd-pipeline/az-federation-details.png)
    <p class="ml-44"><em>The app registration on Azure Portal</em></p>
 
 3. Ensure the app registration has sufficient permissions to deploy all resources by assigning it the `Owner` and `Key Vault Administrator` roles at the **subscription** level. Additionally, configure the required Graph permissions to provide it with the necessary privileges for comprehensive deployment operations.
-   ![api-permission](/assets/az-07-pulumi-setup-deploy-cicd-pipeline/az-app-permission.png)
+   ![api-permission](/assets/az-08-pulumi-setup-deploy-cicd-pipeline/az-app-permission.png)
    <p class="ml-40"><em>The API permission of the app registration</em></p>
 
 ## Deployment Templates
@@ -63,8 +63,8 @@ Create a variable group in Azure DevOps **Libraries** named `pulumi`, including 
 
 - **Steps**:
 
-  - **Install Node.js**: Version 20.
-  - **Setup pnpm**: Configures `pnpm`.
+  - **Install Node.js**: Install current Node LTS version.
+  - **Setup pnpm**: Configures `pnpm` package management.
   - **Build Commons Project**: Installs dependencies and runs the build script for `az-commons`.
   - **Install Project Dependencies**: Installs dependencies for the specified `workDir`.
 
@@ -125,7 +125,7 @@ Each stage leverages the `build-and-deploy.yml` file, supplying the required par
 
 To execute the pipeline, create a branch named `releases/dev` and initiate the run:
 
-![deploy-pipeline-flow](/assets/az-07-pulumi-setup-deploy-cicd-pipeline/deploy-pipeline-flow.png)
+![deploy-pipeline-flow](/assets/az-08-pulumi-setup-deploy-cicd-pipeline/deploy-pipeline-flow.png)
 _Visualization of the Deployment Pipeline_
 
 ---
@@ -142,7 +142,7 @@ To set up a destruction pipeline in Azure DevOps, use the `danger-destroy.azure-
 
 </details>
 
-![deploy-pipeline-flow](/assets/az-07-pulumi-setup-deploy-cicd-pipeline/pulumi-destroy-pipeline.png)
+![deploy-pipeline-flow](/assets/az-08-pulumi-setup-deploy-cicd-pipeline/pulumi-destroy-pipeline.png)
 _Visualization of the Destroy Pipeline_
 
 ---

@@ -478,7 +478,7 @@ Automating the management of inactive Azure Entra ID accounts enhances your orga
 - **Automation**: Automating tasks reduces manual effort and the likelihood of human error.
 - **Scalability**: Using TypeScript and Azure DevOps allows for easy updates and scalability as your organization grows.
 
-### Next Steps
+### Next Topic
 
 - **Enhancements**: Extend the script to send email notifications before disabling accounts.
 - **Logging**: Integrate logging mechanisms for better auditing and monitoring.

@@ -116,7 +116,7 @@ This Hub VNet serves as a crucial element in managing and securing access to all
 
 ---
 
-## Next Steps
+## Next Topic
 
 **[Day 05: Implementing a Private AKS Cluster with Pulumi](/posts/az-05-pulumi-private-aks-cluster-env)**
 

@@ -28,12 +28,6 @@ In this guide, we’ll walk through:
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [Conclusion](#conclusion)
-- [References](#references)
-- [Next Steps](#next-steps)
-- [Thank You](#thank-you)
-
 ---
 
 ## Prerequisites

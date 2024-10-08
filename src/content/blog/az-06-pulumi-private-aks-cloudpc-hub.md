@@ -190,11 +190,11 @@ To remove all associated Azure resources and clean up the stack, execute the `pn
 
 ---
 
-## Next Steps
+## Next Topic
 
-**[Day 07: Setting Up a Deployment Pipeline for Pulumi Projects.](/posts/az-07-pulumi-setup-deploy-cicd-pipeline)**
+**[Day 07: Setup Windows 365 Enterprise as a private VDI](/posts/az-07-setup-cloudpc-windows365-enterprise)**
 
-In the next tutorial, it will guides us through setting up a secure CloudPC and DevOps agent hub, aimed at improving the management and operational capabilities of your private AKS environment using Pulumi.
+In the next article, We will discover how to configure a CloudPC with Windows 365 Enterprise to establish a secure and efficient Virtual Desktop Infrastructure (VDI) for accessing a private AKS environment.
 
 ---
 
