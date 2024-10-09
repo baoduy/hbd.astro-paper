@@ -32,7 +32,7 @@ This module defines the firewall policies for:
 - **CloudPC**: We adhere to the recommended network rules for [Windows 365 Enterprise](https://learn.microsoft.com/en-us/windows-365/enterprise/requirements-network?tabs=enterprise%2Cent). Additionally, we ensure that all machines within the CloudPC subnet have access to AKS, DevOps subnets, and other Azure resources.
   <details><summary><em>View code:</em></summary>
 
-  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/CloudPcFirewallRules/cloudpcPolicyGroup.ts#1-85)
+  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/CloudPcFirewallRules/cloudpcPolicyGroup.ts#1-104)
 
   </details>
 
@@ -167,6 +167,7 @@ Our goal is to create a private VNet for CloudPC and Azure DevOps agents using P
 - To deploy the stack, run the `pnpm run up` command. This will provision all the necessary Azure resources, such as the Virtual Network (VNet), subnets, firewall, and private endpoints. Before executing the command, ensure you are logged into your Azure account using the Azure CLI and have configured Pulumi with the correct backend and credentials.
 
 ![Azure-Resources](/assets/az-06-pulumi-private-aks-cloudpc-hub/az-04-cloudpc.png)
+
 <p class="ml-44"><em>The deployed Azure resources</em></p>
 
 - After the `TeamServicesAgentLinux` extension is installed, an agent should appear in Azure DevOps under the `cloud-agents` deployment group. This agent will be used in future projects to deploy Helm charts into the AKS cluster.
@@ -194,7 +195,7 @@ To remove all associated Azure resources and clean up the stack, execute the `pn
 
 **[Day 07: Setup Windows 365 Enterprise as a private VDI](/posts/az-07-setup-cloudpc-windows365-enterprise)**
 
-In the next article, We will discover how to configure a CloudPC with Windows 365 Enterprise to establish a secure and efficient Virtual Desktop Infrastructure (VDI) for accessing a private AKS environment.
+In the next article, we will explore how to configure a CloudPC with Windows 365 Enterprise to establish a secure and efficient Virtual Desktop Infrastructure (VDI) for accessing a private AKS environment.
 
 ---
 

@@ -53,64 +53,66 @@ This module sets up a **FirewallPolicyRuleCollectionGroup** with policies that e
 The Virtual Network (VNet) serves as the backbone for our AKS cluster. It provides the primary network environment that includes subnets dedicated to AKS nodes.
 The VNet is peered with the Hub VNet to enable seamless integration with other services and to route all traffic through the Hub's firewall, ensuring all egress traffic is controlled.
 
-- **Security Group**: By default, the VNet allows resources in all subnets to access the internet. To enhance security, a security group is created with the following default rules:
+1. **Security Group**: By default, the VNet allows resources in all subnets to access the internet. To enhance security, a security group is created with the following default rules:
 
-  - Block all internet access from all subnets.
-  - Allow VNet-to-VNet communication to enable hub-spoke connectivity.
-  - Additional security rules can be added through parameters.
+- Block all internet access from all subnets.
+- Allow VNet-to-VNet communication to enable hub-spoke connectivity.
+- Additional security rules can be added through parameters.
 
   <details><summary><em>View code:</em></summary>
 
-  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#L10-L56)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#L10-L56)
 
   </details>
 
-- **Route Table**: This VNet will peer with the hub, necessitating a route table to direct all traffic to the private IP address of the firewall.
+2. **Route Table**: This VNet will peer with the hub, necessitating a route table to direct all traffic to the private IP address of the firewall.
 
   <details><summary><em>View code:</em></summary>
 
-  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#L59-L76)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#L59-L76)
 
   </details>
 
-- **VNet**: Finally, the VNet is configured to create the route table and security group, injecting them into all provided subnets. Additionally, it establishes VNet peering with the hub VNet.
+3. **VNet**: Finally, the VNet is configured to create the route table and security group, injecting them into all provided subnets. Additionally, it establishes VNet peering with the hub VNet.
 
   <details><summary><em>View code:</em></summary>
 
-  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#L78-L173)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#L78-L173)
 
   </details>
 
 ### The `AKS.ts` Module
 
-- **SSH Key Generation**: SSH keys are crucial for configuring an AKS cluster. Due to Pulumi's lack of native SSH support, I utilize **[Dynamic Resource Providers](https://www.pulumi.com/docs/iac/concepts/resources/dynamic-providers/)** to craft a custom component that dynamically generates SSH keys with the `node-forge` library.
+1. **SSH Key Generation Custom Resource**: SSH keys are crucial for configuring an AKS cluster. Due to Pulumi's lack of native SSH support, I utilize **[Dynamic Resource Providers](https://www.pulumi.com/docs/iac/concepts/resources/dynamic-providers/)** to craft a custom component that dynamically generates SSH keys with the `node-forge` library.
 
-  This component also demonstrates how to securely store secrets securely within the Pulumi state.
+This component also demonstrates how to securely store secrets securely within the Pulumi state.
+
    <details><summary><em>View SSH generator code:</em></summary>
 
-  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/SshGenerator.ts#L1-L129)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/SshGenerator.ts#L1-L129)
 
    </details>
 
-  Furthermore, a helper class uses the SSH generator alongside a random password to create an SSH public and private key pair and stored them in Key Vault for later uses.
+Furthermore, a helper method uses the SSH generator alongside a random password to create an SSH public and private key pair and stored them in Key Vault for AKS.
+
    <details><summary><em>View code:</em></summary>
 
-  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/Aks.ts#L36-L80)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/Aks.ts#63-102)
 
    </details>
 
-- **AKS Identity Creation**: AKS can be configured to utilize Microsoft Entra ID for user authentication.
-  This setup allows users to sign in to an AKS cluster using a Microsoft Entra authentication to manage access to namespaces and cluster resources.
-  <details><summary><em>View code:</em></summary>
+2. **AKS Identity Creation**: AKS can be configured to utilize Microsoft Entra ID for user authentication.
+This setup allows users to sign in to an AKS cluster using a Microsoft Entra authentication to manage access to namespaces and cluster resources.
+<details><summary><em>View code:</em></summary>
 
-  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/Aks.ts#8-34)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/Aks.ts#16-57)
 
   </details>
 
-- **AKS Cluster Creation**: Finally, by integrating all components, we establish our AKS cluster. The source code contains several key elements worth noting.
-  <details><summary><em>View code:</em></summary>
+3. **AKS Cluster Creation**: Finally, by integrating all components, we establish our AKS cluster. The source code contains several key elements worth noting.
+<details><summary><em>View code:</em></summary>
 
-  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/Aks.ts#82-267)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/Aks.ts#106-290)
 
   </details>
 
