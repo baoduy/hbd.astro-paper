@@ -20,11 +20,7 @@ This tutorial will guide you through the setup of a private AKS cluster with adv
 
 By the end of this guide, you'll know how to integrate the AKS cluster with a Hub VNet and apply firewall policies established in the [previous `az-02-hub-vnet` project](az-04-pulumi-private-aks-hub-vnet-development).
 
----
-
 ## Table of Contents
-
----
 
 ## The project modules
 
@@ -61,25 +57,25 @@ The VNet is peered with the Hub VNet to enable seamless integration with other s
 
   <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#L10-L56)
+  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#L10-L56)
 
   </details>
 
 2. **Route Table**: This VNet will peer with the hub, necessitating a route table to direct all traffic to the private IP address of the firewall.
 
-  <details><summary><em>View code:</em></summary>
+<details><summary><em>View code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#L59-L76)
 
-  </details>
+</details>
 
 3. **VNet**: Finally, the VNet is configured to create the route table and security group, injecting them into all provided subnets. Additionally, it establishes VNet peering with the hub VNet.
 
-  <details><summary><em>View code:</em></summary>
+<details><summary><em>View code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#L78-L173)
 
-  </details>
+</details>
 
 ### The `AKS.ts` Module
 
@@ -87,19 +83,19 @@ The VNet is peered with the Hub VNet to enable seamless integration with other s
 
 This component also demonstrates how to securely store secrets securely within the Pulumi state.
 
-   <details><summary><em>View SSH generator code:</em></summary>
+<details><summary><em>View SSH generator code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/SshGenerator.ts#L1-L129)
 
-   </details>
+</details>
 
 Furthermore, a helper method uses the SSH generator alongside a random password to create an SSH public and private key pair and stored them in Key Vault for AKS.
 
-   <details><summary><em>View code:</em></summary>
+<details><summary><em>View code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/Aks.ts#63-102)
 
-   </details>
+</details>
 
 2. **AKS Identity Creation**: AKS can be configured to utilize Microsoft Entra ID for user authentication.
 This setup allows users to sign in to an AKS cluster using a Microsoft Entra authentication to manage access to namespaces and cluster resources.
@@ -107,16 +103,14 @@ This setup allows users to sign in to an AKS cluster using a Microsoft Entra aut
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/Aks.ts#16-57)
 
-  </details>
+</details>
 
 3. **AKS Cluster Creation**: Finally, by integrating all components, we establish our AKS cluster. The source code contains several key elements worth noting.
 <details><summary><em>View code:</em></summary>
 
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/Aks.ts#106-290)
 
-  </details>
-
----
+</details>
 
 ## Developing a Private AKS Cluster
 
@@ -134,8 +128,6 @@ Our objective is to configure all necessary components for the AKS Cluster, whic
 
 </details>
 
----
-
 ## Deployment and Cleanup
 
 ### Deploying the Stack
@@ -150,15 +142,11 @@ To deploy the stack, execute the `pnpm run up` command. This provisions the nece
 
 To remove the stack and clean up all associated Azure resources, run the `pnpm run destroy` command. This ensures that any resources no longer needed are properly deleted.
 
----
-
 ## Conclusion
 
 In this tutorial, we've successfully implemented a private AKS cluster with advanced networking features using Pulumi.
 By setting up a private Container Registry, configuring firewall rules, and integrating the cluster with a Hub VNet, we have enhanced the security and manageability of our Kubernetes environment.
 These steps ensure that the AKS cluster is well-secured and capable of meeting the demands of a production-grade infrastructure.
-
----
 
 ## References
 
@@ -167,15 +155,11 @@ These steps ensure that the AKS cluster is well-secured and capable of meeting t
 - [Use EntraID role-based access control for AKS](https://learn.microsoft.com/en-us/azure/aks/manage-azure-rbac?tabs=azure-cli)
 - [Use a service principal with AKS](https://learn.microsoft.com/en-us/azure/aks/kubernetes-service-principal?tabs=azure-cli)
 
----
-
 ## Next Topic
 
 **[Day 06: Implement a private CloudPC and DevOps Agent Hub with Pulumi](/posts/az-06-pulumi-private-aks-cloudpc-hub)**
 
 In the next tutorial, it will guides us through setting up a secure CloudPC and DevOps agent hub, aimed at improving the management and operational capabilities of your private AKS environment using Pulumi.
-
----
 
 ## Thank You
 

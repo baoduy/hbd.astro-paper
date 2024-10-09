@@ -20,8 +20,6 @@ This post explains a the architecture of private AKS that we are going to setup 
 ![Private AKS Environment Architecture Diagram](/assets/az-02-pulumi-private-ask-env-architecture/private-aks.png)
 _(Download original draw.io file <a href="/assets/az-02-pulumi-private-ask-env-architecture/private-aks.drawio" download>here</a> )_
 
----
-
 ## Table of Contents
 
 - [Introduction](#introduction)
@@ -29,8 +27,6 @@ _(Download original draw.io file <a href="/assets/az-02-pulumi-private-ask-env-a
 - [References](#references)
 - [Next](#next)
 - [Thank You](#thank-you)
-
----
 
 ## Architecture Overview
 
@@ -41,6 +37,7 @@ This architecture is designed to ensure secure and efficient communication acros
 The Hub VNet acts as the central point for network security and communication management, utilizing a **hub-and-spoke** architecture. It includes:
 
 - **Azure Firewall**: Positioned in dedicated subnets, it serves as the main security gateway, regulating all inbound and outbound network traffic. It consolidates outbound traffic through a single public IP address for easier control and third-party whitelisting. Security measures include:
+
   - **Outbound Traffic Control**: Inspects and authorizes outgoing traffic to approved IP ranges or services.
   - **No Inbound NAT Rules**: Blocks unsolicited inbound internet traffic, enhancing security.
   - **Network Traffic Control**: Restricts direct access to the AKS cluster and other resources, allowing only legitimate internal interactions.
@@ -60,8 +57,6 @@ The CloudPC VNet provides secure environments for virtual desktops and DevOps op
 - **CloudPC Subnet**: Provides secure virtual desktops for internal resource access, eliminating public exposure.
 - **DevOps Subnet**: Hosts resources for DevOps private agents, including CI/CD pipelines and management servers, isolated from critical infrastructure.
 
----
-
 ## Subnet IP Allocation
 
 Here is the summary of the private IP address allocation for each subnet:
@@ -77,8 +72,6 @@ Here is the summary of the private IP address allocation for each subnet:
 
 > **Note**: Adjust the address space according to your environment, as this is intended for demonstration purposes.
 
----
-
 ## Conclusion
 
 Designing the network architecture with a strong focus on security allows us to fully utilize Azure services while safeguarding our workloads from external threats. This private AKS environment offers a robust, scalable, and adaptable platform for deploying containerized applications.
@@ -89,14 +82,10 @@ Designing the network architecture with a strong focus on security allows us to 
 - **Reduced Attack Surface**: By segmenting services into distinct subnets and employing Azure Firewall as a protective barrier, the attack surface is significantly minimized, reducing the risk of unauthorized access.
 - **Efficient Communication**: Private endpoints and internal routing facilitate seamless communication between services without exposing them to external networks.
 
----
-
 ## References
 
 - [Use Azure Firewall to help protect an AKS cluster](https://learn.microsoft.com/en-us/azure/architecture/guide/aks/aks-firewall)
 - [Limit network traffic with Azure Firewall in AKS](https://learn.microsoft.com/en-us/azure/aks/limit-egress-traffic?tabs=aks-with-system-assigned-identities)
-
----
 
 ## Next
 
@@ -104,10 +93,8 @@ Designing the network architecture with a strong focus on security allows us to 
 
 In the next tutorial, we’ll walk you through setting up a secure and scalable infrastructure on Azure by automating secret management using Azure Key Vault and centralized log monitoring with Log Analytics and Application Insights.
 
----
-
 ## Thank You
 
 Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
 
-**Steven** | *[GitHub](https://github.com/baoduy)*
+**Steven** | _[GitHub](https://github.com/baoduy)_

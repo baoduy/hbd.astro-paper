@@ -17,11 +17,7 @@ Creating a secure private VNet for CloudPC (Windows 365 Enterprise) and Azure De
 
 This guide will walk you through the process of setting up a private VNet using Pulumi, integrating it with the Hub VNet was created in the previous article.
 
----
-
 ## Table of Contents
-
----
 
 ## The project modules
 
@@ -120,8 +116,6 @@ The private DNS will be linked to all VNETs in the environment, directing all DN
 
 </details>
 
----
-
 ## Setting Up Private Azure DevOps Agents
 
 Before provisioning a private DevOps agent, it's essential to set up several resources in Azure DevOps:
@@ -140,8 +134,6 @@ Before provisioning a private DevOps agent, it's essential to set up several res
 
 - **Deployment Group Creation**: Navigate to _Pipelines_ > _Deployment group_ in Azure DevOps and create a deployment group with a name of your choice, such as `cloud-agents`.
 
----
-
 ## Developing the CloudPC Stack
 
 Our goal is to create a private VNet for CloudPC and Azure DevOps agents using Pulumi to provision necessary Azure resources.
@@ -157,8 +149,6 @@ Our goal is to create a private VNet for CloudPC and Azure DevOps agents using P
 [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/index.ts#1-106)
 
 </details>
-
----
 
 ## Deployment and Cleanup
 
@@ -179,8 +169,6 @@ Our goal is to create a private VNet for CloudPC and Azure DevOps agents using P
 
 To remove all associated Azure resources and clean up the stack, execute the `pnpm run destroy` command. This will help avoid unnecessary costs and ensure that all resources are properly deleted after testing or development.
 
----
-
 ## References
 
 - [Azure Virtual Network Documentation](https://learn.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview)
@@ -189,15 +177,11 @@ To remove all associated Azure resources and clean up the stack, execute the `pn
 - [TeamServicesAgentLinux Extension](https://learn.microsoft.com/en-us/azure/devops/pipelines/release/deployment-groups/howto-provision-deployment-group-agents?view=azure-devops)
 - [Network requirements For Windows 365 Enterprise](https://learn.microsoft.com/en-us/windows-365/enterprise/requirements-network?tabs=enterprise%2Cent)
 
----
-
 ## Next Topic
 
 **[Day 07: Setup Windows 365 Enterprise as a private VDI](/posts/az-07-setup-cloudpc-windows365-enterprise)**
 
 In the next article, we will explore how to configure a CloudPC with Windows 365 Enterprise to establish a secure and efficient Virtual Desktop Infrastructure (VDI) for accessing a private AKS environment.
-
----
 
 ## Thank You
 

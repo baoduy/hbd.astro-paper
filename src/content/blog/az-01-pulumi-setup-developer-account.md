@@ -24,22 +24,16 @@ In this guide, we’ll walk through:
 - Creating our first Pulumi project using the TypeScript template for Azure
 - Deploying our first Azure Resource Group and Storage Account
 
----
-
 ## Table of Contents
-
----
 
 ## Prerequisites
 
 - **Node.js** installed on the machine
 - An **Azure account** (you can [create a free account here](https://azure.microsoft.com/free/))
 
----
+## Pulumi Setup
 
-## 1: Pulumi Setup
-
-### 1.1. Create a Pulumi Account
+### Create a Pulumi Account
 
 1. **Visit the Pulumi Website**
 
@@ -60,7 +54,7 @@ In this guide, we’ll walk through:
 
    If you signed up using an email address, check your inbox for a confirmation email and verify your account.
 
-### 1.2. Generate a Personal Access Token (PAT)
+### Generate a Personal Access Token (PAT)
 
 A Personal Access Token (PAT) is required to authenticate the Pulumi CLI with your Pulumi account.
 
@@ -79,7 +73,7 @@ A Personal Access Token (PAT) is required to authenticate the Pulumi CLI with yo
    - Provide a description (e.g., "Pulumi CLI Token").
    - Click **"Create"** and copy the generated token for later use.
 
-### 1.3. (Optional) Create a New Organization
+### (Optional) Create a New Organization
 
 If you'd like to manage your projects under a separate organization:
 
@@ -95,15 +89,13 @@ If you'd like to manage your projects under a separate organization:
 
 ![Pulumi Account](/assets/az-01-pulumi-setup-developer-account/pulumi-account.png)
 
----
+## Install CLI Tools
 
-## 2: Install CLI Tools
-
-### 2.1. Install the Pulumi CLI
+### Install the Pulumi CLI
 
 Follow the instructions [here](https://www.pulumi.com/docs/get-started/install/) to install the Pulumi CLI for your operating system.
 
-### 2.2. Install the Azure CLI
+### Install the Azure CLI
 
 Next, Install the Azure CLI by following the instructions [here](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli).
 
@@ -117,9 +109,7 @@ v3.133.0
 azure-cli  2.64.0
 ```
 
----
-
-## 3: Configure Pulumi for Azure
+## Configure Pulumi for Azure
 
 Before diving into coding, let's configure Pulumi to work with your Azure account. Run the following commands to set up your Pulumi stack with the correct Azure subscription details:
 
@@ -139,11 +129,9 @@ pulumi config set azure-native:clientSecret YOUR_AZURE_CLIENT_SECRET --secret
 
 **Note:** Replace placeholders with your actual Azure details. The `--secret` flag ensures sensitive information is encrypted.
 
----
+## Create Your First Pulumi Project
 
-## 4: Create Your First Pulumi Project
-
-### 4.1. Set Up a Git Repository
+### Set Up a Git Repository
 
 Create a new directory for our Pulumi project and initialize a Git repository:
 
@@ -153,7 +141,7 @@ cd day00_pulumi-azure-start
 git init
 ```
 
-### 4.2. Initialize a New Pulumi Project
+### Initialize a New Pulumi Project
 
 Run the following command to create a new Pulumi project using the Azure TypeScript template:
 
@@ -191,11 +179,9 @@ No     Subscription name    Subscription ID                       Tenant
 > - Pulumi supports various package managers, including `npm`, `yarn`, and `pnpm`. For consistency, this guide will use `pnpm` for all Pulumi projects.
 > - In Pulumi, each stack represents a different environment, and by default, all stacks are encrypted with a randomly generated key. If you prefer to use a custom encryption key, refer to the [Pulumi documentation](https://www.pulumi.com/docs/iac/concepts/secrets/#configuring-secrets-encryption) for instructions.
 
----
+## Understand the Project Structure
 
-## 5: Understand the Project Structure
-
-### 5.1. Project files
+### Project files
 
 The template generates several files:
 
@@ -203,7 +189,7 @@ The template generates several files:
 - **Pulumi.dev.yaml**: Contains stack-specific configuration and secrets.
 - **index.ts**: The main program file where you'll define your infrastructure.
 
-### 5.2: Review the Sample Code
+### Review the Sample Code
 
 Open `index.ts` in your preferred code editor and review the sample code. It typically includes the creation of a Resource Group and a Storage Account.
 
@@ -215,11 +201,9 @@ Open `index.ts` in your preferred code editor and review the sample code. It typ
 
 > Note: Exporting the key here is just for demo purposes. In the real environment all the connection string and credentials should be store in the Key Vault instead.
 
----
+## Preview and Deploy Your Stack
 
-## 6: Preview and Deploy Your Stack
-
-### 6.1. Preview the Changes
+### Preview the Changes
 
 Before deploying, preview the changes to ensure everything is set up correctly:
 
@@ -253,7 +237,7 @@ Do you want to perform this update?  [Use arrows to move, type to filter]
 
 </details>
 
-### 6.2. Deploy the Stack
+### Deploy the Stack
 
 Deploy your resources to Azure:
 
@@ -284,7 +268,7 @@ Duration: 35s
 
 </details>
 
-### 6.3: Verify the Deployment
+### Verify the Deployment
 
 After deployment, We can verify the resources in the Azure Portal:
 
@@ -294,9 +278,7 @@ After deployment, We can verify the resources in the Azure Portal:
 
 ![Azure Resources](/assets/az-01-pulumi-setup-developer-account/az-resources.png)
 
----
-
-## 7: Clean Up Resources
+## Clean Up Resources
 
 To avoid incurring unnecessary costs, destroy the resources when they're no longer needed:
 
@@ -330,8 +312,6 @@ If you want to remove the stack completely, run `pulumi stack rm dev`.
 
 </details>
 
----
-
 ## Pulumi CLI commands
 
 The most common commands in the CLI that you’ll be using are as follows:
@@ -357,8 +337,6 @@ Congratulations! You've successfully:
 
 Pulumi simplifies cloud resource management by allowing you to use familiar programming languages and tools. We can now explore adding more complex resources and configurations on the projects.
 
----
-
 ## References
 
 - [Sample source code](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/day-0/day00_pulumi-azure-start#day-0)
@@ -366,16 +344,12 @@ Pulumi simplifies cloud resource management by allowing you to use familiar prog
 - [Pulumi Commands](https://www.pulumi.com/docs/iac/cli/commands/)
 - [Pulumi Secret Config](https://www.pulumi.com/docs/iac/concepts/secrets/#configuring-secrets-encryption)
 
----
-
 ## Next
 
 **[Day 02: Private Aks Environment Architecture.](/posts/az-02-pulumi-private-ask-env-architecture)**
 
 In the next tutorial, We will discuss the architecture of private AKS that we are going to provision on Azure, leveraging multiple subnets, Azure Firewall, and other essential cloud services.
 This architecture ensures that sensitive workloads remain isolated and protected from public internet exposure.
-
----
 
 ## Thank You
 

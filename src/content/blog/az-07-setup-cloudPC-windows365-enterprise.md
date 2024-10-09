@@ -25,6 +25,8 @@ Before we begin the configuration, it is important to ensure that we have a `Win
 
 > Note: A trial license is available, typically lasting one month, with the possibility of extending it for an additional month.
 
+## Table of Contents
+
 ## Intune Configuration
 
 Since Microsoft Intune is widely used for device management, we will not delve into its setup here. Instead, our focus will be on configuring Windows 365 Enterprise.
@@ -47,11 +49,12 @@ Once we have the license ready and assigned to our Entra ID group, we can procee
 
   ![windows365-provision-profile](/assets/az-07-pulumi-setup-cloudPC-windows365-enterprise/intune-windows365-policy-01.png)
 
-## Provisioning CloudPC Devices
+### Provisioning CloudPC Devices
 
 With our profile ready, we can start provisioning CloudPC devices for users. To do this, we need to make sure the target users are part of the `MDM - IT Windows 365` group. After adding users, the provisioning process will automatically start, and the devices will be ready for use within 1 hours.
 
 - Once the provisioning is complete, the assigned users will receive a notification, allowing them to access their CloudPC through the Windows 365 portal.
+  ![intune-wm-provisioned](/assets/az-07-pulumi-setup-cloudPC-windows365-enterprise/intune-wm-provisioned.png)
 
 ## Accessing Windows 365
 

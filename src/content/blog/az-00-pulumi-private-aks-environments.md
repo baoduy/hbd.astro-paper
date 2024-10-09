@@ -17,8 +17,6 @@ As you know setting entire private environments on Cloud is not a easy jobs and 
 In these series I would like to share an ideas/options how to setup the entire private AKS environments on Azure using pulumi includes Virtual Network, Firewall, Private AKS to private Azure DevOps agents
 and Private CloudPC environment and How to expose some public applications through Cloudflare Tunnels.
 
----
-
 ## Pulumi Account Setup
 
 **[Day 01: Setup pulumi account and project](/posts/az-01-pulumi-setup-developer-account)**
@@ -51,8 +49,6 @@ We'll explore how to integrate the AKS cluster with the Hub VNet and apply the f
 
 This tutorial guides us through setting up a secure CloudPC and DevOps agent hub, aimed at improving the management and operational capabilities of your private AKS environment using Pulumi.
 
----
-
 ## Progress Review
 
 Let's take a moment to review our achievements. After completing six tutorials, we have successfully deployed our private AKS environment.
@@ -60,15 +56,11 @@ The illustration below provides a visual representation of our setup:
 ![aks-env](/assets/az-02-pulumi-private-ask-env-architecture/private-aks.png)
 _Overview of private AKS env._
 
----
-
 ## CloudPC environment (Windows 365 enterprise)
 
 **[Day 07: Setup Windows 365 Enterprise as a private VDI](/posts/az-07-setup-cloudpc-windows365-enterprise)**
 
 In the next article, we will explore how to configure a CloudPC with Windows 365 Enterprise to establish a secure and efficient Virtual Desktop Infrastructure (VDI) for accessing a private AKS environment.
-
----
 
 ## Azure DevOps Pipelines
 
@@ -80,17 +72,11 @@ In the next article, We'll walk through creating a Continuous Integration and Co
 
 **[Day 10: Helm Deployment Pipeline](/posts/az-06-pulumi-private-aks-cloudpc-hub)**
 
----
-
 ## Public Apps with Cloudflare Tunnels
 
 ## Remote Development Environments with Microsoft Intune (MDM) and Cloudflare
 
----
-
 ## Conclusions
-
----
 
 ## Improvement
 
@@ -100,8 +86,6 @@ In the next article, We'll walk through creating a Continuous Integration and Co
 
 - Move some component to share project
 - Build share project locally and commit the bin folder to Git repository for saving deployment time.
-
----
 
 ## Thank You
 

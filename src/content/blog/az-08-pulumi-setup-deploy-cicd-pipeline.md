@@ -16,11 +16,7 @@ description: "In this article, we'll walk through creating a Continuous Integrat
 In this article, will guide us through the process of establishing a Continuous Integration and Continuous Deployment (CI/CD) pipeline using Azure DevOps.
 This pipeline will facilitate the deployment of the previously developed Pulumi projects.
 
----
-
 ## Table of Contents
-
----
 
 ## Prerequisites
 
@@ -96,8 +92,6 @@ Create a variable group in Azure DevOps **Libraries** named `pulumi`, including 
 
 </details>
 
----
-
 ## Pulumi Deployment Pipeline
 
 To configure a deployment pipeline in Azure DevOps, utilize the `deploy.azure-pipelines.yml` file.
@@ -128,8 +122,6 @@ To execute the pipeline, create a branch named `releases/dev` and initiate the r
 ![deploy-pipeline-flow](/assets/az-08-pulumi-setup-deploy-cicd-pipeline/deploy-pipeline-flow.png)
 _Visualization of the Deployment Pipeline_
 
----
-
 ## Pulumi Destroy Pipeline
 
 This section demonstrates how to safely destroy a Pulumi deployment stack. Exercise caution, as once a stack is destroyed, it cannot be restored.
@@ -145,9 +137,7 @@ To set up a destruction pipeline in Azure DevOps, use the `danger-destroy.azure-
 ![deploy-pipeline-flow](/assets/az-08-pulumi-setup-deploy-cicd-pipeline/pulumi-destroy-pipeline.png)
 _Visualization of the Destroy Pipeline_
 
----
-
-### Conclusion
+## Conclusion
 
 In this tutorial, we've successfully set up a CI/CD pipeline using Pulumi and Azure DevOps.
 This pipeline automates the deployment of infrastructure, ensuring that our environments are consistent, scalable, and easy to manage.
@@ -161,10 +151,8 @@ By leveraging Pulumi's capabilities, we can integrate infrastructure as code int
 - [Pnpm Pipeline Config](https://pnpm.io/continuous-integration#azure-pipelines)
 - [Repairing State With Pulumi Refresh](https://www.pulumi.com/blog/repairing-state-with-pulumi-refresh/).
 
----
-
 ## Thank You
 
-Thank you for reading! Explore further and happy coding! 🌟✨
+Thank you for taking the time to read this guide! We hope it has been helpful. Feel free to explore further, and happy coding! 🌟✨
 
 **Steven** | _[GitHub](https://github.com/baoduy)_

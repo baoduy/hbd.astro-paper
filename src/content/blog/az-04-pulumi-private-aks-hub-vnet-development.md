@@ -20,11 +20,7 @@ We will demonstrate how to seamlessly integrate a VNet with an Azure Firewall, a
 
 Security is paramount. Our focus will be on enhancing security by implementing network policies, firewalls, and encryption to safeguard our environment, all while maintaining cost-effectiveness on Azure.
 
----
-
 ## Table of Contents
-
----
 
 ## The Hub VNet modules
 
@@ -58,8 +54,6 @@ This module is designed to set up an Azure Firewall, including essential compone
 
 </details>
 
----
-
 ### Developing a Hub VNET
 
 Our goal is to set up the main components required for the Hub VNet, which include:
@@ -82,8 +76,6 @@ Our goal is to set up the main components required for the Hub VNet, which inclu
 > - Properly setting the `dependsOn` property ensures that resources are created and destroyed in the correct sequence.
 > - The code above demonstrates how to reuse the log workspace from the `az-01-shared` project for Firewall diagnostics, enabling effective tracing and monitoring of firewall rules.
 
----
-
 ## Deployment and Cleanup
 
 ### Deploying the Stack
@@ -98,14 +90,10 @@ To deploy the stack, execute the `pnpm run up` command. This provisions the nece
 
 To remove the stack and clean up all associated Azure resources, run the `pnpm run destroy` command. This ensures that any resources no longer needed are properly deleted.
 
----
-
 ## Conclusion
 
 In this guide, we have successfully constructed a Hub Virtual Network (VNet) for our private AKS environment using Pulumi.
 This Hub VNet serves as a crucial element in managing and securing access to all resources within our infrastructure, ensuring robust control and enhanced security measures.
-
----
 
 ## References
 
@@ -114,16 +102,12 @@ This Hub VNet serves as a crucial element in managing and securing access to all
 - [Azure DevOps IPs and FQDNs](https://learn.microsoft.com/en-us/azure/devops/organizations/security/allow-list-ip-url)
 - [Pulumi for Azure](https://www.pulumi.com/docs/intro/cloud-providers/azure/)
 
----
-
 ## Next Topic
 
 **[Day 05: Implementing a Private AKS Cluster with Pulumi](/posts/az-05-pulumi-private-aks-cluster-env)**
 
 In the next tutorial, We'll build a private AKS cluster with advanced networking features.
 We'll explore how to integrate the AKS cluster with the Hub VNet and apply the firewall policies we've created.
-
----
 
 ## Thank You
 
