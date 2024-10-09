@@ -47,7 +47,7 @@ export default defineConfig({
           //originComment: "source: <url>"
         },
       ],
-      remarkRehype,
+      //remarkRehype,
       rehypeStringify,
     ],
     shikiConfig: {

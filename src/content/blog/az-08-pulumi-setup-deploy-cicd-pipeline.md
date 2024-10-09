@@ -54,15 +54,15 @@ Create a variable group in Azure DevOps **Libraries** named `pulumi`, including 
 
 - **Parameters**:
 
-  - `stack`: Target Pulumi stack.
-  - `workDir`: Working directory of the Pulumi project.
+  1. `stack`: Target Pulumi stack.
+  2. `workDir`: Working directory of the Pulumi project.
 
 - **Steps**:
 
-  - **Install Node.js**: Install current Node LTS version.
-  - **Setup pnpm**: Configures `pnpm` package management.
-  - **Build Commons Project**: Installs dependencies and runs the build script for `az-commons`.
-  - **Install Project Dependencies**: Installs dependencies for the specified `workDir`.
+  1. **Install Node.js**: Install current Node LTS version.
+  2. **Setup pnpm**: Configures `pnpm` package management.
+  3. **Build Commons Project**: Installs dependencies and runs the build script for `az-commons`.
+  4. **Install Project Dependencies**: Installs dependencies for the specified `workDir`.
 
 <details><summary><em>View code:</em></summary>
 
@@ -74,9 +74,9 @@ Create a variable group in Azure DevOps **Libraries** named `pulumi`, including 
 
 - **Parameters**:
 
-  - `stack`: Specifies the target Pulumi stack.
-  - `workDir`: Defines the working directory of the Pulumi project.
-  - `azureSubscription`: Represents the Azure subscription connection.
+  1. `stack`: Specifies the target Pulumi stack.
+  2. `workDir`: Defines the working directory of the Pulumi project.
+  3. `azureSubscription`: Represents the Azure subscription connection.
 
 - **Steps**:
 
@@ -98,9 +98,9 @@ To configure a deployment pipeline in Azure DevOps, utilize the `deploy.azure-pi
 
 ### YAML Configuration
 
-- **Trigger**: Automatically activates for branches that match the pattern _releases/\*_.
-- **Agent Pool**: Employs the _ubuntu-latest_ agent pool for execution.
-- **Variables**: Comprises `pulumi`, `azureSubscription`, and `pnpm_config_cache`. The `env_name` is dynamically generated from the branch name.
+1. **Trigger**: Automatically activates for branches that match the pattern _releases/\*_.
+2. **Agent Pool**: Employs the _ubuntu-latest_ agent pool for execution.
+3. **Variables**: Comprises `pulumi`, `azureSubscription`, and `pnpm_config_cache`. The `env_name` is dynamically generated from the branch name.
 
 ### Pipeline Stages
 
@@ -150,6 +150,12 @@ By leveraging Pulumi's capabilities, we can integrate infrastructure as code int
 - [Pulumi extensions](https://marketplace.visualstudio.com/items?itemName=pulumi.build-and-release-task)
 - [Pnpm Pipeline Config](https://pnpm.io/continuous-integration#azure-pipelines)
 - [Repairing State With Pulumi Refresh](https://www.pulumi.com/blog/repairing-state-with-pulumi-refresh/).
+
+## Next Topic
+
+**[Day 09: Synchronizing Container Images to ACR for a Private AKS Cluster Using CI/CD Pipelines.](/posts/az-09-private-aks-acr-image-sync)**
+
+In the next article, We explore the process of synchronizing container images with ACR for deployments in a private AKS cluster. We'll cover how to configure and automate this synchronization using CI/CD pipelines, ensuring seamless updates and secure image management for private AKS environments.
 
 ## Thank You
 
