@@ -176,6 +176,7 @@ To remove all associated Azure resources and clean up the stack, execute the `pn
 - [Azure Bastion Configuration](https://learn.microsoft.com/en-us/azure/bastion/bastion-overview)
 - [TeamServicesAgentLinux Extension](https://learn.microsoft.com/en-us/azure/devops/pipelines/release/deployment-groups/howto-provision-deployment-group-agents?view=azure-devops)
 - [Network requirements For Windows 365 Enterprise](https://learn.microsoft.com/en-us/windows-365/enterprise/requirements-network?tabs=enterprise%2Cent)
+- [AzureDevOps Allowed IP addresses and domain URLs](https://learn.microsoft.com/en-us/azure/devops/organizations/security/allow-list-ip-url?view=azure-devops&tabs=IP-V4)
 
 ## Next Topic
 

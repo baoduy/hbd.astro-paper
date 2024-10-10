@@ -20,6 +20,8 @@ Instead, all container images must be sourced from a private ACR accessible with
 To address this, we need a robust solution that not only synchronizes required images into the ACR but also integrates with Continuous Integration/Continuous Deployment (CI/CD) pipelines and adheres to Software Development Life Cycle (SDLC) best practices.
 This ensures that all images are reviewed and approved before being imported, enhancing security and compliance.
 
+## Table of Contents
+
 ## Implementation
 
 By leveraging Azure DevOps CI/CD pipelines, we can automate the public image importing process as below.

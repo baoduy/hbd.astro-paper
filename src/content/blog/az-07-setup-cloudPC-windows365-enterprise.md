@@ -72,10 +72,14 @@ We can access our CloudPC in several ways:
 
    ![windows-app-dashboard](/assets/az-07-pulumi-setup-cloudPC-windows365-enterprise/windows-app-dashboard.png)
 
-3. **Private AKS Access**: Through Windows 365, we can access our private AKS. This setup allows us to manage our private AKS resources, such as namespaces, pods, and deployments, through the Azure portal.
-
+3. **Private AKS Access**: Windows 365 enables access to our private Azure Kubernetes Service (AKS) cluster. 
+   - **Azure Portal**: This configuration allows us to manage AKS resources, including namespaces, pods, and deployments, directly through the Azure portal.
    ![private-aks-access](/assets/az-07-pulumi-setup-cloudPC-windows365-enterprise/azure-portal-private-aks.png)
 
+   - **Kubectl CLI**: To use the `kubectl` command locally, follow the Azure Portal instructions to set up your local environment. This setup requires the installation of `Azure CLI`, `kubectl`, and `kubelogin`.
+    ![private-aks-connection](/assets/az-07-pulumi-setup-cloudPC-windows365-enterprise/private-aks-connect.png)
+    > Important: Once the `.kube` configuration file is generated, the `API server address` is set to the private link DNS by default. To ensure connectivity to the cluster, modify this address to align with the one displayed on the Azure Portal.
+    
 ## Conclusion
 
 In this guide, we have successfully set up a CloudPC using Windows 365 Enterprise, configured the necessary provisioning profiles, and ensured secure access to our private AKS environment through a Virtual Desktop Infrastructure (VDI). This setup provides our teams with efficient, secure remote access that integrates seamlessly with our existing infrastructure.
