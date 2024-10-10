@@ -72,11 +72,19 @@ const layoutProps = {
     <article id="article" class="prose mx-auto mt-8 max-w-3xl">
       <Content />
     </article>
-
+  
+    <div id="buyme-a-coffee" class="mt-3">
+      <a href="https://buymeacoffee.com/baoduy2412" target="_blank"
+        ><img
+          src="/assets/bmc-button.png"
+          width="100"
+          style="margin-left:0px"
+        /></a
+      >
+    </div>
     <ul class="my-8">
       {tags.map(tag => <Tag tag={slugifyStr(tag)} />)}
     </ul>
-
     <div
       class="flex flex-col-reverse items-center justify-between gap-6 sm:flex-row-reverse sm:items-end sm:gap-4"
     >
@@ -91,7 +99,6 @@ const layoutProps = {
         </svg>
         <span>Back to Top</span>
       </button>
-
       <ShareLinks />
     </div>
   </main>

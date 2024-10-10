@@ -107,5 +107,4 @@ Feel free to give it a try, and as always, I’d love to hear your feedback! Let
 
 Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
 
-**Steven**
-[GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)
+**Steven** | *[GitHub](https://github.com/baoduy)*
