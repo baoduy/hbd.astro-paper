@@ -19,6 +19,11 @@ Building on that foundation, this guide will walk you through creating Helm char
 
 ## Table of Contents
 
+## AzureDevOps Agent Installation
+
+Before deploying the helm charts, We need to install the AzureDevops agent into the VM that had been created in _az-04-cloudPC_ project.
+Remote to the VM through our Windows 365 VDI, and follow the [introduction here] to install the devops agent.
+
 ## Creating Helm Charts
 
 Before we set up our deployment pipeline, we need to create Helm charts for nginx-ingress and cert-manager. 

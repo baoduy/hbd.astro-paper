@@ -85,20 +85,12 @@ This module demonstrates how to encrypt Azure resources using a custom encryptio
 
 ### The `VM.ts` Module
 
-This module facilitates the provisioning of a Linux virtual machine (VM) on Azure with automatically generated login credentials and disk encryption.
-
-It connects the VM to a subnet within the virtual network and installs the **[TeamServicesAgentLinux](https://learn.microsoft.com/en-us/azure/devops/pipelines/release/deployment-groups/howto-provision-deployment-group-agents?view=azure-devops)**. The installation requires the following parameters:
-
-- **VSTSAccountName**: Specify the URL of your Azure DevOps organization, for example, https://dev.azure.com/contoso.
-- **TeamProject**: Provide the name of your project, such as myProject.
-- **DeploymentGroup**: Indicate the name of the deployment group you have created.
-- **AgentName**: Optionally, assign a name to the agent. If left blank, the agent will default to the VM name with a `-DG` suffix.
-- **Personal Access Token**: Input the Personal Access Token (PAT) for authenticating with Azure Pipelines.
-- **Tags**: Optionally, provide a comma-separated list of tags to assign to the agent. Each tag can be up to 256 characters, is case-insensitive, and there is no limit to the number of tags.
+This module facilitates the provisioning of a Linux virtual machine (VM)
+on Azure with automatically generated login credentials and disk encryption and connects the VM to a subnet within the virtual network.
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/VM.ts#1-221)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/VM.ts#1-183)
 
 </details>
 
@@ -117,33 +109,14 @@ The private DNS will be linked to all VNETs in the environment, directing all DN
 
 </details>
 
-## Setting Up Private Azure DevOps Agents
-
-Before provisioning a private DevOps agent, it's essential to set up several resources in Azure DevOps:
-
-- **Personal Access Token (PAT)**: The private agent requires a PAT with specific permissions to install and configure the agent on a VM. You can create a `az-PAT-token` via the Azure DevOps User Settings portal with the following permissions:
-
-  - `Read` access to the Deployment group.
-  - `Read` access to Code.
-  - `Expiration`: Set to 1 year from the creation date.
-
-  Once created, add the token as a secret named `devops-pat` in the Pulumi project `az-04-cloudPC` using the following command. This command encrypts the PAT token and stores it in the project state for later use during VM provisioning and agent installation.
-
-  ```bash
-  pulumi config set devops-pat YOUR_PAT_HERE --secret
-  ```
-
-- **Deployment Group Creation**: Navigate to _Pipelines_ > _Deployment group_ in Azure DevOps and create a deployment group with a name of your choice, such as `cloud-agents`.
-
 ## Developing the CloudPC Stack
+Our objective is to establish a private Virtual Network (VNet) for CloudPC and Azure DevOps agents using Pulumi, 
+enabling us to provision the necessary Azure resources effectively.
 
-Our goal is to create a private VNet for CloudPC and Azure DevOps agents using Pulumi to provision the necessary Azure resources.
-
-1. **Firewall Policy**: To enforce security policies for CouldPC and DevOps agent egress traffic.
-2. **VNet and Peering**: The main network that will house subnets for CloudPC and the Azure DevOps agent.
-3. **Disk encryption set**: The disk encryption component for Virtual Machine.
-4. **AzureDevOps configuration**: The PAT generation and preparation to develop DevOps agent VM.
-5. **Deploy a private DevOps agent**: Set up a Linux VM and Install `TeamServicesAgentLinux` extension using the parameters We have prepared above.
+1. **Firewall Policy**: Implement security policies to manage egress traffic for CloudPC and DevOps agents.
+2. **VNet and Peering**: Develop the primary network infrastructure, including subnets for CloudPC and the Azure DevOps agent, with necessary VNet peering.
+3. **Disk Encryption Set**: Integrate a disk encryption set to secure virtual machine data at rest.
+4. **Deploy a Linux VM**: Provision a Linux virtual machine to host the Azure DevOps agent. The agent installation process will be covered in the following topic.
 
 <details><summary><em>View code:</em></summary>
 
@@ -160,11 +133,6 @@ Our goal is to create a private VNet for CloudPC and Azure DevOps agents using P
 ![Azure-Resources](/assets/az-06-pulumi-private-aks-cloudpc-hub/az-04-cloudpc.png)
 
 <p class="ml-44"><em>The deployed Azure resources</em></p>
-
-- After the `TeamServicesAgentLinux` extension is installed, an agent should appear in Azure DevOps under the `cloud-agents` deployment group. This agent will be used in future projects to deploy Helm charts into the AKS cluster.
-
-<img alt="private-ado-agent" src="/assets/az-06-pulumi-private-aks-cloudpc-hub/private-ado-agent.png" width="500px">
-<p class="ml-44"><em>The private agent on Azure DevOps</em></p>
 
 ### Cleaning Up the Stack
 

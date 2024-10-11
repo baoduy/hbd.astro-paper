@@ -86,6 +86,7 @@ In the next article, We'll walk through creating a Continuous Integration and Co
 
 - Move some component to share the project
 - Build the share project locally and commit the bin folder to Git repository for saving deployment time.
+- Using a Virtual scale set with an auto-scale for private agents
 
 ## Thank You
 
