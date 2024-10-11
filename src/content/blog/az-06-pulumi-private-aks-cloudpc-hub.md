@@ -92,9 +92,9 @@ It connects the VM to a subnet within the virtual network and installs the **[Te
 - **VSTSAccountName**: Specify the URL of your Azure DevOps organization, for example, https://dev.azure.com/contoso.
 - **TeamProject**: Provide the name of your project, such as myProject.
 - **DeploymentGroup**: Indicate the name of the deployment group you have created.
-- **AgentName**: Optionally, assign a name to the agent. If left blank, the agent will default to the VM name with a -DG suffix.
+- **AgentName**: Optionally, assign a name to the agent. If left blank, the agent will default to the VM name with a `-DG` suffix.
 - **Personal Access Token**: Input the Personal Access Token (PAT) for authenticating with Azure Pipelines.
-- **Tags**: Optionally, provide a comma-separated list of tags to assign to the agent. Each tag can be up to 256 characters, is case insensitive, and there is no limit to the number of tags.
+- **Tags**: Optionally, provide a comma-separated list of tags to assign to the agent. Each tag can be up to 256 characters, is case-insensitive, and there is no limit to the number of tags.
 
 <details><summary><em>View code:</em></summary>
 
@@ -104,9 +104,10 @@ It connects the VM to a subnet within the virtual network and installs the **[Te
 
 ### The `PrivateDNS.ts` module
 
-To streamline internal network communication, we will configure a DNS resolver. Our NGINX will be deployed on AKS as a private ingress with an internal IP address of `192.168.31.250`, which must reside within the AKS subnet.
+To streamline internal network communication, we will configure a DNS resolver. Our NGINX will be deployed on AKS as private ingress with an internal IP address of `192.168.31.250`, which must reside within the AKS subnet.
 
-To facilitate SSL certificate generation using [`Cert-Manager`](https://cert-manager.io/) on our AKS, we will utilize the Cloudflare domain `drunkcoding.net` for internal DNS communication.
+To facilitate SSL certificate generation using [`Cert-Manager`](https://cert-manager.io/) on our AKS, 
+We will use the Cloudflare domain `drunkcoding.net` for internal DNS communication.
 
 The private DNS will be linked to all VNETs in the environment, directing all DNS requests to the IP address `192.168.31.250`.
 
@@ -136,13 +137,13 @@ Before provisioning a private DevOps agent, it's essential to set up several res
 
 ## Developing the CloudPC Stack
 
-Our goal is to create a private VNet for CloudPC and Azure DevOps agents using Pulumi to provision necessary Azure resources.
+Our goal is to create a private VNet for CloudPC and Azure DevOps agents using Pulumi to provision the necessary Azure resources.
 
 1. **Firewall Policy**: To enforce security policies for CouldPC and DevOps agent egress traffic.
 2. **VNet and Peering**: The main network that will house subnets for CloudPC and the Azure DevOps agent.
 3. **Disk encryption set**: The disk encryption component for Virtual Machine.
 4. **AzureDevOps configuration**: The PAT generation and preparation to develop DevOps agent VM.
-5. **Deploy a private DevOps agent**: Setup a Linux VM and Install `TeamServicesAgentLinux` extension using the parameters We have prepared above.
+5. **Deploy a private DevOps agent**: Set up a Linux VM and Install `TeamServicesAgentLinux` extension using the parameters We have prepared above.
 
 <details><summary><em>View code:</em></summary>
 

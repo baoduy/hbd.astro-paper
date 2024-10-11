@@ -15,7 +15,7 @@ description: "This post explains a the architecture of private AKS that we are g
 
 In today's cloud-centric world, security is paramount. By default, many cloud services are publicly accessible over the internet, which can pose significant risks for sensitive workloads. When deploying a private AKS (AKS) environment, it's essential to protect all components while maintaining efficient network communication.
 
-This post explains a the architecture of private AKS that we are going to setup on Azure, leveraging multiple subnets, Azure Firewall, and other essential cloud services. This architecture ensures that sensitive workloads remain isolated and protected from public internet exposure.
+This post explains an architecture of private AKS that we are going to set up on Azure, leveraging multiple subnets, Azure Firewall, and other essential cloud services. This architecture ensures that sensitive workloads remain isolated and protected from public internet exposure.
 
 ![Private AKS Environment Architecture Diagram](/assets/az-02-pulumi-private-ask-env-architecture/private-aks.png)
 _(Download original draw.io file <a href="/assets/az-02-pulumi-private-ask-env-architecture/private-aks.drawio" download>here</a> )_
@@ -77,7 +77,7 @@ Here is the summary of the private IP address allocation for each subnet:
 Designing the network architecture with a strong focus on security allows us to fully utilize Azure services while safeguarding our workloads from external threats. This private AKS environment offers a robust, scalable, and adaptable platform for deploying containerized applications.
 
 - **Complete Isolation**: Essential resources remain shielded from the public internet. Service access is secured through private endpoints and managed by Azure Firewall.
-- **Centralized Security Management**: Azure Firewall acts as a unified control point for overseeing and securing all network traffic entering and leaving the environment.
+- **Centralized Security Management**: Azure Firewall acts as a unified control point for overseeing and securing all network traffic and leaving the environment.
 - **Scalability and Flexibility**: Each subnet can be scaled independently according to workload demands, offering flexibility in expanding the AKS cluster or integrating additional services.
 - **Reduced Attack Surface**: By segmenting services into distinct subnets and employing Azure Firewall as a protective barrier, the attack surface is significantly minimized, reducing the risk of unauthorized access.
 - **Efficient Communication**: Private endpoints and internal routing facilitate seamless communication between services without exposing them to external networks.

@@ -46,7 +46,8 @@ This module is responsible for creating a FirewallPolicy resource, which serves 
 
 ### The `Firewall.ts` Module
 
-This module is designed to set up an Azure Firewall, including essential components such as IP addresses and diagnostic settings. It ensures the firewall is connected to the designated subnet within the VNet and is associated with the root policy resources.
+This module is designed to set up an Azure Firewall, including essential parts such as IP addresses and diagnostic settings.
+It ensures the firewall is connected to the designated subnet within the VNet and is associated with the root policy resources.
 
 <details><summary><em>View code:</em></summary>
 
@@ -56,7 +57,7 @@ This module is designed to set up an Azure Firewall, including essential compone
 
 ### Developing a Hub VNET
 
-Our goal is to set up the main components required for the Hub VNet, which include:
+Our goal is to set up the main parts required for the Hub VNet, which include:
 
 1. **Resource Group**: A container for managing related Azure resources.
 2. **Virtual Network (VNet)**: The main network that hosts our subnets.

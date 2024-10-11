@@ -54,8 +54,8 @@ Create a variable group in Azure DevOps **Libraries** named `pulumi`, including 
 
 - **Parameters**:
 
-  1. `stack`: Target Pulumi stack.
-  2. `workDir`: Working directory of the Pulumi project.
+  1. **stack**: Specifies the target Pulumi stack.
+  2. **workDir**: Defines the working directory of the Pulumi project.
 
 - **Steps**:
 
@@ -64,9 +64,9 @@ Create a variable group in Azure DevOps **Libraries** named `pulumi`, including 
   3. **Build Commons Project**: Installs dependencies and runs the build script for `az-commons`.
   4. **Install Project Dependencies**: Installs dependencies for the specified `workDir`.
 
-<details><summary><em>View code:</em></summary>
+<details><summary><em>View yaml:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/build-template.yml#1-32)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/pulumi/build-template.yml#1-35)
 
 </details>
 
@@ -74,68 +74,78 @@ Create a variable group in Azure DevOps **Libraries** named `pulumi`, including 
 
 - **Parameters**:
 
-  1. `stack`: Specifies the target Pulumi stack.
-  2. `workDir`: Defines the working directory of the Pulumi project.
-  3. `azureSubscription`: Represents the Azure subscription connection.
+  1. **stack**: Specifies the target Pulumi stack.
+  2. **workDir**: Defines the working directory of the Pulumi project.
+  3. **azureSubscription**: Represents the Azure subscription connection.
 
 - **Steps**:
 
-  1. **Install Pulumi CLI**: Installs the latest version of the Pulumi CLI for Linux.
+  1. **Install Pulumi CLI**: Install the latest version of the Pulumi CLI for Linux.
   2. **Pulumi Refresh**: Refreshes the stack if the `pulumi.refresh` parameter is set to true.
   3. **Pulumi Up After Refresh**: Executes `pulumi up` if `pulumi.refresh` is true, ensuring the stack is updated after a refresh.
   4. **Pulumi Up**: Executes `pulumi up` to deploy the stack.
-     > Using Pulumi refresh is essential for maintaining accurate state. For more details, refer to [this article](https://www.pulumi.com/blog/repairing-state-with-pulumi-refresh/).
 
-<details><summary><em>View code:</em></summary>
+<details><summary><em>View yaml:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/deploy-template.yml#1-58)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/pulumi/deploy-template.yml#1-58)
 
 </details>
+
+> Using Pulumi refresh is essential for maintaining an accurate state. For more details, refer to [this article](https://www.pulumi.com/blog/repairing-state-with-pulumi-refresh/).
 
 ## Pulumi Deployment Pipeline
 
-To configure a deployment pipeline in Azure DevOps, utilize the `deploy.azure-pipelines.yml` file.
+To establish a deployment pipeline in Azure DevOps, we'll use the `deploy.azure-pipelines.yml` file.
 
-### YAML Configuration
+### YAML Configuration Overview
 
-1. **Trigger**: Automatically activates for branches that match the pattern _releases/\*_.
-2. **Agent Pool**: Employs the _ubuntu-latest_ agent pool for execution.
-3. **Variables**: Comprises `pulumi`, `azureSubscription`, and `pnpm_config_cache`. The `env_name` is dynamically generated from the branch name.
+1. **Trigger**: The pipeline is set to trigger automatically for branches matching the pattern _releases/\*_.
+2. **Agent Pool**: We use the _ubuntu-latest_ agent pool for running our pipeline tasks.
+3. **Variables**: The configuration includes several key variables:
+   - `pulumi`: A variable group containing essential Pulumi configuration settings.
+   - `azureSubscription`: The name of the Azure Resource Manager connection.
+   - `pnpm_config_cache`: The specified location for the pnpm cache.
+   - `env_name`: Dynamically derived from the branch name, determining the deployment environment.
 
-### Pipeline Stages
+### Pipeline Structure and Flow
 
-1. **deploy_shared**: Initiates the deployment of the `az-01-shared` module.
-2. **deploy_hub**: Proceeds with deploying the `az-02-hub-vnet` module after `deploy_shared` is complete.
-3. **deploy_aks**: Continues with the deployment of the `az-03-aks-cluster` module, following `deploy_hub`.
-4. **deploy_cloudpc**: Finalizes with the deployment of the `az-04-cloudPC` module, subsequent to `deploy_hub`.
+Our pipeline consists of four distinct deployment stages. Each stage utilizes the `build-and-deploy.yml` template file, with appropriate parameters passed to it.
 
-Each stage leverages the `build-and-deploy.yml` file, supplying the required parameters.
+To initiate the pipeline:
+1. Create a new branch named `releases/dev`
+2. Push your changes to this branch
+3. The pipeline will automatically trigger and run
 
-<details><summary><em>View Code:</em></summary>
+Here's a visual representation of the deployment sequence:
+    ![deploy-pipeline-flow](/assets/az-08-pulumi-setup-deploy-cicd-pipeline/deploy-pipeline-flow.png)
+<p class="ml-44"><em>Visualization of the Deployment Pipeline Stages</em></p>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/deploy.azure-pipelines.yml#1-64)
+The pipeline progresses through these stages in order, ensuring a systematic and controlled deployment process. 
+Each stage builds upon the previous one, allowing for a comprehensive and structured approach to deploying our Pulumi projects.
+
+<details><summary><em>View yaml:</em></summary>
+
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/pulumi/deploy.azure-pipelines.yml#1-64)
 
 </details>
-
-To execute the pipeline, create a branch named `releases/dev` and initiate the run:
-
-![deploy-pipeline-flow](/assets/az-08-pulumi-setup-deploy-cicd-pipeline/deploy-pipeline-flow.png)
-_Visualization of the Deployment Pipeline_
 
 ## Pulumi Destroy Pipeline
 
 This section demonstrates how to safely destroy a Pulumi deployment stack. Exercise caution, as once a stack is destroyed, it cannot be restored.
 
-To set up a destruction pipeline in Azure DevOps, use the `danger-destroy.azure-pipelines.yml` file. To effectively reverse the entire Pulumi deployment, ensure that the states are reverted from the deployment state. Each stage in this process utilizes the `danger-build-and-destroy.yml` file with the necessary parameters.
+To set up a destruction pipeline in Azure DevOps, use the `danger-destroy.azure-pipelines.yml` file. 
+To effectively destroy the entire Pulumi deployment, ensure that the states are reverted from the deployment state. 
+Each stage in this process uses the `danger-build-and-destroy.yml` file with the necessary parameters.
 
-<details><summary><em>View Code:</em></summary>
+Here's a visual representation of the deployment sequence:
+![deploy-pipeline-flow](/assets/az-08-pulumi-setup-deploy-cicd-pipeline/pulumi-destroy-pipeline.png)
+<p class="ml-44"><em>Visualization of the Destroy Pipeline</em></p>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/danger-destroy.azure-pipelines.yml#1-58)
+<details><summary><em>View yaml:</em></summary>
+
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/pulumi/danger-destroy.azure-pipelines.yml#1-58)
 
 </details>
-
-![deploy-pipeline-flow](/assets/az-08-pulumi-setup-deploy-cicd-pipeline/pulumi-destroy-pipeline.png)
-_Visualization of the Destroy Pipeline_
 
 ## Conclusion
 
@@ -159,6 +169,6 @@ In the next article, We explore the process of synchronizing container images wi
 
 ## Thank You
 
-Thank you for taking the time to read this guide! We hope it has been helpful. Feel free to explore further, and happy coding! 🌟✨
+Thank you for taking the time to read this guide! We hope it has been helpful. Feel free to explore further and happy coding! 🌟✨
 
 **Steven** | _[GitHub](https://github.com/baoduy)_

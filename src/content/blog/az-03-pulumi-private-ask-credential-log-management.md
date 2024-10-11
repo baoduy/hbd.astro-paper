@@ -40,7 +40,7 @@ Before we start coding, it's important to define our configuration settings. Thi
 We categorize our resources into groups for better organization and management:
 
 | Resource Group                  | Description                                             |
-| ------------------------------- | ------------------------------------------------------- |
+|---------------------------------|---------------------------------------------------------|
 | **Shared Resource Group**       | Where our Key Vault and logging components reside.      |
 | **Hub VNet Resource Group**     | Contains our main VNet hub.                             |
 | **AKS VNet Resource Group**     | Contains resources specific to the AKS cluster.         |
@@ -51,7 +51,7 @@ We categorize our resources into groups for better organization and management:
 Again, this is the subnet Ip address spaces that we have defined in the [previous post](/posts/az-02-pulumi-private-ask-env-architecture#summary-of-allocated-subnets).
 
 | VNet Name           | Subnet Name                    | Address Prefix      | Total | Usable |
-| ------------------- | ------------------------------ | ------------------- | ----- | ------ |
+|---------------------|--------------------------------|---------------------|-------|--------|
 | **1. Hub VNet**     | 1.1 Firewall Subnet            | `192.168.30.0/26`   | 64    | 59     |
 |                     | 1.2 Firewall Management Subnet | `192.168.30.64/26`  | 54    | 59     |
 |                     | 1.3 General Subnet             | `192.168.30.128/27` | 32    | 27     |

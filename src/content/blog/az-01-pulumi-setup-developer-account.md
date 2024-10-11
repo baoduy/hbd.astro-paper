@@ -158,7 +158,7 @@ We'll be prompted to provide:
 - **Package manager**: Choose your preferred package manager (e.g., `npm`, `yarn`, `pnpm`). Here I will pick `pnpm`.
 - **Azure location**: e.g., `SoutheastAsia`
 
-After the project is created, if you are using your own account for development then ensure you're logged into Azure:
+After the project is created, if you are using your own account for development, then ensure you're logged into Azure:
 
 ```bash
 az login
@@ -199,7 +199,7 @@ Open `index.ts` in your preferred code editor and review the sample code. It typ
 
 </details>
 
-> Note: Exporting the key here is just for demo purposes. In the real environment all the connection string and credentials should be store in the Key Vault instead.
+> Note: Exporting the key here is just for demo purposes. In the real environment, all the connection string and credentials should be stored in the Key Vault instead.
 
 ## Preview and Deploy Your Stack
 
@@ -330,9 +330,9 @@ The most common commands in the CLI that you’ll be using are as follows:
 Congratulations! You've successfully:
 
 - Registered for a Pulumi account
-- Generated a Personal Access Token
+- Generate a Personal Access Token
 - Set up the Pulumi and Azure CLI tools
-- Created your first Pulumi project using TypeScript for Azure
+- Create your first Pulumi project using TypeScript for Azure
 - Deployed an Azure Resource Group and Storage Account
 
 Pulumi simplifies cloud resource management by allowing you to use familiar programming languages and tools. We can now explore adding more complex resources and configurations on the projects.

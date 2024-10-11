@@ -51,7 +51,7 @@ Once we have the license ready and assigned to our Entra ID group, we can procee
 
 ### Provisioning CloudPC Devices
 
-With our profile ready, we can start provisioning CloudPC devices for users. To do this, we need to make sure the target users are part of the `MDM - IT Windows 365` group. After adding users, the provisioning process will automatically start, and the devices will be ready for use within 1 hours.
+With our profile ready, we can start provisioning CloudPC devices for users. To do this, we need to make sure the target users are part of the `MDM - IT Windows 365` group. After adding users, the provisioning process will automatically start, and the devices will be ready for use within 1 hour.
 
 - Once the provisioning is complete, the assigned users will receive a notification, allowing them to access their CloudPC through the Windows 365 portal.
   ![intune-wm-provisioned](/assets/az-07-pulumi-setup-cloudPC-windows365-enterprise/intune-wm-provisioned.png)

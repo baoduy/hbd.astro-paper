@@ -26,7 +26,7 @@ By the end of this guide, you'll know how to integrate the AKS cluster with a Hu
 
 ### The `ContainerRegistry.ts` Module
 
-To enhance security and ensure that all Docker images deployed to our AKS cluster are verified, this module establishes a private Container Registry. By restricting AKS to pull images exclusively from this private registry, we eliminate the need to open firewalls to the public internet.
+To enhance security and ensure that all Docker images deployed to our AKS cluster are verified, this module establishes a private Container Registry. By restricting AKS to pull images exclusively from this private registry, we eliminate the need to open firewalls on the public internet.
 
 <details><summary><em>View code:</em></summary>
 
@@ -81,7 +81,7 @@ The VNet is peered with the Hub VNet to enable seamless integration with other s
 
 1. **SSH Key Generation Custom Resource**: SSH keys are crucial for configuring an AKS cluster. Due to Pulumi's lack of native SSH support, I utilize **[Dynamic Resource Providers](https://www.pulumi.com/docs/iac/concepts/resources/dynamic-providers/)** to craft a custom component that dynamically generates SSH keys with the `node-forge` library.
 
-This component also demonstrates how to securely store secrets securely within the Pulumi state.
+This component also demonstrates how to securely store secrets within the Pulumi state.
 
 <details><summary><em>View SSH generator code:</em></summary>
 
@@ -158,9 +158,9 @@ These steps ensure that the AKS cluster is well-secured and capable of meeting t
 
 ## Next Topic
 
-**[Day 06: Implement a private CloudPC and DevOps Agent Hub with Pulumi](/posts/az-06-pulumi-private-aks-cloudpc-hub)**
+**[Day 06: Implements a private CloudPC and DevOps Agent Hub with Pulumi](/posts/az-06-pulumi-private-aks-cloudpc-hub)**
 
-In the next tutorial, it will guides us through setting up a secure CloudPC and DevOps agent hub, aimed at improving the management and operational capabilities of your private AKS environment using Pulumi.
+In the next tutorial, it will guide us through setting up a secure CloudPC and DevOps agent hub, aimed at improving the management and operational capabilities of your private AKS environment using Pulumi.
 
 ## Thank You
 

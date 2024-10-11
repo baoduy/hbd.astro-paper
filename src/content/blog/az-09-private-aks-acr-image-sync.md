@@ -6,8 +6,9 @@ featured: false
 draft: false
 tags:
   - AKS
-  - Private
   - Pulumi
+  - CI/CD
+  - AzureDevOps
 description: "In this article, we explore the process of synchronizing container images with ACR for deployments in a private AKS cluster. We'll cover how to configure and automate this synchronization using CI/CD pipelines, ensuring seamless updates and secure image management for private AKS environments."
 ---
 
@@ -34,7 +35,7 @@ Each line specifies the source image and the destination repository within the A
 
 <details><summary><em>Example <code>images.txt</code></em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/image-sync-pipeline/images.txt#1-7)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/image-sync/images.txt#1-7)
 
 </details>
 
@@ -48,7 +49,7 @@ The `sync-script.sh` script automates the process of importing images listed in 
 
 <details><summary><em>View code</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/image-sync-pipeline/sync-script.sh#1-55)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/image-sync/sync-script.sh#1-55)
 
 </details>
 
@@ -65,14 +66,15 @@ To streamline the synchronization process, we utilize a CI/CD pipeline. This pip
 **Important Considerations:**
 
 - The `image-sync` variable group contains the `DOCKER_NAME` and `DOCKER_TOKEN`, which are essential for accessing Docker Hub and avoiding rate limits.
-- Substitute `azureSubscription` with your specific Azure service connection name in Azure DevOps.
-- Replace `acrName` with the actual name of your Azure Container Registry.
+- Substitute `azureSubscription` with a specific Azure service connection name in Azure DevOps.
+- Replace `acrName` with the actual name of the Azure Container Registry.
 - Verify that the service principal linked to the Azure service connection has the necessary permissions to import images into the ACR.
 
 ![az-devops-sync-pipeline](/assets/az-09-private-aks-acr-image-sync/az-devops-sync-pipeline.png)
 
 Once the pipeline completes successfully, you can verify that all images have been correctly imported into the ACR.
 ![acr-imported-images](/assets/az-09-private-aks-acr-image-sync/acr-imported-images.png)
+<p class="ml-44"><em>The imported images on ACR repositories</em></p>
 
 ## Conclusion
 
@@ -91,6 +93,6 @@ This approach not only streamlines the deployment process but also integrates se
 
 ## Thank You
 
-Thank you for taking the time to read this guide! We hope it has been helpful. Feel free to explore further, and happy coding! 🌟✨
+Thank you for taking the time to read this guide! We hope it has been helpful. Feel free to explore further and happy coding! 🌟✨
 
 **Steven** | _[GitHub](https://github.com/baoduy)_
