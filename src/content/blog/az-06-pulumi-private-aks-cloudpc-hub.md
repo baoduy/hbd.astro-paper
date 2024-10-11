@@ -94,18 +94,20 @@ on Azure with automatically generated login credentials and disk encryption and 
 
 </details>
 
-### The `PrivateDNS.ts` module
+### The `PrivateDNS.ts` Module
 
-To streamline internal network communication, we will configure a DNS resolver. Our NGINX will be deployed on AKS as private ingress with an internal IP address of `192.168.31.250`, which must reside within the AKS subnet.
+To optimize internal network communication, we implement a DNS resolver. This module sets up a private DNS zone that facilitates efficient name resolution within our network infrastructure.
 
-To facilitate SSL certificate generation using [`Cert-Manager`](https://cert-manager.io/) on our AKS, 
-We will use the Cloudflare domain `drunkcoding.net` for internal DNS communication.
+1. **Private DNS Zone**: Creates a dedicated DNS zone for internal use.
+2. **VNet Links**: Establishes connections between the private DNS zone and both the Hub and CloudPC virtual networks.
+3. **A Record**: Configures A record that points to the private IP address of our NGINX ingress controller.
+  > In the following topics, We will cover the NGINX ingress controller deployed on AKS as private ingress, and it will be assigned the internal IP address `192.168.31.250`. This IP must be within the AKS subnet range.
 
-The private DNS will be linked to all VNETs in the environment, directing all DNS requests to the IP address `192.168.31.250`.
+By linking this private DNS to both the Hub and CloudPC VNets, we ensure that all DNS requests for our internal services are correctly routed to the NGINX ingress controller. This setup enhances security and improves network performance by keeping internal traffic within our private network.
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/PrivateDNS.ts#1-70)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/PrivateDNS.ts#1-1000)
 
 </details>
 
@@ -120,7 +122,7 @@ enabling us to provision the necessary Azure resources effectively.
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/index.ts#1-106)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/index.ts#1-1000)
 
 </details>
 
@@ -128,7 +130,7 @@ enabling us to provision the necessary Azure resources effectively.
 
 ### Deploying the Stack
 
-- To deploy the stack, run the `pnpm run up` command. This will provision all the necessary Azure resources, such as the Virtual Network (VNet), subnets, firewall, and private endpoints. Before executing the command, ensure you are logged into your Azure account using the Azure CLI and have configured Pulumi with the correct backend and credentials.
+To deploy the stack, run the `pnpm run up` command. This will provision all the necessary Azure resources, such as the Virtual Network (VNet), subnets, firewall, and private endpoints. Before executing the command, ensure you are logged into your Azure account using the Azure CLI and have configured Pulumi with the correct backend and credentials.
 
 ![Azure-Resources](/assets/az-06-pulumi-private-aks-cloudpc-hub/az-04-cloudpc.png)
 

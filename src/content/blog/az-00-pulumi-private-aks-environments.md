@@ -66,9 +66,11 @@ In the next article, we will explore how to configure a CloudPC with Windows 365
 
 **[Day 08: Setting Up a Deployment Pipeline for Pulumi Projects.](/posts/az-08-pulumi-setup-deploy-cicd-pipeline)**
 
-In the next article, We'll walk through creating a Continuous Integration and Continuous Deployment (CI/CD) pipeline on Azure DevOps for our Pulumi projects
+In the next article, we will walk through creating a Continuous Integration and Continuous Deployment (CI/CD) pipeline on Azure DevOps for our Pulumi projects.
 
-**[Day 09: Docker Image Sync-up](/posts/az-06-pulumi-private-aks-cloudpc-hub)**
+**[Day 09: Synchronizing Container Images to ACR for a Private AKS Cluster Using CI/CD Pipelines.](/posts/az-09-private-aks-acr-image-sync)**
+
+In the next article, We explore the process of synchronizing container images with ACR for deployments in a private AKS cluster. We'll cover how to configure and automate this synchronization using CI/CD pipelines, ensuring seamless updates and secure image management for private AKS environments.
 
 **[Day 10: Helm Deployment Pipeline](/posts/az-06-pulumi-private-aks-cloudpc-hub)**
 

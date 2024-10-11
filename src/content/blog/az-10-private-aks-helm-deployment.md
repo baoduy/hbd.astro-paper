@@ -1,7 +1,7 @@
 ---
 author: Steven Hoang
 pubDatetime: 2025-01-01T12:00:00Z
-title: "Az] Day 10: Implementing a Helm Deployment CI/CD AzureDevOps Pipeline for a Private AKS Cluster."
+title: "[Az] Day 10: Implementing a Helm Deployment CI/CD AzureDevOps Pipeline for a Private AKS Cluster."
 featured: false
 draft: false
 tags:
@@ -19,10 +19,30 @@ Building on that foundation, this guide will walk you through creating Helm char
 
 ## Table of Contents
 
-## AzureDevOps Agent Installation
+## Configuring an Azure DevOps Agent
 
-Before deploying the helm charts, We need to install the AzureDevops agent into the VM that had been created in _az-04-cloudPC_ project.
-Remote to the VM through our Windows 365 VDI, and follow the [introduction here] to install the devops agent.
+To streamline the deployment process of your Helm charts, it's crucial to set up and configure an Azure DevOps agent on the virtual machine (VM) provisioned by the _az-04-cloudPC_ project. 
+This setup ensures that your CI/CD pipeline functions smoothly within a private network environment.
+
+### Installing the Azure DevOps Agent
+
+1. Log into your virtual machine using Windows 365 Virtual Desktop Infrastructure (VDI).
+2. Follow the detailed instructions in the [Microsoft documentation](https://learn.microsoft.com/en-gb/azure/devops/pipelines/agents/linux-agent?view=azure-devops) to install the Azure DevOps agent on a Linux-based VM.
+3. Once installed, assign the agent to the `aks-agents` pool to optimize resource allocation.
+
+After configuration, the agent should be listed under Azure DevOps project's agents as below:
+![private-aks-agent-pool](/assets/az-10-private-aks-helm-deployment/private-aks-agent-pool.png)
+
+### Installing Essential Tools
+
+For effective Helm chart deployment, ensure the following tools are installed on the agent:
+
+- **Azure CLI**: Required for managing Azure resources. Follow the installation guide [here](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt).
+- **KubeLogin**: This is a client-go credential plugin implementing azure authentication and required for pipeline deployment to authenticate with AKS using Service Principal. Refer [here](https://azure.github.io/kubelogin/install.html).
+- **Helm CLI**: Essential for managing Kubernetes applications. Refer to the installation instructions [here](https://helm.sh/docs/intro/install/).
+- **Kubectl**: Necessary for Kubernetes cluster management. Installation guidance is available [here](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/).
+
+> Note: After installing these tools, restart the VM to ensure that the installations are correctly applied and effective.
 
 ## Creating Helm Charts
 
@@ -205,6 +225,7 @@ Remember to always follow security best practices, such as using Azure Key Vault
 
 ## References
 
+- [Self-hosted Linux agents](https://learn.microsoft.com/en-gb/azure/devops/pipelines/agents/linux-agent?view=azure-devops)
 - [Helm Documentation](https://helm.sh/docs/)
 - [Azure DevOps Documentation](https://docs.microsoft.com/en-us/azure/devops/?view=azure-devops)
 - [Nginx Ingress Controller Documentation](https://kubernetes.github.io/ingress-nginx/)

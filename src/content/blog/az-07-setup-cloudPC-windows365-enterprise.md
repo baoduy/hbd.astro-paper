@@ -78,7 +78,6 @@ We can access our CloudPC in several ways:
 
    - **Kubectl CLI**: To use the `kubectl` command locally, follow the Azure Portal instructions to set up your local environment. This setup requires the installation of `Azure CLI`, `kubectl`, and `kubelogin`.
     ![private-aks-connection](/assets/az-07-pulumi-setup-cloudPC-windows365-enterprise/private-aks-connect.png)
-    > Important: Once the `.kube` configuration file is generated, the `API server address` is set to the private link DNS by default. To ensure connectivity to the cluster, modify this address to align with the one displayed on the Azure Portal.
     
 ## Conclusion
 
