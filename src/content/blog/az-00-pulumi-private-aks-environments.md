@@ -49,12 +49,12 @@ We'll explore how to integrate the AKS cluster with the Hub VNet and apply the f
 
 This tutorial guides us through setting up a secure CloudPC and DevOps agent hub, aimed at improving the management and operational capabilities of your private AKS environment using Pulumi.
 
-## Progress Review
+## Progress Review After Day 06
 
 Let's take a moment to review our achievements. After completing six tutorials, we have successfully deployed our private AKS environment.
-The illustration below provides a visual representation of our setup:
-![aks-env](/assets/az-02-pulumi-private-ask-env-architecture/private-aks.png)
-_Overview of private AKS env._
+The illustration below provides a visual representation of our current environment after Day 06:
+![aks-env](/assets/az-02-pulumi-private-ask-env-architecture/private-aks-day-06.png)
+<p class="ml-44"><em>The illustration private of AKS env</em></p>
 
 ## CloudPC environment (Windows 365 enterprise)
 
@@ -72,7 +72,16 @@ In the next article, we will walk through creating a Continuous Integration and 
 
 In the next article, We explore the process of synchronizing container images with ACR for deployments in a private AKS cluster. We'll cover how to configure and automate this synchronization using CI/CD pipelines, ensuring seamless updates and secure image management for private AKS environments.
 
-**[Day 10: Helm Deployment Pipeline](/posts/az-06-pulumi-private-aks-cloudpc-hub)**
+**[Day 10: Implementing a Helm Deployment CI/CD AzureDevOps Pipeline for a Private AKS Cluster.](/posts/az-10-private-aks-helm-deployment)**
+
+In the next article, We will create Helm charts for nginx-ingress and cert-manager, and set up a robust CI/CD pipeline using Azure DevOps for Helm deployments to a private AKS cluster.
+
+## Progress Review After Day 10
+
+Let's take a moment to review our achievements. After completing 10 tutorials, we have successfully deployed our internal ingress, cert-manager and private DNS Zone.
+The illustration below provides a visual representation of our current environment:
+![aks-env](/assets/az-02-pulumi-private-ask-env-architecture/private-aks-day-10.png)
+<p class="ml-14"><em>The illustration of AKS env with private ingress and DNS Zone</em></p>
 
 ## Public Apps with Cloudflare Tunnels
 

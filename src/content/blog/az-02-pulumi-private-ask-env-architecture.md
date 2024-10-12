@@ -62,7 +62,7 @@ The CloudPC VNet provides secure environments for virtual desktops and DevOps op
 Here is the summary of the private IP address allocation for each subnet:
 
 | VNet Name           | Subnet Name                    | Address Prefix      | Total | Usable |
-| ------------------- | ------------------------------ | ------------------- | ----- | ------ |
+|---------------------|--------------------------------|---------------------|-------|--------|
 | **1. Hub VNet**     | 1.1 Firewall Subnet            | `192.168.30.0/26`   | 64    | 59     |
 |                     | 1.2 Firewall Management Subnet | `192.168.30.64/26`  | 54    | 59     |
 |                     | 1.3 General Subnet             | `192.168.30.128/27` | 32    | 27     |

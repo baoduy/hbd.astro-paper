@@ -91,6 +91,13 @@ This approach not only streamlines the deployment process but also integrates se
 - [Image importing pipeline](https://github.com/baoduy/drunk-azure-pulumi-articles/tree/main/image-sync-pipeline)
 - [Azure Container Registry Documentation](https://docs.microsoft.com/azure/container-registry/)
 
+
+## Next Topic
+
+**[Day 10: Implementing a Helm Deployment CI/CD AzureDevOps Pipeline for a Private AKS Cluster.](/posts/az-10-private-aks-helm-deployment)**
+
+In the next article, We will create Helm charts for nginx-ingress and cert-manager, and set up a robust CI/CD pipeline using Azure DevOps for Helm deployments to a private AKS cluster.
+
 ## Thank You
 
 Thank you for taking the time to read this guide! We hope it has been helpful. Feel free to explore further and happy coding! 🌟✨

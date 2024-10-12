@@ -30,7 +30,7 @@ This setup ensures that your CI/CD pipeline functions smoothly within a private 
 2. Follow the detailed instructions in the [Microsoft documentation](https://learn.microsoft.com/en-gb/azure/devops/pipelines/agents/linux-agent?view=azure-devops) to install the Azure DevOps agent on a Linux-based VM.
 3. Once installed, assign the agent to the `aks-agents` pool to optimize resource allocation.
 
-After configuration, the agent should be listed under Azure DevOps project's agents as below:
+After installed, the agent should be listed under Azure DevOps project's agents as below:
 ![private-aks-agent-pool](/assets/az-10-private-aks-helm-deployment/private-aks-agent-pool.png)
 
 ### Installing Essential Tools
