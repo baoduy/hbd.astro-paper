@@ -43,7 +43,7 @@ Here are my current router settings.
 We're going to start by installing Nginx on our cluster. In the following guide, we will illustrate how to set up and run Nginx on K3s.
 At its core, Nginx will listen to inbound requests on the master node's IP address and subsequently forward these requests to the services operating within our cluster.
 
-<img src="/assets/ks-Install-nginx-on-pi-cluster/pi-cluster-nginx-diagram.png" width="600px">
+<img alt="pi-cluster-nginx-diagram" src="/assets/ks-Install-nginx-on-pi-cluster/pi-cluster-nginx-diagram.png" width="600px">
 
 **1. Config Ip address**
 
@@ -184,5 +184,4 @@ When accessing to `http://echo.drunkcoding.net` you able to see the JSON respons
 
 Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
 
-**Steven**
-[GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)
+**Steven** | *[GitHub](https://github.com/baoduy)*

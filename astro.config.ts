@@ -3,6 +3,12 @@ import tailwind from "@astrojs/tailwind";
 import react from "@astrojs/react";
 import remarkToc from "remark-toc";
 import remarkCollapse from "remark-collapse";
+import remarkGfm from "remark-gfm";
+import remarkHint from 'remark-hint';
+import h2Reformat from './src/plugins/h2Reformat';
+import remarkRehype from "remark-rehype";
+import rehypeStringify from "rehype-stringify";
+import remarkInlineGithubCodeSnippet from "remark-inline-github-code-snippets";
 import sitemap from "@astrojs/sitemap";
 import partytown from "@astrojs/partytown";
 import { SITE } from "./src/config";
@@ -24,6 +30,8 @@ export default defineConfig({
   ],
   markdown: {
     remarkPlugins: [
+      h2Reformat,
+      remarkHint,
       remarkToc,
       [
         remarkCollapse,
@@ -31,6 +39,16 @@ export default defineConfig({
           test: "Table of contents",
         },
       ],
+      remarkGfm,
+      [
+        remarkInlineGithubCodeSnippet,
+        {
+          inlineMarker: "inline",
+          //originComment: "source: <url>"
+        },
+      ],
+      //remarkRehype,
+      rehypeStringify,
     ],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes

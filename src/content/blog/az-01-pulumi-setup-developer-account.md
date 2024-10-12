@@ -2,45 +2,38 @@
 author: Steven Hoang
 pubDatetime: 2025-01-01T12:00:00Z
 title: "[Az] Day 01: Setup pulumi developer account"
-postSlug: az-01-pulumi-setup-developer-account
 featured: false
 draft: false
 tags:
   - aks
   - private
   - pulumi
-description: "A comprehensive guide on how to set up a Pulumi developer account and deploy Azure resources using Infrastructure as Code (IaC) via Pulumi. It walks users through the setup process from account creation to deploying Azure Resources using Pulumi and TypeScript."
+description: "A guide on how to set up a Pulumi developer account and deploy Azure resources using Infrastructure as Code (IaC) via Pulumi. 
+It walks users through the setup process from account creation to deploying Azure Resources using Pulumi and TypeScript."
 ---
 
-# Introduction
+## Introduction
 
-Pulumi is an open-source Infrastructure as Code (IaC) tool that enables developers to define cloud resources using familiar programming languages like TypeScript, Python, Go, and C#. By leveraging the full power of these languages—including loops, conditionals, and functions—you can efficiently manage your infrastructure.
+Pulumi is an open-source Infrastructure as Code (IaC) tool that enables developers to define cloud resources using familiar programming languages like TypeScript, Python, Go, and C#. By leveraging the full power of these tools, we can efficiently manage our infrastructure on the cloud (Azure, AWS, Google Cloud, etc.).
 
-In this guide, we'll walk you through:
+In this guide, we’ll walk through:
 
 - Registering for a Pulumi account
 - Generating a Personal Access Token (PAT)
 - Setting up the Pulumi and Azure CLI tools
-- Creating your first Pulumi project using the TypeScript template for Azure
-- Deploying your first Azure Resource Group and Storage Account
-
----
+- Creating our first Pulumi project using the TypeScript template for Azure
+- Deploying our first Azure Resource Group and Storage Account
 
 ## Table of Contents
 
----
-
 ## Prerequisites
 
-- **Node.js** installed on your machine
-- **Azure CLI** installed and configured
+- **Node.js** installed on the machine
 - An **Azure account** (you can [create a free account here](https://azure.microsoft.com/free/))
 
----
+## Pulumi Setup
 
-## 1: Pulumi Setup
-
-### 1.1. Create a Pulumi Account
+### Create a Pulumi Account
 
 1. **Visit the Pulumi Website**
 
@@ -61,13 +54,13 @@ In this guide, we'll walk you through:
 
    If you signed up using an email address, check your inbox for a confirmation email and verify your account.
 
-### 1.2. Generate a Personal Access Token (PAT)
+### Generate a Personal Access Token (PAT)
 
 A Personal Access Token (PAT) is required to authenticate the Pulumi CLI with your Pulumi account.
 
-1. **Log In to the Pulumi Console**
+1. **Log In to the Pulumi Dashboard**
 
-   Visit the [Pulumi Console](https://app.pulumi.com/) and log in with your credentials.
+   Visit the [Pulumi Dashboard](https://app.pulumi.com/) and log in with your credentials.
 
 2. **Access the Tokens Page**
 
@@ -80,7 +73,7 @@ A Personal Access Token (PAT) is required to authenticate the Pulumi CLI with yo
    - Provide a description (e.g., "Pulumi CLI Token").
    - Click **"Create"** and copy the generated token for later use.
 
-### 1.3. (Optional) Create a New Organization
+### (Optional) Create a New Organization
 
 If you'd like to manage your projects under a separate organization:
 
@@ -94,21 +87,19 @@ If you'd like to manage your projects under a separate organization:
    - Click on **"Create Organization"**.
    - Follow the prompts to set up your organization.
 
-![Pulumi Account](/assets/az00-pulumi-setup-developer-account/pulumi-account.png)
+![Pulumi Account](/assets/az-01-pulumi-setup-developer-account/pulumi-account.png)
 
----
+## Install CLI Tools
 
-## 2: Install CLI Tools
-
-### 2.1. Install the Pulumi CLI
+### Install the Pulumi CLI
 
 Follow the instructions [here](https://www.pulumi.com/docs/get-started/install/) to install the Pulumi CLI for your operating system.
 
-### 2.2. Install the Azure CLI
+### Install the Azure CLI
 
-Install the Azure CLI by following the instructions [here](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli).
+Next, Install the Azure CLI by following the instructions [here](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli).
 
-**Here are the current versions**
+**Here are the current versions after installed them successfully.**
 
 ```bash
 > pulumi version
@@ -118,9 +109,7 @@ v3.133.0
 azure-cli  2.64.0
 ```
 
----
-
-## 3: Configure Pulumi for Azure
+## Configure Pulumi for Azure
 
 Before diving into coding, let's configure Pulumi to work with your Azure account. Run the following commands to set up your Pulumi stack with the correct Azure subscription details:
 
@@ -131,7 +120,7 @@ pulumi org set-default YOUR_PULUMI_ORGANIZATION
 # Configure Azure settings
 pulumi config set azure-native:tenantId YOUR_AZURE_TENANT_ID
 pulumi config set azure-native:subscriptionId YOUR_AZURE_SUBSCRIPTION_ID
-pulumi config set azure-native:location YOUR_AZURE_LOCATION  # e.g., EastUS
+pulumi config set azure-native:location YOUR_AZURE_LOCATION  # e.g., SoutheastAsia
 
 # Optional: If you're using a service principal for authentication
 pulumi config set azure-native:clientId YOUR_AZURE_CLIENT_ID
@@ -140,13 +129,11 @@ pulumi config set azure-native:clientSecret YOUR_AZURE_CLIENT_SECRET --secret
 
 **Note:** Replace placeholders with your actual Azure details. The `--secret` flag ensures sensitive information is encrypted.
 
----
+## Create Your First Pulumi Project
 
-## 4: Create Your First Pulumi Project
+### Set Up a Git Repository
 
-### 4.1. Set Up a Git Repository
-
-Create a new directory for your Pulumi project and initialize a Git repository:
+Create a new directory for our Pulumi project and initialize a Git repository:
 
 ```bash
 mkdir day00_pulumi-azure-start
@@ -154,7 +141,7 @@ cd day00_pulumi-azure-start
 git init
 ```
 
-### 4.2. Initialize a New Pulumi Project
+### Initialize a New Pulumi Project
 
 Run the following command to create a new Pulumi project using the Azure TypeScript template:
 
@@ -162,16 +149,16 @@ Run the following command to create a new Pulumi project using the Azure TypeScr
 pulumi new azure-typescript
 ```
 
-You'll be prompted to provide:
+We'll be prompted to provide:
 
 - **Login**: Authenticate using the PAT token generated earlier.
 - **Project name**: Accept the default or enter a custom name.
 - **Project description**: (Optional)
 - **Stack name**: e.g., `dev`
-- **Package manager**: Choose your preferred package manager (e.g., `npm`, `yarn`, `pnpm`).
+- **Package manager**: Choose your preferred package manager (e.g., `npm`, `yarn`, `pnpm`). Here I will pick `pnpm`.
 - **Azure location**: e.g., `SoutheastAsia`
 
-After the project is created, if you are using your own account for development then ensure you're logged into Azure:
+After the project is created, if you are using your own account for development, then ensure you're logged into Azure:
 
 ```bash
 az login
@@ -187,57 +174,36 @@ No     Subscription name    Subscription ID                       Tenant
 
 ```
 
----
+> **Note**:
+>
+> - Pulumi supports various package managers, including `npm`, `yarn`, and `pnpm`. For consistency, this guide will use `pnpm` for all Pulumi projects.
+> - In Pulumi, each stack represents a different environment, and by default, all stacks are encrypted with a randomly generated key. If you prefer to use a custom encryption key, refer to the [Pulumi documentation](https://www.pulumi.com/docs/iac/concepts/secrets/#configuring-secrets-encryption) for instructions.
 
-## 5: Understand the Project Structure
+## Understand the Project Structure
 
-### 5.1. Project files
+### Project files
 
 The template generates several files:
 
 - **Pulumi.yaml**: Contains project metadata.
-- **Pulumi.dev.yaml**: Contains stack-specific configuration.
+- **Pulumi.dev.yaml**: Contains stack-specific configuration and secrets.
 - **index.ts**: The main program file where you'll define your infrastructure.
-- **package.json**: Node.js project metadata.
-- **tsconfig.json**: TypeScript compiler configuration.
 
-### 5.2: Review and Modify the Sample Code
+### Review the Sample Code
 
 Open `index.ts` in your preferred code editor and review the sample code. It typically includes the creation of a Resource Group and a Storage Account.
 
-**Sample Code:**
+<details><summary><em>View Code:</em></summary>
 
-```typescript
-import * as pulumi from "@pulumi/pulumi";
-import * as resources from "@pulumi/azure-native/resources";
-import * as storage from "@pulumi/azure-native/storage";
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/day-0/day00_pulumi-azure-start/index.ts#1-1000)
 
-// Create an Azure Resource Group
-const resourceGroup = new resources.ResourceGroup("resourceGroup");
+</details>
 
-// Create an Azure Storage Account
-const storageAccount = new storage.StorageAccount("storageaccount", {
-  resourceGroupName: resourceGroup.name,
-  sku: {
-    name: storage.SkuName.Standard_LRS,
-  },
-  kind: storage.Kind.StorageV2,
-});
+> Note: Exporting the key here is just for demo purposes. In the real environment, all the connection string and credentials should be stored in the Key Vault instead.
 
-// Export the primary key of the Storage Account
-const storageAccountKeys = storage.listStorageAccountKeysOutput({
-  resourceGroupName: resourceGroup.name,
-  accountName: storageAccount.name,
-});
+## Preview and Deploy Your Stack
 
-export const primaryStorageKey = storageAccountKeys.keys[0].value;
-```
-
----
-
-## 6: Preview and Deploy Your Stack
-
-### 6.1. Preview the Changes
+### Preview the Changes
 
 Before deploying, preview the changes to ensure everything is set up correctly:
 
@@ -245,10 +211,9 @@ Before deploying, preview the changes to ensure everything is set up correctly:
 pulumi up
 ```
 
-**Sample Output:**
+<details><summary><em>Sample Output:</em></summary>
 
 ```bash
-> pulumi up
 Previewing update (dev)
 
 View in Browser (Ctrl+O): https://app.pulumi.com/drunkcoding/day00_pulumi-azure-start/dev/previews/xxxxxxxx-1f60-4ed9-bb35-xxxxxxxxxxxx
@@ -270,9 +235,9 @@ Do you want to perform this update?  [Use arrows to move, type to filter]
   details
 ```
 
-You should see a plan indicating that new resources will be created.
+</details>
 
-### 6.2. Deploy the Stack
+### Deploy the Stack
 
 Deploy your resources to Azure:
 
@@ -280,7 +245,7 @@ Deploy your resources to Azure:
 pulumi up -y
 ```
 
-**Sample Output:**
+<details><summary><em>Sample Output:</em></summary>
 
 ```bash
 Updating (dev)
@@ -301,30 +266,27 @@ Resources:
 Duration: 35s
 ```
 
-### 6.3: Verify the Deployment
+</details>
 
-After deployment, you can verify the resources in the Azure Portal:
+### Verify the Deployment
+
+After deployment, We can verify the resources in the Azure Portal:
 
 - Log in to the [Azure Portal](https://portal.azure.com/).
 - Navigate to **Resource Groups** and locate your newly created resource group.
 - Verify that the Storage Account is present within the resource group.
 
-![Azure Resources](/assets/az00-pulumi-setup-developer-account/az-resources.png)
+![Azure Resources](/assets/az-01-pulumi-setup-developer-account/az-resources.png)
 
----
-
-## 7: Clean Up Resources
+## Clean Up Resources
 
 To avoid incurring unnecessary costs, destroy the resources when they're no longer needed:
 
 ```bash
-pulumi destroy
+pulumi destroy -y
 ```
 
-- Review the resources scheduled for deletion.
-- Type `yes` when prompted to confirm.
-
-**Sample Output:**
+<details><summary><em>Sample Output:</em></summary>
 
 ```bash
 Destroying (dev)
@@ -348,33 +310,49 @@ The resources in the stack have been deleted, but the history and configuration 
 If you want to remove the stack completely, run `pulumi stack rm dev`.
 ```
 
----
+</details>
+
+## Pulumi CLI commands
+
+The most common commands in the CLI that you’ll be using are as follows:
+
+- `pulumi new`: creates a new project using a template
+- `pulumi stack select`: switching between the stacks (at least one is required to perform an update)
+- `pulumi config`: configure variables such as keys, regions, and so on
+- `pulumi up`: preview and deploy changes to your program and/or infrastructure
+- `pulumi preview`: preview your changes explicitly before deploying
+- `pulumi destroy`: destroy your program and its infrastructure when you’re done
+
+> Refer [here for the details](https://www.pulumi.com/docs/iac/cli/commands/) of Pulumi commands
 
 ## Conclusion
 
 Congratulations! You've successfully:
 
 - Registered for a Pulumi account
-- Generated a Personal Access Token
+- Generate a Personal Access Token
 - Set up the Pulumi and Azure CLI tools
-- Created your first Pulumi project using TypeScript for Azure
+- Create your first Pulumi project using TypeScript for Azure
 - Deployed an Azure Resource Group and Storage Account
 
-Pulumi simplifies cloud resource management by allowing you to use familiar programming languages and tools. You can now explore adding more complex resources and configurations to your project.
+Pulumi simplifies cloud resource management by allowing you to use familiar programming languages and tools. We can now explore adding more complex resources and configurations on the projects.
 
----
+## References
 
-## Next Steps
+- [Sample source code](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/day-0/day00_pulumi-azure-start#day-0)
+- [Pulumi get started](https://www.pulumi.com/docs/iac/get-started/)
+- [Pulumi Commands](https://www.pulumi.com/docs/iac/cli/commands/)
+- [Pulumi Secret Config](https://www.pulumi.com/docs/iac/concepts/secrets/#configuring-secrets-encryption)
 
-- **Day 1: Create a Virtual Network Hub on Azure**
+## Next
 
-  Continue your Pulumi journey by setting up a virtual network hub, adding virtual machines, or deploying Azure Functions.
+**[Day 02: Private Aks Environment Architecture.](/posts/az-02-pulumi-private-ask-env-architecture)**
 
----
+In the next tutorial, We will discuss the architecture of private AKS that we are going to provision on Azure, leveraging multiple subnets, Azure Firewall, and other essential cloud services.
+This architecture ensures that sensitive workloads remain isolated and protected from public internet exposure.
 
 ## Thank You
 
 Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
 
-**Steven**
-[GitHub](<[https://github.com/baoduy](https://github.com/baoduy)>)
+**Steven** | _[GitHub](https://github.com/baoduy)_
