@@ -30,7 +30,7 @@ This module facilitates the creation of a Virtual Network, allowing for the spec
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-02-hub-vnet/VNet.ts#L1-L44)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-02-hub-vnet/VNet.ts#1-1000)
 
 </details>
 
@@ -40,7 +40,7 @@ This module is responsible for creating a FirewallPolicy resource, which serves 
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-02-hub-vnet/FirewallPolicy.ts#L1-L25)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-02-hub-vnet/FirewallPolicy.ts#1-1000)
 
 </details>
 
@@ -51,7 +51,7 @@ It ensures the firewall is connected to the designated subnet within the VNet an
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-02-hub-vnet/Firewall.ts#L1-L114)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-02-hub-vnet/Firewall.ts#1-1000)
 
 </details>
 
@@ -68,7 +68,7 @@ Our goal is to set up the main parts required for the Hub VNet, which include:
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-02-hub-vnet/index.ts#L1-L73)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-02-hub-vnet/index.ts#1-1000)
 
 </details>
 

@@ -22,12 +22,6 @@ _(Download original draw.io file <a href="/assets/az-02-pulumi-private-ask-env-a
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [Conclusion](#conclusion)
-- [References](#references)
-- [Next](#next)
-- [Thank You](#thank-you)
-
 ## Architecture Overview
 
 This architecture is designed to ensure secure and efficient communication across various components by leveraging multiple VNets and subnets. Below is a detailed explanation of the key components and their configurations:
@@ -62,7 +56,7 @@ The CloudPC VNet provides secure environments for virtual desktops and DevOps op
 Here is the summary of the private IP address allocation for each subnet:
 
 | VNet Name           | Subnet Name                    | Address Prefix      | Total | Usable |
-|---------------------|--------------------------------|---------------------|-------|--------|
+| ------------------- | ------------------------------ | ------------------- | ----- | ------ |
 | **1. Hub VNet**     | 1.1 Firewall Subnet            | `192.168.30.0/26`   | 64    | 59     |
 |                     | 1.2 Firewall Management Subnet | `192.168.30.64/26`  | 54    | 59     |
 |                     | 1.3 General Subnet             | `192.168.30.128/27` | 32    | 27     |

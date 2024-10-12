@@ -48,7 +48,7 @@ Create a variable group in Azure DevOps **Libraries** named `pulumi`, including 
    ![api-permission](/assets/az-08-pulumi-setup-deploy-cicd-pipeline/az-app-permission.png)
    <p class="ml-40"><em>The API permission of the app registration</em></p>
 
-> **Important:** For future AKS Helm deployments, ensure that this Service Connection is added to the `AZ ROL DEV-AKS-ADMIN` EntraID group associated with the AKS Admin cluster role. 
+> **Important:** For future AKS Helm deployments, ensure that this Service Connection is added to the `AZ ROL DEV-AKS-ADMIN` EntraID group associated with the AKS Admin cluster role.
 > This step is necessary for granting the permissions for Helm deployment from AzureDevOps to the AKS environment.
 
 ## Deployment Templates
@@ -69,7 +69,7 @@ Create a variable group in Azure DevOps **Libraries** named `pulumi`, including 
 
 <details><summary><em>View yaml:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/pulumi/build-template.yml#1-35)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/pulumi/build-template.yml#1-1000)
 
 </details>
 
@@ -90,7 +90,7 @@ Create a variable group in Azure DevOps **Libraries** named `pulumi`, including 
 
 <details><summary><em>View yaml:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/pulumi/deploy-template.yml#1-58)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/pulumi/deploy-template.yml#1-1000)
 
 </details>
 
@@ -115,20 +115,22 @@ To establish a deployment pipeline in Azure DevOps, we'll use the `deploy.azure-
 Our pipeline consists of four distinct deployment stages. Each stage utilizes the `build-and-deploy.yml` template file, with appropriate parameters passed to it.
 
 To initiate the pipeline:
+
 1. Create a new branch named `releases/dev`
 2. Push your changes to this branch
 3. The pipeline will automatically trigger and run
 
 Here's a visual representation of the deployment sequence:
-    ![deploy-pipeline-flow](/assets/az-08-pulumi-setup-deploy-cicd-pipeline/deploy-pipeline-flow.png)
+![deploy-pipeline-flow](/assets/az-08-pulumi-setup-deploy-cicd-pipeline/deploy-pipeline-flow.png)
+
 <p class="ml-44"><em>Visualization of the Deployment Pipeline Stages</em></p>
 
-The pipeline progresses through these stages in order, ensuring a systematic and controlled deployment process. 
+The pipeline progresses through these stages in order, ensuring a systematic and controlled deployment process.
 Each stage builds upon the previous one, allowing for a comprehensive and structured approach to deploying our Pulumi projects.
 
 <details><summary><em>View yaml:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/pulumi/deploy.azure-pipelines.yml#1-64)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/pulumi/deploy.azure-pipelines.yml#1-1000)
 
 </details>
 
@@ -136,17 +138,18 @@ Each stage builds upon the previous one, allowing for a comprehensive and struct
 
 This section demonstrates how to safely destroy a Pulumi deployment stack. Exercise caution, as once a stack is destroyed, it cannot be restored.
 
-To set up a destruction pipeline in Azure DevOps, use the `danger-destroy.azure-pipelines.yml` file. 
-To effectively destroy the entire Pulumi deployment, ensure that the states are reverted from the deployment state. 
+To set up a destruction pipeline in Azure DevOps, use the `danger-destroy.azure-pipelines.yml` file.
+To effectively destroy the entire Pulumi deployment, ensure that the states are reverted from the deployment state.
 Each stage in this process uses the `danger-build-and-destroy.yml` file with the necessary parameters.
 
 Here's a visual representation of the deployment sequence:
 ![deploy-pipeline-flow](/assets/az-08-pulumi-setup-deploy-cicd-pipeline/pulumi-destroy-pipeline.png)
+
 <p class="ml-44"><em>Visualization of the Destroy Pipeline</em></p>
 
 <details><summary><em>View yaml:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/pulumi/danger-destroy.azure-pipelines.yml#1-58)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/pulumi/danger-destroy.azure-pipelines.yml#1-1000)
 
 </details>
 

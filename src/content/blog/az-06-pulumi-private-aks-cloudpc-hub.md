@@ -28,21 +28,21 @@ This module defines the firewall policies for:
 - **CloudPC**: We adhere to the recommended network rules for [Windows 365 Enterprise](https://learn.microsoft.com/en-us/windows-365/enterprise/requirements-network?tabs=enterprise%2Cent). Additionally, we ensure that all machines within the CloudPC subnet have access to AKS, DevOps subnets, and other Azure resources.
   <details><summary><em>View code:</em></summary>
 
-  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/CloudPcFirewallRules/cloudpcPolicyGroup.ts#1-104)
+  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/CloudPcFirewallRules/cloudpcPolicyGroup.ts#1-1000)
 
   </details>
 
 - **DevOps**: The current setup allows all machines in the DevOps subnet unrestricted access to all resources, including those on the internet. To improve security, it is recommended to restrict access to only necessary resources and implement more granular firewall rules.
   <details><summary><em>View code:</em></summary>
 
-  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/CloudPcFirewallRules/devopsPolicyGroup.ts#1-20)
+  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/CloudPcFirewallRules/devopsPolicyGroup.ts#1-1000)
 
   </details>
 
 - **Index File**: Combines CloudPC and DevOps rules into a unified `FirewallPolicyRuleCollectionGroup`, linking them to the root policy established in the `az-02-hub-vnet` project.
   <details><summary><em>View code:</em></summary>
 
-  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/CloudPcFirewallRules/index.ts#1-55)
+  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/CloudPcFirewallRules/index.ts#1-1000)
 
   </details>
 
@@ -90,7 +90,7 @@ on Azure with automatically generated login credentials and disk encryption and 
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/VM.ts#1-183)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-04-cloudPC/VM.ts#1-1000)
 
 </details>
 
@@ -101,7 +101,7 @@ To optimize internal network communication, we implement a DNS resolver. This mo
 1. **Private DNS Zone**: Creates a dedicated DNS zone for internal use.
 2. **VNet Links**: Establishes connections between the private DNS zone and both the Hub and CloudPC virtual networks.
 3. **A Record**: Configures A record that points to the private IP address of our NGINX ingress controller.
-  > In the following topics, We will cover the NGINX ingress controller deployed on AKS as private ingress, and it will be assigned the internal IP address `192.168.31.250`. This IP must be within the AKS subnet range.
+   > In the following topics, We will cover the NGINX ingress controller deployed on AKS as private ingress, and it will be assigned the internal IP address `192.168.31.250`. This IP must be within the AKS subnet range.
 
 By linking this private DNS to both the Hub and CloudPC VNets, we ensure that all DNS requests for our internal services are correctly routed to the NGINX ingress controller. This setup enhances security and improves network performance by keeping internal traffic within our private network.
 
@@ -112,7 +112,8 @@ By linking this private DNS to both the Hub and CloudPC VNets, we ensure that al
 </details>
 
 ## Developing the CloudPC Stack
-Our objective is to establish a private Virtual Network (VNet) for CloudPC and Azure DevOps agents using Pulumi, 
+
+Our objective is to establish a private Virtual Network (VNet) for CloudPC and Azure DevOps agents using Pulumi,
 enabling us to provision the necessary Azure resources effectively.
 
 1. **Firewall Policy**: Implement security policies to manage egress traffic for CloudPC and DevOps agents.

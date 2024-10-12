@@ -40,7 +40,7 @@ Before we start coding, it's important to define our configuration settings. Thi
 We categorize our resources into groups for better organization and management:
 
 | Resource Group                  | Description                                             |
-|---------------------------------|---------------------------------------------------------|
+| ------------------------------- | ------------------------------------------------------- |
 | **Shared Resource Group**       | Where our Key Vault and logging components reside.      |
 | **Hub VNet Resource Group**     | Contains our main VNet hub.                             |
 | **AKS VNet Resource Group**     | Contains resources specific to the AKS cluster.         |
@@ -51,7 +51,7 @@ We categorize our resources into groups for better organization and management:
 Again, this is the subnet Ip address spaces that we have defined in the [previous post](/posts/az-02-pulumi-private-ask-env-architecture#summary-of-allocated-subnets).
 
 | VNet Name           | Subnet Name                    | Address Prefix      | Total | Usable |
-|---------------------|--------------------------------|---------------------|-------|--------|
+| ------------------- | ------------------------------ | ------------------- | ----- | ------ |
 | **1. Hub VNet**     | 1.1 Firewall Subnet            | `192.168.30.0/26`   | 64    | 59     |
 |                     | 1.2 Firewall Management Subnet | `192.168.30.64/26`  | 54    | 59     |
 |                     | 1.3 General Subnet             | `192.168.30.128/27` | 32    | 27     |
@@ -61,7 +61,7 @@ Again, this is the subnet Ip address spaces that we have defined in the [previou
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/config.ts#L1-L21)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/config.ts#1-1000)
 
 </details>
 
@@ -85,7 +85,7 @@ This module provides functions to retrieve Azure environment configurations:
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-commons/azEnv.ts#1-20)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-commons/azEnv.ts#1-1000)
 
 </details>
 
@@ -98,7 +98,7 @@ This module helps generate resource names with a consistent prefix based on the 
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-commons/naming.ts#1-33)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-commons/naming.ts#1-1000)
 
 </details>
 
@@ -116,7 +116,7 @@ This module provides functions to retrieve Pulumi stack environment configuratio
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-commons/stackEnv.ts#1-25)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-commons/stackEnv.ts#1-1000)
 
 </details>
 
@@ -142,7 +142,7 @@ Creating a `Azure Key Vault` is a secure storage solution for managing secrets, 
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/Vault.ts#L1-L132)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/Vault.ts#1-1000)
 
 </details>
 
@@ -157,7 +157,7 @@ This module provisions a Log Analytics Workspace, which is used for collecting a
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/Log/Workspace.ts#L1-L126)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/Log/Workspace.ts#1-1000)
 
 </details>
 
@@ -173,7 +173,7 @@ this module is setup an Application Insights component for monitoring web applic
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/Log/AppInsight.ts#L1-L174)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/Log/AppInsight.ts#1-1000)
 
 </details>
 
@@ -187,7 +187,7 @@ The `index.ts` file acts as the central hub for the `shared` project, and a simi
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/index.ts#L1-L55)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared/index.ts#1-1000)
 
 </details>
 

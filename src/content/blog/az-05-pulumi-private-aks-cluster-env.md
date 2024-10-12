@@ -30,7 +30,7 @@ To enhance security and ensure that all Docker images deployed to our AKS cluste
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/ContainerRegistry.ts#L1-L32)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/ContainerRegistry.ts#1-1000)
 
 </details>
 
@@ -40,7 +40,7 @@ This module sets up a **FirewallPolicyRuleCollectionGroup** with policies that e
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/AksFirewallRules.ts#L1-L104)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/AksFirewallRules.ts#1-1000)
 
 </details>
 
@@ -57,7 +57,7 @@ The VNet is peered with the Hub VNet to enable seamless integration with other s
 
   <details><summary><em>View code:</em></summary>
 
-  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#L10-L56)
+  [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#1-1000)
 
   </details>
 
@@ -65,7 +65,7 @@ The VNet is peered with the Hub VNet to enable seamless integration with other s
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#L59-L76)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#1-1000)
 
 </details>
 
@@ -73,7 +73,7 @@ The VNet is peered with the Hub VNet to enable seamless integration with other s
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#L78-L173)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/VNet.ts#10-1000)
 
 </details>
 
@@ -85,7 +85,7 @@ This component also demonstrates how to securely store secrets within the Pulumi
 
 <details><summary><em>View SSH generator code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/SshGenerator.ts#L1-L129)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/SshGenerator.ts#1-1000)
 
 </details>
 
@@ -124,7 +124,7 @@ Our objective is to configure all necessary components for the AKS Cluster, whic
 
 <details><summary><em>View code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/index.ts#1-93)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-03-aks-cluster/index.ts#1-1000)
 
 </details>
 

@@ -195,7 +195,7 @@ Open `index.ts` in your preferred code editor and review the sample code. It typ
 
 <details><summary><em>View Code:</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/day-0/day00_pulumi-azure-start/index.ts#L1-L23)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/day-0/day00_pulumi-azure-start/index.ts#1-1000)
 
 </details>
 

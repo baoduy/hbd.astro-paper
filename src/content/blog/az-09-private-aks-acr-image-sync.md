@@ -35,7 +35,7 @@ Each line specifies the source image and the destination repository within the A
 
 <details><summary><em>Example <code>images.txt</code></em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/image-sync/images.txt#1-7)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/image-sync/images.txt#1-1000)
 
 </details>
 
@@ -49,7 +49,7 @@ The `sync-script.sh` script automates the process of importing images listed in 
 
 <details><summary><em>View code</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/image-sync/sync-script.sh#1-55)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/image-sync/sync-script.sh#1-1000)
 
 </details>
 
@@ -59,7 +59,7 @@ To streamline the synchronization process, we utilize a CI/CD pipeline. This pip
 
 <details><summary><em>View code</em></summary>
 
-[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/image-sync-pipeline/image-sync.azure-pipelines.yml#1-26)
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/image-sync-pipeline/image-sync.azure-pipelines.yml#1-1000)
 
 </details>
 
@@ -74,6 +74,7 @@ To streamline the synchronization process, we utilize a CI/CD pipeline. This pip
 
 Once the pipeline completes successfully, you can verify that all images have been correctly imported into the ACR.
 ![acr-imported-images](/assets/az-09-private-aks-acr-image-sync/acr-imported-images.png)
+
 <p class="ml-44"><em>The imported images on ACR repositories</em></p>
 
 ## Conclusion
@@ -90,7 +91,6 @@ This approach not only streamlines the deployment process but also integrates se
 
 - [Image importing pipeline](https://github.com/baoduy/drunk-azure-pulumi-articles/tree/main/image-sync-pipeline)
 - [Azure Container Registry Documentation](https://docs.microsoft.com/azure/container-registry/)
-
 
 ## Next Topic
 
