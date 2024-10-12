@@ -44,192 +44,111 @@ For effective Helm chart deployment, ensure the following tools are installed on
 
 > Note: After installing these tools, restart the VM to ensure that the installations are correctly applied and effective.
 
-## Creating Helm Charts
+### Azure DevOps Extensions
 
-Before we set up our deployment pipeline, we need to create Helm charts for nginx-ingress and cert-manager. 
-These charts will define the configuration and deployment settings for our applications.
+To facilitate our deployment process, we'll be using the [Replace Tokens](https://marketplace.visualstudio.com/items?itemName=qetza.replacetokens) extension for Azure Pipelines.
+This task replaces tokens in text-based files with actual variable values, allowing for dynamic configuration of our Helm charts.
+Ensure this extension is installed in your Azure DevOps environment before proceeding with the pipeline setup.
 
-### Nginx Ingress Controller
+## Nginx and Cert Manager Helm Chart
 
-First, let's create a Helm chart for the Nginx Ingress Controller:
+Our Helm chart is designed to deploy three essential components:
 
-1. Create a new directory for your Helm charts:
+1. **Nginx Ingress Controller**: This internal ingress controller will service traffic at the IP address `192.168.31.250`, using the internal domain `drunkcoding.net`.
+2. **Cert-Manager**: This component is responsible for generating SSL certificates for all internal subdomains. It also monitors certificate expiration and handles timely renewals.
+3. **Let's Encrypt ClusterIssuer**: The chart includes templates to deploy a Let's Encrypt ClusterIssuer, enabling Cert-Manager to issue free SSL certificates from Let's Encrypt.
 
-```bash
-mkdir -p helm-charts/nginx-ingress
-cd helm-charts/nginx-ingress
-```
+<details><summary><em>View the <code>Chart.yaml</code> file</em></summary>
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/ingress-helm/Chart.yaml#1-1000)
 
-2. Create a `Chart.yaml` file:
+</details>
 
-```yaml
-apiVersion: v2
-name: nginx-ingress
-description: A Helm chart for Nginx Ingress Controller
-version: 0.1.0
-appVersion: "1.0"
-```
+### Env-Variables Values
 
-3. Create a `values.yaml` file with the following content:
+We've created a `values-dev.yaml` file to configure our development environment.
+- **Chart Variables**: Tokens in the format `${{Name}}` are placeholders for variables that will be populated from the pipeline during deployment. These variables can be sourced from library groups, Azure Key Vault, or inline variables.
+- **Chart Images**: All chart images are configured to be pulled from our internal Azure Container Registry (ACR), which was set up in the previous topic.
 
-```yaml
-controller:
-  image:
-    repository: <your-acr-name>.azurecr.io/ingress-nginx/controller
-    tag: "v1.2.0"
-  replicaCount: 2
-  service:
-    type: LoadBalancer
-```
+<details><summary><em>View the <code>values-dev.yaml</code> file</em></summary>
 
-4. Create a `templates` directory and add the necessary Kubernetes manifest files (e.g., `deployment.yaml`, `service.yaml`, etc.) for the Nginx Ingress Controller.
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/ingress-helm/values-dev.yaml#1-1000)
 
-### Cert-Manager
+</details>
 
-Now, let's create a Helm chart for cert-manager:
+### Setting Up an Azure DevOps Pipeline
 
-1. Create a new directory for the cert-manager chart:
+With our Helm charts prepared, it's time to create an Azure DevOps pipeline to deploy these to our secure AKS cluster.
 
-```bash
-mkdir -p helm-charts/cert-manager
-cd helm-charts/cert-manager
-```
+**Pipeline Preparation:**
+- First, go to your Git repository and start a new pipeline. Choose "Existing pipeline" and choose the `ingress-helm.azure-pipelines.yml` file.
+- Next, We'll need to set up some variables for this pipeline:
+  1. `cf-dns`: This group includes two key details:
+     - `cf-domain`: This is the Cloudflare domain, used here for SSL verification since we are managing DNS internally.
+     - `cf-dns-token`: A token from Cloudflare that lets us edit DNS; it has certain permissions. You can refer [here](/posts/ks-08-cert-manager-with-private-aks) for guidance on setting this up.
+     <img alt="cf-variable-group" src="/assets/az-10-private-aks-helm-deployment/cf-variable-group.png" width="450px">
+  2. `env_name`: This should be the name of the branch from which the pipeline building.
+  3. `azureSubscription`: The name of your Azure subscription, set as _az-pulumi_ from previous steps. Make sure this account can manage Helm deployment and is part of the `AZ ROL DEV-AKS-ADMIN` group within AKS Admin Active Directory.
+  4. `rsGroup`: The name of the Azure resource group that contains your AKS cluster.
+  5. `aksName`: The name given to your AKS cluster.
+  6. `acrName`: The name of the Azure Container Registry.
+  7. `private-ip`: A dedicated private IP for the ingress controller.
+  8. `valueFile`: The specific Helm values file name only.
+  9. `chart`: The location of Helm chart.
+  10. `releaseName`: The name of the Helm release.
 
-2. Create a `Chart.yaml` file:
+**Pipeline Deployment:**
+- Once the deployment is successful:
+    ![nginx-ingress-pipeline](/assets/az-10-private-aks-helm-deployment/nginx-ingress-pipeline.png)
 
-```yaml
-apiVersion: v2
-name: cert-manager
-description: A Helm chart for cert-manager
-version: 0.1.0
-appVersion: "1.8.0"
-```
+- We'll find that the pods are now active within the `nginx-ingress` namespace.
+    ![nginx-ingress-namespace-pods](/assets/az-10-private-aks-helm-deployment/nginx-ingress-namespace-pods.png)
 
-3. Create a `values.yaml` file with the following content:
+<details><summary><em>View the <code>values-dev.yaml</code> here</em></summary>
 
-```yaml
-image:
-  repository: <your-acr-name>.azurecr.io/jetstack/cert-manager-controller
-  tag: "v1.8.0"
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/ingress-helm/ingress-helm.azure-pipelines.yml#1-1000)
 
-installCRDs: true
-```
+</details>
 
-4. Create a `templates` directory and add the necessary Kubernetes manifest files for cert-manager.
+## Application Helm Chart
 
-## Setting Up Azure DevOps Pipeline
+Now, let's create another Helm chart to deploy our applications. For this example, we'll use a Helm chart to deploy the `azuredocs/aks-helloworld:v1` image, provided by the Microsoft AKS team for demonstration purposes. Once deployed, the cert-manager will automatically issue an SSL certificate for the subdomain `hello.drunkcoding.net`, enabling us to access the application via Windows 365 VDI.
+**Pipeline Deployment:**
+- Upon successful deployment:
+  ![drunk-apps-helm-deployment](/assets/az-10-private-aks-helm-deployment/drunk-apps-helm-deployment.png)
 
-Now that we have our Helm charts ready, let's set up an Azure DevOps pipeline to deploy them to our private AKS cluster.
+- The application pods should now be active within the `drunk-apps` namespace.
+  ![drunk-apps-namespace-pods](/assets/az-10-private-aks-helm-deployment/drunk-apps-namespace-pods.png)
 
-1. Create a new pipeline in Azure DevOps and choose "Azure Repos Git" as the source.
+- The SSL certificate `tls-hello-world-lets` should be successfully issued and stored in the `drunk-apps` namespace's secrets.
+  ![drunk-apps-namespace-cert](/assets/az-10-private-aks-helm-deployment/issued-cert-hello.png)
 
-2. Select your repository and choose "Starter pipeline" to create a new YAML file.
+**Application Access:**
+- Access the app via Windows 365 VDI:
+    ![windows365-drunk-apps](/assets/az-10-private-aks-helm-deployment/windows365-drunk-apps.png)
 
-3. Replace the contents of the YAML file with the following:
+<details><summary><em>View the app helm chart here</em></summary>
 
-```yaml
-trigger:
-  - main
+[inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/drunk-apps-helm/drunk-apps-helm.azure-pipelines.yml#1-1000)
 
-variables:
-  - group: aks-deployment-vars
-
-stages:
-  - stage: Deploy
-    jobs:
-      - job: DeployHelmCharts
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - task: HelmInstaller@1
-            inputs:
-              helmVersion: 'latest'
-
-          - task: AzureCLI@2
-            inputs:
-              azureSubscription: '$(AZURE_SUBSCRIPTION)'
-              scriptType: 'bash'
-              scriptLocation: 'inlineScript'
-              inlineScript: |
-                az aks get-credentials --resource-group $(AKS_RESOURCE_GROUP) --name $(AKS_CLUSTER_NAME)
-
-          - task: HelmDeploy@0
-            inputs:
-              connectionType: 'Kubernetes Service Connection'
-              namespace: 'ingress-nginx'
-              command: 'upgrade'
-              chartType: 'FilePath'
-              chartPath: './helm-charts/nginx-ingress'
-              releaseName: 'nginx-ingress'
-              install: true
-
-          - task: HelmDeploy@0
-            inputs:
-              connectionType: 'Kubernetes Service Connection'
-              namespace: 'cert-manager'
-              command: 'upgrade'
-              chartType: 'FilePath'
-              chartPath: './helm-charts/cert-manager'
-              releaseName: 'cert-manager'
-              install: true
-```
-
-4. Create a variable group named `aks-deployment-vars` in Azure DevOps and add the following variables:
-    - `AZURE_SUBSCRIPTION`: Your Azure subscription name or ID
-    - `AKS_RESOURCE_GROUP`: The resource group of your AKS cluster
-    - `AKS_CLUSTER_NAME`: The name of your AKS cluster
-
-## Implementing the Deployment Pipeline
-
-With our pipeline set up, we can now implement the deployment process:
-
-1. Commit and push your Helm charts and the Azure pipeline YAML file to your repository.
-
-2. In Azure DevOps, go to Pipelines and run the newly created pipeline.
-
-3. The pipeline will authenticate with Azure, connect to your AKS cluster, and deploy both the nginx-ingress and cert-manager Helm charts.
-
-## Testing and Verification
-
-After the pipeline has completed successfully, you can verify the deployments:
-
-1. Connect to your AKS cluster using `kubectl`:
-
-```bash
-az aks get-credentials --resource-group <your-resource-group> --name <your-aks-cluster-name>
-```
-
-2. Check the status of the nginx-ingress deployment:
-
-```bash
-kubectl get pods -n ingress-nginx
-```
-
-3. Verify the cert-manager deployment:
-
-```bash
-kubectl get pods -n cert-manager
-```
-
-4. Test the nginx-ingress by creating a sample application and an Ingress resource that uses the nginx-ingress controller.
-
-5. Test cert-manager by creating a Certificate resource and verifying that it's properly issued.
+</details>
 
 ## Conclusion
 
 In this guide, we've walked through the process of creating Helm charts for nginx-ingress and cert-manager, and setting up an Azure DevOps pipeline to deploy these charts to a private AKS cluster. This approach allows for easy management and deployment of these critical components in your Kubernetes infrastructure.
 
-By leveraging Helm and Azure DevOps, you can ensure consistent and repeatable deployments across your environments, making it easier to manage and scale your applications in a private AKS cluster.
+By leveraging Helm and Azure DevOps, We can ensure consistent and repeatable deployments across your environments, making it easier to manage and scale your applications in a private AKS cluster.
 
 Remember to always follow security best practices, such as using Azure Key Vault for storing sensitive information and regularly updating your deployments with the latest security patches.
 
 ## References
 
+- [Nginx Helm Chart](https://github.com/baoduy/drunk-azure-pulumi-articles/tree/main/pipeline/ingress-helm)
+- [Drunk Apps Helm Chart](https://github.com/baoduy/drunk-azure-pulumi-articles/tree/main/pipeline/drunk-apps-helm)
 - [Self-hosted Linux agents](https://learn.microsoft.com/en-gb/azure/devops/pipelines/agents/linux-agent?view=azure-devops)
 - [Helm Documentation](https://helm.sh/docs/)
-- [Azure DevOps Documentation](https://docs.microsoft.com/en-us/azure/devops/?view=azure-devops)
 - [Nginx Ingress Controller Documentation](https://kubernetes.github.io/ingress-nginx/)
 - [Cert-Manager Documentation](https://cert-manager.io/docs/)
+- [AzureDevOps Replace Token Extension](https://marketplace.visualstudio.com/items?itemName=qetza.replacetokens&targetId=aed13a53-890d-4411-a029-49b8b9bf9004&utm_source=vstsproduct&utm_medium=ExtHubManageList)
 
 ## Thank You
 

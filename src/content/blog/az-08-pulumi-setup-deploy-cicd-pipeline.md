@@ -48,8 +48,8 @@ Create a variable group in Azure DevOps **Libraries** named `pulumi`, including 
    ![api-permission](/assets/az-08-pulumi-setup-deploy-cicd-pipeline/az-app-permission.png)
    <p class="ml-40"><em>The API permission of the app registration</em></p>
 
-> **Important:** For future AKS Helm deployments, ensure that this Service Connection is added to the `AZ ROL DEV-AKS-ADMIN` Entra ID group associated with the AKS cluster. 
-> This step is crucial for granting the necessary permissions for Helm operations within the AKS environment.
+> **Important:** For future AKS Helm deployments, ensure that this Service Connection is added to the `AZ ROL DEV-AKS-ADMIN` EntraID group associated with the AKS Admin cluster role. 
+> This step is necessary for granting the permissions for Helm deployment from AzureDevOps to the AKS environment.
 
 ## Deployment Templates
 
