@@ -8,8 +8,9 @@ tags:
   - AKS
   - Private
   - Pulumi
-description: "In this article, We'll walk through the process of developing the first Hub VNet for a private AKS environment using Pulumi. 
-We will demonstrate how to seamlessly integrate a VNet with an Azure Firewall, along with configuring outbound public IP addresses."
+description: "
+In this tutorial, We’ll walk through the process of developing the first Hub VNet for a private AKS environment using Pulumi. We will demonstrate how to seamlessly integrate a VNet with an Azure Firewall, along with configuring outbound public IP addresses.
+"
 ---
 
 ## Introduction

@@ -8,7 +8,9 @@ tags:
   - AKS
   - Private
   - Pulumi
-description: "In this article, we'll walk through creating a Continuous Integration and Continuous Deployment (CI/CD) pipeline on Azure DevOps for our Pulumi projects."
+description: "
+In this tutorial, We will walk through creating a Continuous Integration and Continuous Deployment (CI/CD) pipeline on Azure DevOps for our Pulumi projects.
+"
 ---
 
 ## Introduction

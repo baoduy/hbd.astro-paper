@@ -8,7 +8,9 @@ tags:
   - AKS
   - Private
   - Pulumi
-description: "This tutorial guides us through setting up a secure CloudPC and DevOps agent hub, aimed at improving the management and operational capabilities of your private AKS environment using Pulumi."
+description: "
+In this tutorial, guide us through setting up a secure CloudPC and DevOps agent hub, aimed at improving the management and operational capabilities of the private AKS environment using Pulumi.
+"
 ---
 
 ## Introduction

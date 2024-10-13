@@ -9,7 +9,9 @@ tags:
   - Helm
   - CI/CD
   - AzureDevOps
-description: "In this article, We will create Helm charts for nginx-ingress and cert-manager, and set up a robust CI/CD pipeline using Azure DevOps for Helm deployments to a private AKS cluster."
+description: "
+In this tutorial, We will create Helm charts for nginx-ingress and cert-manager, and set up a robust CI/CD pipeline using Azure DevOps for Helm deployments to a private AKS cluster.
+"
 ---
 
 ## Introduction

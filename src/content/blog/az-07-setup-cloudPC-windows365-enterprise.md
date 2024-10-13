@@ -8,7 +8,9 @@ tags:
   - AKS
   - Private
   - Pulumi
-description: "In this article, we will explore how to configure a CloudPC with Windows 365 Enterprise to establish a secure and efficient Virtual Desktop Infrastructure (VDI) for accessing a private AKS environment."
+description: "
+In this tutorial, We will explore how to configure a CloudPC with Windows 365 Enterprise to establish a secure and efficient Virtual Desktop Infrastructure (VDI) for accessing a private AKS environment.
+"
 ---
 
 ## Introduction

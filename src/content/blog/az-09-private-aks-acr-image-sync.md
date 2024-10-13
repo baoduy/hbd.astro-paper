@@ -9,7 +9,9 @@ tags:
   - Pulumi
   - CI/CD
   - AzureDevOps
-description: "In this article, we explore the process of synchronizing container images with ACR for deployments in a private AKS cluster. We'll cover how to configure and automate this synchronization using CI/CD pipelines, ensuring seamless updates and secure image management for private AKS environments."
+description: "
+In this tutorial, We explore the process of synchronizing container images with ACR for deployments in a private AKS cluster. We’ll cover how to configure and automate this synchronization using CI/CD pipelines, ensuring seamless updates and secure image management for private AKS environments.
+"
 ---
 
 ## Introduction

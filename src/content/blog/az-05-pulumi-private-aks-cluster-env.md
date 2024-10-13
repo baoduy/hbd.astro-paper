@@ -8,8 +8,9 @@ tags:
   - AKS
   - Private
   - Pulumi
-description: "In this tutorial, We’ll build a private AKS cluster with advanced networking features. 
-We’ll explore how to integrate the AKS cluster with the Hub VNet and apply the firewall policies we’ve created."
+description: "
+In this tutorial, We’ll build a private AKS cluster with advanced networking features. We’ll explore how to integrate the AKS cluster with the Hub VNet and apply the firewall policies we’ve created.
+"
 ---
 
 ## Introduction
