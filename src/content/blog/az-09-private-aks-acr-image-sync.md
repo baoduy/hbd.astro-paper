@@ -1,6 +1,6 @@
 ---
 author: Steven Hoang
-pubDatetime: 2025-01-01T12:00:00Z
+pubDatetime: 2024-10-12T12:00:00Z
 title: "[Az] Day 09: Synchronizing Container Images to ACR for a Private AKS Cluster Using CI/CD Pipelines."
 featured: false
 draft: false

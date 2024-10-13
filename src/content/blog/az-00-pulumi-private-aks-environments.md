@@ -1,6 +1,6 @@
 ---
 author: Steven Hoang
-pubDatetime: 2025-01-01T12:00:00Z
+pubDatetime: 2024-10-12T12:00:00Z
 title: "[Az] A Comprehensive Series of Articles on Setting Up a Private AKS Environment on Azure with Pulumi."
 featured: true
 draft: false
@@ -109,9 +109,15 @@ Throughout this comprehensive series, we've journeyed through the intricate proc
 
 Starting with the Pulumi account setup, we've built a secure and scalable infrastructure that includes Virtual Networks, Azure Firewall, private AKS clusters, and private Azure DevOps agents. 
 
-We've also explored how to integrate a private CloudPC environment and expose applications securely via Cloudflare Tunnels.
+Additionally, we delved into the integration of a private CloudPC environment and demonstrated secure application exposure through Cloudflare Tunnels.
 
-## Improvement
+- Throughout this series, we developed a total of six Azure DevOps pipelines, as shown below:
+   ![azure-devops-pipelines-overview](/assets/az-00-pulumi-private-aks-environments/azure-devops-pipelines-overview.png)
+
+- In terms of expenses, we incurred approximately $200 in Azure resource costs, detailed in the analytics below:
+    ![az-cost-analytics](/assets/az-00-pulumi-private-aks-environments/az-cost-analytics.png)
+
+## Improvement For Future
 
 ### Architect Improvement
 

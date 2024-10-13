@@ -1,6 +1,6 @@
 ---
 author: Steven Hoang
-pubDatetime: 2025-01-01T12:00:00Z
+pubDatetime: 2024-10-12T12:00:00Z
 title: "[Az] Day 11: Exposing a Private AKS Application via Cloudflare Tunnel."
 featured: false
 draft: false

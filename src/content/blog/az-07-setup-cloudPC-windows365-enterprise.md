@@ -1,6 +1,6 @@
 ---
 author: Steven Hoang
-pubDatetime: 2025-01-01T12:00:00Z
+pubDatetime: 2024-10-12T12:00:00Z
 title: "[Az] Day 07: Setting Up a CloudPC with Windows 365 Enterprise."
 featured: false
 draft: false

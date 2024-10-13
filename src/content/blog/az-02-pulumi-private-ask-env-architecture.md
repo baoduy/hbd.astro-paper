@@ -1,6 +1,6 @@
 ---
 author: Steven Hoang
-pubDatetime: 2025-01-01T12:00:00Z
+pubDatetime: 2024-10-12T12:00:00Z
 title: "[Az] Day 02: Private Azure Kubernetes (AKS) Environment Architecture."
 featured: false
 draft: false
