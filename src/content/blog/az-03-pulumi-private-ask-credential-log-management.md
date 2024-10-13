@@ -8,7 +8,9 @@ tags:
   - AKS
   - Private
   - Pulumi
-description: "In this guide, we’ll walk you through setting up a secure and scalable infrastructure on Azure by automating secret management using Azure Key Vault and centralized log monitoring with Log Analytics and Application Insights."
+description: "
+In this tutorial, we will guide you through the process of establishing a secure and automated system for secret management using Azure Key Vault. 
+Additionally, we will cover how to implement centralized log monitoring using Azure Log Analytics and Application Insights, enhancing observability and operational efficiency."
 ---
 
 ## Introduction

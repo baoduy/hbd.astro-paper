@@ -56,7 +56,7 @@ The CloudPC VNet provides secure environments for virtual desktops and DevOps op
 Here is the summary of the private IP address allocation for each subnet:
 
 | VNet Name           | Subnet Name                    | Address Prefix      | Total | Usable |
-| ------------------- | ------------------------------ | ------------------- | ----- | ------ |
+|---------------------|--------------------------------|---------------------|-------|--------|
 | **1. Hub VNet**     | 1.1 Firewall Subnet            | `192.168.30.0/26`   | 64    | 59     |
 |                     | 1.2 Firewall Management Subnet | `192.168.30.64/26`  | 54    | 59     |
 |                     | 1.3 General Subnet             | `192.168.30.128/27` | 32    | 27     |
@@ -85,7 +85,8 @@ Designing the network architecture with a strong focus on security allows us to 
 
 **[Day 03: Secret Management and Centralized Log Monitoring on Azure](/posts/az-03-pulumi-private-ask-credential-log-management)**
 
-In the next tutorial, we’ll walk you through setting up a secure and scalable infrastructure on Azure by automating secret management using Azure Key Vault and centralized log monitoring with Log Analytics and Application Insights.
+In the next article, we will guide you through the process of establishing a secure and automated system for secret management using Azure Key Vault.
+Additionally, we will cover how to implement centralized log monitoring using Azure Log Analytics and Application Insights, enhancing observability and operational efficiency.
 
 ## Thank You
 
