@@ -225,9 +225,9 @@ Implementing RBAC and the principle of least privilege enhances the security pos
 - [az-01-shared](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-01-shared).
 - [az-commons](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/az-commons).
 
-## Next Topic
+## Next
 
-**[Day 04: Develop a Virtual Network Hub for Private AKS on Azure](/posts/az-04-pulumi-private-aks-hub-vnet-development)**
+**[Day 04: Develops a Virtual Network Hub for Private AKS on Azure](/posts/az-04-pulumi-private-aks-hub-vnet-development)**
 
 In the next article, We'll walk through the process of developing the first Hub VNet for a private AKS environment using Pulumi.
 We will demonstrate how to seamlessly integrate a VNet with an Azure Firewall, along with configuring outbound public IP addresses.

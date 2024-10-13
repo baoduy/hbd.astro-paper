@@ -153,7 +153,7 @@ Remember to always follow security best practices, such as using Azure Key Vault
 - [AzureDevOps Replace Token Extension](https://marketplace.visualstudio.com/items?itemName=qetza.replacetokens&targetId=aed13a53-890d-4411-a029-49b8b9bf9004&utm_source=vstsproduct&utm_medium=ExtHubManageList)
 
 
-## Next Topic
+## Next
 
 **[Day 11: Exposing a Private AKS Application via Cloudflare Tunnel.](/posts/az-11-private-aks-expose-public-app-with-cloudflare-tunnel)**
 

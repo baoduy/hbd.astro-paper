@@ -94,7 +94,7 @@ This approach not only streamlines the deployment process but also integrates se
 - [Image importing pipeline](https://github.com/baoduy/drunk-azure-pulumi-articles/tree/main/image-sync-pipeline)
 - [Azure Container Registry Documentation](https://docs.microsoft.com/azure/container-registry/)
 
-## Next Topic
+## Next
 
 **[Day 10: Implementing a Helm Deployment CI/CD AzureDevOps Pipeline for a Private AKS Cluster.](/posts/az-10-private-aks-helm-deployment)**
 

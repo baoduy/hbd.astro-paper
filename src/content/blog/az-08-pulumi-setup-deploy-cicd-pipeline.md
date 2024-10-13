@@ -169,7 +169,7 @@ By leveraging Pulumi's capabilities, we can integrate infrastructure as code int
 - [Pnpm Pipeline Config](https://pnpm.io/continuous-integration#azure-pipelines)
 - [Repairing State With Pulumi Refresh](https://www.pulumi.com/blog/repairing-state-with-pulumi-refresh/).
 
-## Next Topic
+## Next
 
 **[Day 09: Synchronizing Container Images to ACR for a Private AKS Cluster Using CI/CD Pipelines.](/posts/az-09-private-aks-acr-image-sync)**
 

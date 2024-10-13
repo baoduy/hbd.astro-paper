@@ -104,7 +104,7 @@ This Hub VNet serves as a crucial element in managing and securing access to all
 - [Azure DevOps IPs and FQDNs](https://learn.microsoft.com/en-us/azure/devops/organizations/security/allow-list-ip-url)
 - [Pulumi for Azure](https://www.pulumi.com/docs/intro/cloud-providers/azure/)
 
-## Next Topic
+## Next
 
 **[Day 05: Implementing a Private AKS Cluster with Pulumi](/posts/az-05-pulumi-private-aks-cluster-env)**
 
