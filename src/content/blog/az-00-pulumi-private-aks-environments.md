@@ -20,11 +20,11 @@ Setting up a completely private environment in the cloud is a complex endeavor, 
 
 We'll delve into:
 
-- **Virtual Network Creation**: Building a secure network foundation for your resources.
+- **Virtual Network Creation**: Building a secure network foundation for the environment.
 - **Azure Firewall Configuration**: Implementing robust security measures to control network traffic.
 - **Private AKS Cluster Deployment**: Setting up Kubernetes clusters that are isolated from the public internet.
 - **Private Azure DevOps Agents**: Integrating continuous integration and deployment pipelines within a secure environment.
-- **Private CloudPC Environment**: Establishing secure virtual desktop infrastructure for remote development.
+- **Private CloudPC Environment**: Establishing secure virtual desktop infrastructure for remote development using Windows 365 Enterprise.
 - **Secure Application Exposure**: Using Cloudflare Tunnels to expose select internal applications to the public internet without compromising security.
 
 This series aims to provide a step-by-step guide to help to build secure, scalable, and consistent private cloud environments on Azure. Whether you're a cloud architect, DevOps engineer, or developer, these articles will equip you with the knowledge to tackle the challenges of private cloud infrastructure.
