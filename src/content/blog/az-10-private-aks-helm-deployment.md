@@ -150,6 +150,13 @@ Remember to always follow security best practices, such as using Azure Key Vault
 - [Cert-Manager Documentation](https://cert-manager.io/docs/)
 - [AzureDevOps Replace Token Extension](https://marketplace.visualstudio.com/items?itemName=qetza.replacetokens&targetId=aed13a53-890d-4411-a029-49b8b9bf9004&utm_source=vstsproduct&utm_medium=ExtHubManageList)
 
+
+## Next Topic
+
+**[Day 11: Exposing a Private AKS Application via Cloudflare Tunnel.](/posts/az-11-private-aks-expose-public-app-with-cloudflare-tunnel)**
+
+In the next article, We demonstrate how to securely expose an application running on a private AKS cluster to the internet using Cloudflare Tunnel, without the need for public IP addresses or open ports. We'll also show how to apply authentication to all exposed applications and centralize access control using Azure Entra ID Groups, ensuring only authorized users have access.
+
 ## Thank You
 
 Thank you for taking the time to read this guide! We hope it has been helpful in setting up your Helm deployment pipeline for a private AKS cluster. Feel free to explore further and happy deploying! 🚀🌟

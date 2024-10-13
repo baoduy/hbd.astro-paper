@@ -1,21 +1,33 @@
 ---
 author: Steven Hoang
 pubDatetime: 2025-01-01T12:00:00Z
-title: "[Az] A Comprehensive Series of Articles on Setting Up a Private AKS Environment on Azure with Pulumi"
+title: "[Az] A Comprehensive Series of Articles on Setting Up a Private AKS Environment on Azure with Pulumi."
 featured: true
 draft: false
 tags:
-  - aks
-  - private
-  - pulumi
-description: "In these series, I would like to share an ideas/options how to setup the entire private AKS environments on Azure using pulumi includes Virtual Network, Firewall, Private AKS to private Azure DevOps agents and Private CloudPC environment and How to expose some public applications through Cloudflare Tunnels."
+  - AKS
+  - Helm
+  - CI/CD
+  - AzureDevOps
+  - Cloudflare
+  - Tunnel
+description: "In these series, Embark on a comprehensive journey to set up a fully private Azure Kubernetes Service (AKS) environment using Pulumi. This series guides you through the creation of Virtual Networks, configuration of Azure Firewalls, deployment of private AKS clusters, and integration with private Azure DevOps agents and a private CloudPC environment. Additionally, learn how to securely expose select applications to the public internet via Cloudflare Tunnels. Ideal for those aiming to build secure, scalable, and consistent environments across development, sandbox, and production stages."
 ---
 
 ## Introduction
 
-As you know, setting entire private environments on Cloud is not an easy job and especially to manage the consistence between the environments (DEV, SANDBOX and PRD) are challenging.
-In these series, I would like to share an ideas/options how to set up the entire private AKS environments on Azure using pulumi includes Virtual Network, Firewall, Private AKS to private Azure DevOps agents
-and Private CloudPC environment and How to expose some public applications through Cloudflare Tunnels.
+Setting up a completely private environment in the cloud is a complex endeavor, especially when striving to maintain consistency across development (DEV), sandbox, and production (PRD) environments. In this comprehensive series, I will share insights and strategies on how to establish an entirely private AKS environment on Azure using Pulumi.
+
+We'll delve into:
+
+- **Virtual Network Creation**: Building a secure network foundation for your resources.
+- **Azure Firewall Configuration**: Implementing robust security measures to control network traffic.
+- **Private AKS Cluster Deployment**: Setting up Kubernetes clusters that are isolated from the public internet.
+- **Private Azure DevOps Agents**: Integrating continuous integration and deployment pipelines within a secure environment.
+- **Private CloudPC Environment**: Establishing secure virtual desktop infrastructure for remote development.
+- **Secure Application Exposure**: Using Cloudflare Tunnels to expose select internal applications to the public internet without compromising security.
+
+This series aims to provide a step-by-step guide to help to build secure, scalable, and consistent private cloud environments on Azure. Whether you're a cloud architect, DevOps engineer, or developer, these articles will equip you with the knowledge to tackle the challenges of private cloud infrastructure.
 
 ## Pulumi Account Setup
 
@@ -85,13 +97,26 @@ The illustration below provides a visual representation of our current environme
 
 ## Public Apps with Cloudflare Tunnels
 
+**[Day 11: Exposing a Private AKS Application via Cloudflare Tunnel.](/posts/az-11-private-aks-expose-public-app-with-cloudflare-tunnel)**
+
+In the next article, We demonstrate how to securely expose an application running on a private AKS cluster to the internet using Cloudflare Tunnel, without the need for public IP addresses or open ports. We'll also show how to apply authentication to all exposed applications and centralize access control using Azure Entra ID Groups, ensuring only authorized users have access.
+
 ## Remote Development Environments with Microsoft Intune (MDM) and Cloudflare
 
 ## Conclusions
 
+Throughout this comprehensive series, we've journeyed through the intricate process of setting up a private AKS environment on Azure using Pulumi. 
+
+Starting with the Pulumi account setup, we've built a secure and scalable infrastructure that includes Virtual Networks, Azure Firewall, private AKS clusters, and private Azure DevOps agents. 
+
+We've also explored how to integrate a private CloudPC environment and expose applications securely via Cloudflare Tunnels.
+
 ## Improvement
 
 ### Architect Improvement
+
+- Add DMZ network
+- Provide Firewall Rules for a Cloudflare tunnel to restrict access to the resouces.
 
 ### Project improvement
 
