@@ -31,6 +31,8 @@ We'll delve into:
 This series aims to provide a step-by-step guide to help to build secure, scalable, and consistent private cloud environments on Azure. 
 Whether you're a cloud architect, DevOps engineer, or developer, these articles will equip you with the knowledge to tackle the challenges of private cloud infrastructure.
 
+## Table of Contents
+
 ## Pulumi Account Setup
 
 **[Day 01: Setup pulumi account and project](/posts/az-01-pulumi-setup-developer-account)**
@@ -137,6 +139,7 @@ As we reflect on our journey to establish a private AKS environment on Azure, th
 - **Refine Firewall Rules**: Enhance the firewall configurations with more granular rules, specifically tailored for the services operating within the DMZ. Restrict access by employing precise IP ranges and protocols, ensuring that only legitimate and necessary traffic is permitted, thereby improving security.
 
 - **Leverage Auto-Scaling for Private Agents**: Optimize resource usage by employing Azure Virtual Machine Scale Sets to automatically adjust the number of private Azure DevOps agents based on demand. This approach not only ensures high availability during peak workloads but also conserves resources during periods of inactivity.
+
 ### Project Enhancements
 
 - **Modularize Shared Components**: Increase maintainability and reusability by extracting shared components into separate, modular projects. This strategy fosters consistency and streamlines updates across various environments, reducing the complexity and risk of manual changes.
@@ -144,6 +147,12 @@ As we reflect on our journey to establish a private AKS environment on Azure, th
 - **Optimize Build Processes with Pre-Built Binaries**: Accelerate deployment by pre-building shared components' binaries locally and committing them to the repository. This practice minimizes deployment times by avoiding repeated builds in CI/CD pipelines, leading to faster and more reliable integration and delivery processes.
 
 By pursuing these enhancements, we aim to strengthen the security, efficiency, and scalability of our private AKS environment. Implementing these improvements will better prepare our infrastructure to meet emerging challenges and support continued business growth.
+
+## References
+
+The complete source code for this series is available on my [GitHub repository](https://github.com/baoduy/drunk-azure-pulumi-articles). 
+Feel free to clone the repository and contribute by submitting pull requests or raising issues.
+
 ## Thank You
 
 Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨
