@@ -14,16 +14,27 @@ description: "
 In this tutorial, We'll explore other alternative ways to access to private AKS cluster and Applications to the internet using Cloudflare Tunnel and WARP.
 "
 ---
-
 ## Introduction
 
-This is the last article of series **Setting up a private AKS environment on Azure using Pulumi**.
-In this article, We'll explore other alternative ways to access to private AKS cluster and Applications to the internet using Cloudflare Tunnel and WARP.
+In the final stretch of our series on establishing a private AKS environment on Azure with Pulumi, we confront a critical balancing act: ensuring secure access for developers and users without compromising the environment's integrity. 
 
-[The Cloudflare WARP client](https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/) allows you to protect corporate devices by securely and privately sending traffic from those devices to Cloudflare’s global network, where Cloudflare Gateway can apply advanced web filtering. 
-The WARP client also makes it possible to apply advanced **Zero Trust** policies that check for a device’s health before it connects to corporate applications.
+While stringent security is paramount for compliance, excessive restrictions can hinder developer productivity by obstructing access to essential tools. This challenge is compounded by the rise of remote work, which necessitates robust solutions for managing devices and enforcing security policies beyond traditional network boundaries.
+
+This is where Cloudflare WARP and its Zero Trust model come into play. WARP empowers us to grant secure, private access to corporate applications while meticulously verifying device health before connection. By routing traffic through Cloudflare's global network, the WARP client allows for granular web filtering and robust security measures enforced by Cloudflare Gateway.
+
+This approach offers a compelling solution for organizations with remote workforces, enhancing security while minimizing friction for users. By integrating Cloudflare Tunnel and WARP into our private AKS environment, we can strike a balance: enabling seamless developer access while upholding the integrity and security of our corporate network. 
 
 ## Table of Contents
+
+## Setup Cloudflare WARP
+
+## Config MDM Devices Validation
+
+## Network Configuration
+
+## Private Resources Accessing
+
+## Improve Exposing Application Security Policy
 
 ## Conclusion
 
