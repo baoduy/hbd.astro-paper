@@ -115,7 +115,7 @@ Cloudflare provides a robust solution for securing applications accessible via t
 
 ### Configuring Cloudflare SSO with EntraID
 
-Begin by logging into the [Cloudflare Zero Trust](https://one.dash.cloudflare.com) dashboard. Navigate to **Settings** > **Authentication**, and select "Add New" under the **Login methods** section.
+Logging into the [Cloudflare Zero Trust](https://one.dash.cloudflare.com) dashboard, Navigate to **Settings** > **Authentication**, and select "Add New" under the **Login methods** section.
 
 1. **Login providers:** Cloudflare offers multiple login providers; choose **Azure AD** for this configuration.
   ![cloudflare-login-providers](/assets/az-11-private-aks-expose-public-app-with-cloudflare-tunnel/cloudflare-login-providers.png)

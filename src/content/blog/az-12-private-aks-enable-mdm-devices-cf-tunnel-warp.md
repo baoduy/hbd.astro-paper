@@ -26,11 +26,64 @@ This approach offers a compelling solution for organizations with remote workfor
 
 ## Table of Contents
 
-## Setup Cloudflare WARP
+## WARP Configuration
 
-## Config MDM Devices Validation
+To begin, log into the [Cloudflare Zero Trust](https://one.dash.cloudflare.com) dashboard and navigate to **Settings** > **WARP Client** and configure the following settings:
 
-## Network Configuration
+1. **Device Enrollment Permissions:**
+    - **Device Enrollment Rules**: Click the "Manage" button under the Device enrollment permissions section to add the necessary _Device enrollment rules_ as depicted below.
+      ![cf-device-onboarding-rules](/assets/az-12-private-aks-enable-mdm-devices-cf-tunnel-warp/cf-device-onboarding-rules.png)
+    
+    - **Authentication**: Ensure that the authentication tab exclusively enables the _Azure AD_ provider, with both _WARP authentication identity_ and _Apply to all Access applications_ activated.
+      ![cf-device-onboarding-auth](/assets/az-12-private-aks-enable-mdm-devices-cf-tunnel-warp/cf-device-onboarding-auth.png)
+
+2. **Global Settings**: Activate the Admin override feature, setting the timeout appropriately—6 hours is a recommended.
+      ![cf-warp-global-settings](/assets/az-12-private-aks-enable-mdm-devices-cf-tunnel-warp/cf-warp-global-settings.png)
+
+3. **Device Posture:** This section is crucial for defining device validation rules.
+    - **WARP Client Check**: Activate both the _Gateway_ and _WARP_ checking rules.
+    - **Third-Party Service Providers**: Click the "Add new" button and select _Microsoft Endpoint Manager_. Follow the provided instructions to implement the Microsoft Intune MDM validation check.
+    - **Service Provider Check**: Create a new rule named `Device-Compliant`, assigning it a value of `Compliant`. Avoid selecting an operation unless the rule is intended for a specific OS.
+     ![cf-warp-device-posture](/assets/az-12-private-aks-enable-mdm-devices-cf-tunnel-warp/cf-warp-device-posture.png)
+
+4. **Network Locations**: Click on "Virtual Network" to create two virtual networks:
+    - **default-internal-net:** This network is the default for organizational access, permitting connection to internal applications.
+    - **it-internal-net:** A specialized network for the IT department, granting access to select internal services (e.g., SSH access to DevOps agent VMs).
+     ![cf-warp-network](/assets/az-12-private-aks-enable-mdm-devices-cf-tunnel-warp/cf-warp-network.png)
+
+## WARP Profile Configuration
+
+Upon navigating to Device Settings, you'll find a default profile. This profile can be enhanced with the following customizations:
+
+1. **Configuration Options:**
+   Adjust the settings as outlined below:
+    - **Captive Portal Detection:** Enable with a 3-minute timeout. This feature allows the WARP client to temporarily deactivate when encountering a captive portal, facilitating connection to networks like those in hotels, airplanes, or other public environments.
+    - **Lock WARP Switch:** Ensure that users cannot disable the WARP switch, preventing them from disconnecting the client.
+    - **Allow Updates:** Permit local administrators to receive update notifications for the client and initiate the updates.
+    - **Automatic Reconnection:** Set to enable with a 3-minute timeout. This ensures the WARP client automatically reconnects after the specified duration.
+    - **Service Mode:** Default to **Gateway with WARP**. This should not be altered.
+      ![cf-warp-profile-config-settings](/assets/az-12-private-aks-enable-mdm-devices-cf-tunnel-warp/cf-warp-profile-config-settings.png)
+
+2. **Split Tunneling:**
+   It should be in **Exclude IPs and Domains** mode, configure traffic routing preferences within Cloudflare Zero Trust.
+    
+    By default, all private IP address spaces are excluded. To allow remote devices to access AKS and DevOps subnets, adjust the exclusion rules. Click the "Manage" button to ensure these subnets are included for access.
+    ![cf-warp-profile-split-tunnel](/assets/az-12-private-aks-enable-mdm-devices-cf-tunnel-warp/cf-warp-profile-split-tunnel.png)
+    
+3. **Microsoft 365 Traffic Routing:** 
+   If your organization uses Microsoft 365, it's advisable to enable direct routing for its traffic to ensure optimal performance.
+
+
+## WARP Team Domain Management
+
+Upon registering for Cloudflare Zero Trust, you will need to specify a **Team Domain**. If you do not recall your current team domain or wish to modify it, head over to **Settings** > **Custom Pages**. Here, you can view and update your team domain, as well as customize the appearance of login and error pages to better fit your organization’s branding needs.
+![cf-warp-custom-pages](/assets/az-12-private-aks-enable-mdm-devices-cf-tunnel-warp/cf-warp-custom-pages.png)
+
+## WARP Client App Rollout
+
+1. **Intune App Rollout:** To facilitate the mass deployment of the WARP Client across all devices, follow the [detailed instructions provided here](https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/deployment/mdm-deployment/partners/intune/). This guide outlines the steps to integrate the WARP client app with Intune for efficient rollout to the designated target devices.
+
+2. **WARP Activation**:
 
 ## Private Resources Accessing
 
