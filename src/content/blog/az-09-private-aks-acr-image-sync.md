@@ -65,12 +65,11 @@ To streamline the synchronization process, we utilize a CI/CD pipeline. This pip
 
 </details>
 
-**Important Considerations:**
+**Important Variables:**
 
 - The `image-sync` variable group contains the `DOCKER_NAME` and `DOCKER_TOKEN`, which are essential for accessing Docker Hub and avoiding rate limits.
-- Substitute `azureSubscription` with a specific Azure service connection name in Azure DevOps.
+- The `azureSubscription` with a specific Azure service connection name in Azure DevOps.
 - Replace `acrName` with the actual name of the Azure Container Registry.
-- Verify that the service principal linked to the Azure service connection has the necessary permissions to import images into the ACR.
 
 ![az-devops-sync-pipeline](/assets/az-09-private-aks-acr-image-sync/az-devops-sync-pipeline.png)
 
