@@ -1,6 +1,6 @@
 ---
 author: Steven Hoang
-pubDatetime: 2025-01-01T12:00:00Z
+pubDatetime: 2024-10-12T12:00:00Z
 title: "[Az] Day 04: Develop a VNet Hub for Private AKS on Azure."
 featured: false
 draft: false
@@ -8,8 +8,9 @@ tags:
   - AKS
   - Private
   - Pulumi
-description: "In this article, We'll walk through the process of developing the first Hub VNet for a private AKS environment using Pulumi. 
-We will demonstrate how to seamlessly integrate a VNet with an Azure Firewall, along with configuring outbound public IP addresses."
+description: "
+In this tutorial, We’ll walk through the process of developing the first Hub VNet for a private AKS environment using Pulumi. We will demonstrate how to seamlessly integrate a VNet with an Azure Firewall, along with configuring outbound public IP addresses.
+"
 ---
 
 ## Introduction
@@ -103,7 +104,7 @@ This Hub VNet serves as a crucial element in managing and securing access to all
 - [Azure DevOps IPs and FQDNs](https://learn.microsoft.com/en-us/azure/devops/organizations/security/allow-list-ip-url)
 - [Pulumi for Azure](https://www.pulumi.com/docs/intro/cloud-providers/azure/)
 
-## Next Topic
+## Next
 
 **[Day 05: Implementing a Private AKS Cluster with Pulumi](/posts/az-05-pulumi-private-aks-cluster-env)**
 

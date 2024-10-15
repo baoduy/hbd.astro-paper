@@ -1,6 +1,6 @@
 ---
 author: Steven Hoang
-pubDatetime: 2025-01-01T12:00:00Z
+pubDatetime: 2024-10-12T12:00:00Z
 title: "[Az] Day 06: Implement a private CloudPC and DevOps Agent Hub with Pulumi."
 featured: false
 draft: false
@@ -8,7 +8,9 @@ tags:
   - AKS
   - Private
   - Pulumi
-description: "This tutorial guides us through setting up a secure CloudPC and DevOps agent hub, aimed at improving the management and operational capabilities of your private AKS environment using Pulumi."
+description: "
+In this tutorial, guide us through setting up a secure CloudPC and DevOps agent hub, aimed at improving the management and operational capabilities of the private AKS environment using Pulumi.
+"
 ---
 
 ## Introduction
@@ -150,7 +152,7 @@ To remove all associated Azure resources and clean up the stack, execute the `pn
 - [Network requirements For Windows 365 Enterprise](https://learn.microsoft.com/en-us/windows-365/enterprise/requirements-network?tabs=enterprise%2Cent)
 - [AzureDevOps Allowed IP addresses and domain URLs](https://learn.microsoft.com/en-us/azure/devops/organizations/security/allow-list-ip-url?view=azure-devops&tabs=IP-V4)
 
-## Next Topic
+## Next
 
 **[Day 07: Setup Windows 365 Enterprise as a private VDI](/posts/az-07-setup-cloudpc-windows365-enterprise)**
 

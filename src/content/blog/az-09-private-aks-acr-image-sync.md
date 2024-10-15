@@ -1,6 +1,6 @@
 ---
 author: Steven Hoang
-pubDatetime: 2025-01-01T12:00:00Z
+pubDatetime: 2024-10-12T12:00:00Z
 title: "[Az] Day 09: Synchronizing Container Images to ACR for a Private AKS Cluster Using CI/CD Pipelines."
 featured: false
 draft: false
@@ -9,7 +9,9 @@ tags:
   - Pulumi
   - CI/CD
   - AzureDevOps
-description: "In this article, we explore the process of synchronizing container images with ACR for deployments in a private AKS cluster. We'll cover how to configure and automate this synchronization using CI/CD pipelines, ensuring seamless updates and secure image management for private AKS environments."
+description: "
+In this tutorial, We explore the process of synchronizing container images with ACR for deployments in a private AKS cluster. We’ll cover how to configure and automate this synchronization using CI/CD pipelines, ensuring seamless updates and secure image management for private AKS environments.
+"
 ---
 
 ## Introduction
@@ -63,12 +65,11 @@ To streamline the synchronization process, we utilize a CI/CD pipeline. This pip
 
 </details>
 
-**Important Considerations:**
+**Important Variables:**
 
 - The `image-sync` variable group contains the `DOCKER_NAME` and `DOCKER_TOKEN`, which are essential for accessing Docker Hub and avoiding rate limits.
-- Substitute `azureSubscription` with a specific Azure service connection name in Azure DevOps.
+- The `azureSubscription` with a specific Azure service connection name in Azure DevOps.
 - Replace `acrName` with the actual name of the Azure Container Registry.
-- Verify that the service principal linked to the Azure service connection has the necessary permissions to import images into the ACR.
 
 ![az-devops-sync-pipeline](/assets/az-09-private-aks-acr-image-sync/az-devops-sync-pipeline.png)
 
@@ -92,7 +93,7 @@ This approach not only streamlines the deployment process but also integrates se
 - [Image importing pipeline](https://github.com/baoduy/drunk-azure-pulumi-articles/tree/main/image-sync-pipeline)
 - [Azure Container Registry Documentation](https://docs.microsoft.com/azure/container-registry/)
 
-## Next Topic
+## Next
 
 **[Day 10: Implementing a Helm Deployment CI/CD AzureDevOps Pipeline for a Private AKS Cluster.](/posts/az-10-private-aks-helm-deployment)**
 

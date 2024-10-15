@@ -1,6 +1,6 @@
 ---
 author: Steven Hoang
-pubDatetime: 2025-01-01T12:00:00Z
+pubDatetime: 2024-10-12T12:00:00Z
 title: "[Az] Day 01: Setup pulumi developer account"
 featured: false
 draft: false
@@ -8,15 +8,16 @@ tags:
   - aks
   - private
   - pulumi
-description: "A guide on how to set up a Pulumi developer account and deploy Azure resources using Infrastructure as Code (IaC) via Pulumi. 
-It walks users through the setup process from account creation to deploying Azure Resources using Pulumi and TypeScript."
+description: "Start the cloud journey with Pulumi by setting up a developer account and deploying the first Azure resources.
+This guide walks you through creating a Pulumi account, installing the necessary CLI tools, and using TypeScript to manage Azure infrastructure as code."
 ---
 
 ## Introduction
 
-Pulumi is an open-source Infrastructure as Code (IaC) tool that enables developers to define cloud resources using familiar programming languages like TypeScript, Python, Go, and C#. By leveraging the full power of these tools, we can efficiently manage our infrastructure on the cloud (Azure, AWS, Google Cloud, etc.).
+Pulumi is a powerful open-source Infrastructure as Code (IaC) tool that allows us to define cloud resources using popular programming languages such as _TypeScript, Python, Go, and C#_. 
+By harnessing these tools, we can effectively manage our infrastructure across multiple cloud providers like **Azure, AWS, and Google Cloud**.
 
-In this guide, we’ll walk through:
+In this guide, we will explore:
 
 - Registering for a Pulumi account
 - Generating a Personal Access Token (PAT)
@@ -37,7 +38,7 @@ In this guide, we’ll walk through:
 
 1. **Visit the Pulumi Website**
 
-   Navigate to the [Pulumi website](https://www.pulumi.com/) and click on the **"Sign Up"** button.
+   Let's navigate to the [Pulumi website](https://www.pulumi.com/) and click on the **"Sign Up"** button.
 
 2. **Choose a Sign-Up Method**
 
@@ -58,7 +59,7 @@ In this guide, we’ll walk through:
 
 A Personal Access Token (PAT) is required to authenticate the Pulumi CLI with your Pulumi account.
 
-1. **Log In to the Pulumi Dashboard**
+1. **Pulumi Dashboard**
 
    Visit the [Pulumi Dashboard](https://app.pulumi.com/) and log in with your credentials.
 
@@ -127,7 +128,10 @@ pulumi config set azure-native:clientId YOUR_AZURE_CLIENT_ID
 pulumi config set azure-native:clientSecret YOUR_AZURE_CLIENT_SECRET --secret
 ```
 
-**Note:** Replace placeholders with your actual Azure details. The `--secret` flag ensures sensitive information is encrypted.
+> **Note:** 
+> 
+> - Replace placeholders with your actual Azure details. 
+> - The `--secret` flag ensures sensitive information is encrypted using Pulumi stack encryption.
 
 ## Create Your First Pulumi Project
 
@@ -136,8 +140,8 @@ pulumi config set azure-native:clientSecret YOUR_AZURE_CLIENT_SECRET --secret
 Create a new directory for our Pulumi project and initialize a Git repository:
 
 ```bash
-mkdir day00_pulumi-azure-start
-cd day00_pulumi-azure-start
+mkdir pulumi-azure-start
+cd pulumi-azure-start
 git init
 ```
 
@@ -153,12 +157,12 @@ We'll be prompted to provide:
 
 - **Login**: Authenticate using the PAT token generated earlier.
 - **Project name**: Accept the default or enter a custom name.
-- **Project description**: (Optional)
-- **Stack name**: e.g., `dev`
-- **Package manager**: Choose your preferred package manager (e.g., `npm`, `yarn`, `pnpm`). Here I will pick `pnpm`.
-- **Azure location**: e.g., `SoutheastAsia`
+- **Project description**: The description of the project. (Optional)
+- **Stack name**: The stack name, example: `dev`, `sandbox`, or `prd`
+- **Package manager**: Choose the package manager (e.g., `npm`, `yarn`, `pnpm`).
+- **Azure location**: The azure region location for the resources to be created on. e.g., `SoutheastAsia`
 
-After the project is created, if you are using your own account for development, then ensure you're logged into Azure:
+After the project is created, if you are using your own account for development, then ensure you're logged into Azure using Az CLI:
 
 ```bash
 az login
@@ -177,7 +181,7 @@ No     Subscription name    Subscription ID                       Tenant
 > **Note**:
 >
 > - Pulumi supports various package managers, including `npm`, `yarn`, and `pnpm`. For consistency, this guide will use `pnpm` for all Pulumi projects.
-> - In Pulumi, each stack represents a different environment, and by default, all stacks are encrypted with a randomly generated key. If you prefer to use a custom encryption key, refer to the [Pulumi documentation](https://www.pulumi.com/docs/iac/concepts/secrets/#configuring-secrets-encryption) for instructions.
+> - By default, all pulumi stacks are encrypted with a randomly generated key. If you prefer to use a custom encryption key, refer to the [Pulumi documentation](https://www.pulumi.com/docs/iac/concepts/secrets/#configuring-secrets-encryption) for instructions.
 
 ## Understand the Project Structure
 
@@ -199,9 +203,10 @@ Open `index.ts` in your preferred code editor and review the sample code. It typ
 
 </details>
 
-> Note: Exporting the key here is just for demo purposes. In the real environment, all the connection string and credentials should be stored in the Key Vault instead.
+> Note: Exporting the key here is just for demo purposes. 
+> In the real environment, all the connection string and credentials should be stored in the Key Vault instead.
 
-## Preview and Deploy Your Stack
+## Preview and Deploy Pulumi Stack
 
 ### Preview the Changes
 

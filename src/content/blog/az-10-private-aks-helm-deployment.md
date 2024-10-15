@@ -1,6 +1,6 @@
 ---
 author: Steven Hoang
-pubDatetime: 2025-01-01T12:00:00Z
+pubDatetime: 2024-10-12T12:00:00Z
 title: "[Az] Day 10: Implementing a Helm Deployment CI/CD AzureDevOps Pipeline for a Private AKS Cluster."
 featured: false
 draft: false
@@ -9,7 +9,9 @@ tags:
   - Helm
   - CI/CD
   - AzureDevOps
-description: "In this article, We will create Helm charts for nginx-ingress and cert-manager, and set up a robust CI/CD pipeline using Azure DevOps for Helm deployments to a private AKS cluster."
+description: "
+In this tutorial, We will create Helm charts for nginx-ingress and cert-manager, and set up a robust CI/CD pipeline using Azure DevOps for Helm deployments to a private AKS cluster.
+"
 ---
 
 ## Introduction
@@ -52,7 +54,7 @@ Ensure this extension is installed in your Azure DevOps environment before proce
 
 ## Nginx and Cert Manager Helm Chart
 
-Our Helm chart is designed to deploy three essential components:
+Our Helm chart is designed to deploy three essential parts:
 
 1. **Nginx Ingress Controller**: This internal ingress controller will service traffic at the IP address `192.168.31.250`, using the internal domain `drunkcoding.net`.
 2. **Cert-Manager**: This component is responsible for generating SSL certificates for all internal subdomains. It also monitors certificate expiration and handles timely renewals.
@@ -149,6 +151,12 @@ Remember to always follow security best practices, such as using Azure Key Vault
 - [Nginx Ingress Controller Documentation](https://kubernetes.github.io/ingress-nginx/)
 - [Cert-Manager Documentation](https://cert-manager.io/docs/)
 - [AzureDevOps Replace Token Extension](https://marketplace.visualstudio.com/items?itemName=qetza.replacetokens&targetId=aed13a53-890d-4411-a029-49b8b9bf9004&utm_source=vstsproduct&utm_medium=ExtHubManageList)
+
+## Next
+
+**[Day 11: Exposing a Private AKS Application via Cloudflare Tunnel.](/posts/az-11-private-aks-expose-public-app-with-cloudflare-tunnel)**
+
+In the next article, We demonstrate how to securely expose an application running on a private AKS cluster to the internet using Cloudflare Tunnel, without the need for public IP addresses or open ports. We'll also show how to apply authentication to all exposed applications and centralize access control using Azure Entra ID Groups, ensuring only authorized users have access.
 
 ## Thank You
 
