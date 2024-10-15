@@ -31,7 +31,7 @@ Before diving into Cloudflare Tunnel, make sure you have the following set-up:
 
 ## Setting Up Cloudflare Tunnel
 
-*Cloudflare Tunnel** (formerly Argo Tunnel) provides a secure connection between your services and Cloudflare without the need for public IP addresses or inbound firewall rules.
+**Cloudflare Tunnel** (formerly Argo Tunnel) provides a secure connection between your services and Cloudflare without the need for public IP addresses or inbound firewall rules.
 
 ### Generate Tunnel Token
 
@@ -58,7 +58,7 @@ With the secure storage of the tunnel token in Key Vault, follow these refined s
 
 1. **Cloudflared Chart:**
 
-   I crafted the [cloudflared Helm chart](https://github.com/baoduy/drunk-azure-pulumi-articles/tree/main/pipeline/cf-tunnel-helm), expanding upon the previous chart template. 
+   I created the [cloudflared Helm chart](https://github.com/baoduy/drunk-azure-pulumi-articles/tree/main/pipeline/cf-tunnel-helm), expanding upon the previous chart template. 
    This implementation establishes an AKS network policy that blocks inbound traffic to the namespace while allowing only the necessary outbound traffic to the internal Nginx Ingress using the private IP `192.168.31.250`.
 
     <details><summary><em>View the <code>values-dev.yaml</code> file</em></summary>
