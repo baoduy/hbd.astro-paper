@@ -88,7 +88,7 @@ Upon navigating to Device Settings, you'll find a default profile. This profile 
 Upon registering for Cloudflare Zero Trust, you will need to specify a **Team Domain**. If you do not recall your current team domain or wish to modify it, head over to **Settings** > **Custom Pages**. Here, you can view and update your team domain, as well as customize the appearance of login and error pages to better fit your organization’s branding needs.
 ![cf-warp-custom-pages](/assets/az-12-private-aks-enable-mdm-devices-cf-tunnel-warp/cf-warp-custom-pages.png)
 
-## Deploying the WARP Client Application
+## Deploying the WARP Client with Intune
 
 1. **Deploy via Intune:** To streamline the deployment of the WARP Client across all devices, follow the [guide here](https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/deployment/mdm-deployment/partners/intune/). 
    This resource details how to onboard the WARP client app with Intune for efficient distribution to widely selected devices.
@@ -96,14 +96,16 @@ Upon registering for Cloudflare Zero Trust, you will need to specify a **Team Do
 2. **Activating WARP:**
    - After installing the WARP client, the Cloudflare icon will appear in the Taskbar/MenuBar, and a browser window will automatically open, prompting users to log in with Azure AD credentials.
       ![cf-warp-client-login](/assets/az-12-private-aks-enable-mdm-devices-cf-tunnel-warp/cf-warp-client-login.png)
-   - Upon successful login, the WARP client will display a "Protected" status, indicating that the device is secured.
+   - Upon successful login, the WARP client will register the device with Cloudflare Zero Trust and display a "Protected" status, indicating that the device is secured.
       ![cf-warp-client-status](/assets/az-12-private-aks-enable-mdm-devices-cf-tunnel-warp/cf-warp-client-status.png)
    - The device will also appear on the Zero Trust portal under **My Team** > **Devices**, with its posture status visible as shown below:
       ![cf-warp-device-posture-status](/assets/az-12-private-aks-enable-mdm-devices-cf-tunnel-warp/cf-warp-device-posture-status.png)
 
+> Important: Cloudflare Zero Trust is complimentary for up to the first 50 users. Fees apply for additional users. For more information, visit the [pricing page](https://www.cloudflare.com/en-gb/plans/zero-trust-services/).
+
 ## Network Policy
 
-To ensure secure access to the AKS Subnet `192.168.31.0/24` and DevOps Subnet `192.168.32.128/27`, compliance enforcement is essential. Here’s how to set up the necessary network policies to permit only compliant devices:
+To ensure secure access to the AKS Subnet `192.168.31.0/24` and DevOps Subnet `192.168.32.128/27`. Here’s how to set up the necessary network policies to permit only compliant devices:
 1. **Blocking Non-compliant Devices:**
 
     Configure a network firewall policy to restrict access for non-compliant devices. Follow these instructions to establish this rule:
@@ -161,15 +163,15 @@ While the existing `hello` application is secured with Azure AD authentication, 
 Accessing private network resources through WARP is a critical feature that I find extremely valuable. By configuring Cloudflare Tunnel, we can enable WARP devices to securely access private network ranges.
 
 1. **Configure Private Network Tunnel:**
-   To start, navigate to your Cloudflare Tunnel settings. Click "Edit" next to your tunnel, select the "Private Network" tab, and add the specific private IP ranges you wish to expose. Refer to the screenshot below for guidance:
+   To start, navigate to the Cloudflare Tunnel settings. Click "Edit" next to your tunnel, select the "Private Network" tab, and add the specific private IP ranges wish to be exposed. Refer to the screenshot below for guidance:
     ![cf-tunnel-private-network-config](/assets/az-12-private-aks-enable-mdm-devices-cf-tunnel-warp/cf-tunnel-private-network-config.png)
 
 2. **Switch WARP Network:**
-   On your WARP-enabled device, switch the network to `it-internal-net` to gain access to the designated internal resources.
+   On the WARP-enabled device, switch the network to `it-internal-net` to gain access to the designated internal resources.
     ![cf-warp-network-switch](/assets/az-12-private-aks-enable-mdm-devices-cf-tunnel-warp/cf-warp-network-switch.png)
 
 3. **SSH into DevOps Agent:**
-   With the WARP device configured, you can now establish an SSH connection to the DevOps virtual machine, as though you were directly connected to the local network.
+   With the WARP device configured, We can now establish an SSH connection to the DevOps virtual machine, as though direct local network.
     ![cf-warp-ssh-devops](/assets/az-12-private-aks-enable-mdm-devices-cf-tunnel-warp/cf-warp-ssh-devops.png)
 
 > If you encounter any issues, ensure that your Azure firewall settings, CloudPC Security Group, and Cloudflare Tunnel network policies are properly configured to permit access to the DevOps subnet from the AKS subnet.
