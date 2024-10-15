@@ -28,9 +28,9 @@ This approach offers a compelling solution for organizations with remote workfor
 
 ## Prerequisites
 
-Before diving into Cloudflare Tunnel and WARP, make sure you have the following set up:
+Before diving into Cloudflare Tunnel and WARP, make sure you have the following set-up:
 
-- **Cloudflare Zero Trust:** You need an active Cloudflare account with the Zero Trust feature enabled to set up a Cloudflare Tunnel.
+- **Cloudflare Zero Trust:** You need an active Cloudflare account with the [Zero Trust feature](https://developers.cloudflare.com/cloudflare-one/setup/) enabled to set up a Cloudflare Tunnel.
 - **Microsoft Intune:** Ensure Microsoft Intune is configured for Mobile Device Management (MDM) to manage your devices effectively.
 - **Test Device:** We'll demonstrate using a macOS virtual machine enrolled in the organization's MDM. You can test with your enrolled device by following similar steps.
   ![intune-mdm-devices](/assets/az-12-private-aks-enable-mdm-devices-cf-tunnel-warp/intune-mdm-devices.png)

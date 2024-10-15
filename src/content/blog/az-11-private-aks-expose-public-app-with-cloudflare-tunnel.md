@@ -23,6 +23,12 @@ In this guide, we’ll walk through how to securely expose an application hosted
 
 ## Table of Contents
 
+## Prerequisites
+
+Before diving into Cloudflare Tunnel, make sure you have the following set-up:
+
+- **Cloudflare Zero Trust:** You need an active Cloudflare account with the [Zero Trust feature](https://developers.cloudflare.com/cloudflare-one/setup/) enabled to set up a Cloudflare Tunnel.
+
 ## Setting Up Cloudflare Tunnel
 
 *Cloudflare Tunnel** (formerly Argo Tunnel) provides a secure connection between your services and Cloudflare without the need for public IP addresses or inbound firewall rules.
