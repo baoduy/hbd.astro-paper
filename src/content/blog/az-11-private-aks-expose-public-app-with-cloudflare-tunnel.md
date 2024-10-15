@@ -31,7 +31,7 @@ Before diving into Cloudflare Tunnel, make sure you have the following set-up:
 
 ## Setting Up Cloudflare Tunnel
 
-*Cloudflare Tunnel** (formerly Argo Tunnel) provides a secure connection between your services and Cloudflare without the need for public IP addresses or inbound firewall rules.
+**Cloudflare Tunnel** (formerly Argo Tunnel) provides a secure connection between your services and Cloudflare without the need for public IP addresses or inbound firewall rules.
 
 ### Generate Tunnel Token
 
@@ -58,7 +58,7 @@ With the secure storage of the tunnel token in Key Vault, follow these refined s
 
 1. **Cloudflared Chart:**
 
-   I crafted the [cloudflared Helm chart](https://github.com/baoduy/drunk-azure-pulumi-articles/tree/main/pipeline/cf-tunnel-helm), expanding upon the previous chart template. 
+   I created the [cloudflared Helm chart](https://github.com/baoduy/drunk-azure-pulumi-articles/tree/main/pipeline/cf-tunnel-helm), expanding upon the previous chart template. 
    This implementation establishes an AKS network policy that blocks inbound traffic to the namespace while allowing only the necessary outbound traffic to the internal Nginx Ingress using the private IP `192.168.31.250`.
 
     <details><summary><em>View the <code>values-dev.yaml</code> file</em></summary>
@@ -69,7 +69,7 @@ With the secure storage of the tunnel token in Key Vault, follow these refined s
 
 2. **Cloudflared Deployment Pipeline:**
    
-   This pipeline mirrors the previous setup, with an additional enhancement. It incorporates a step to directly retrieve secrets from the Key Vault, bypassing the need for a Variable Group.
+   This pipeline mirrors the previous pipeline, with an additional enhancement to directly retrieve secrets from the Key Vault, bypassing the need for a Variable Group.
 
     <details><summary><em>View the <code>network-rule.yaml</code> file</em></summary>
     
@@ -83,7 +83,7 @@ With the secure storage of the tunnel token in Key Vault, follow these refined s
 
 ### Deploying the Cloudflare Tunnel
 
-1. Create a new pipeline named `cf-tunnel-helm` is configured to link with the `cf-tunnel-helm.azure-pipelines.yml` file, enabling the deployment
+1. Create a new pipeline named `cf-tunnel-helm` with the `cf-tunnel-helm.azure-pipelines.yml` file, enabling the deployment
 of this Helm chart to AKS.
 
    ![Cloudflare Tunnel Deployment Pipeline](/assets/az-11-private-aks-expose-public-app-with-cloudflare-tunnel/cf-system-helm-pipeline.png)
@@ -96,7 +96,7 @@ of this Helm chart to AKS.
 
 ## Exposing the Application
 
-With all preparations complete, we can now expose the application to the internet. Follow these steps to finalize the setup:
+With all preparations complete, we can now expose the application to the internet follow these steps:
 
 1. Go to the Cloudflare Tunnel created previously and click "Edit."
 2. Navigate to the "Public Hostname" section and configure it as follows:
@@ -116,12 +116,11 @@ With all preparations complete, we can now expose the application to the interne
 
 Once the application is exposed to the internet, it becomes accessible to everyone, posing security concerns. 
 To enhance security, we need to restrict access to authorized personnel only, such as company staff or specific group members. 
-
-Cloudflare provides a robust solution for securing applications accessible via tunnels. Let's explore how to implement this.
+Cloudflare provides a robust solution for securing applications accessible via tunnels.
 
 ### Configuring Cloudflare SSO with EntraID
 
-Logging into the [Cloudflare Zero Trust](https://one.dash.cloudflare.com) dashboard, Navigate to **Settings** > **Authentication**, and select "Add New" under the **Login methods** section.
+First, logging into the [Cloudflare Zero Trust](https://one.dash.cloudflare.com) dashboard, Navigate to **Settings** > **Authentication**, and select "Add New" under the **Login methods** section.
 
 1. **Login providers:** Cloudflare offers multiple login providers; choose **Azure AD** for this configuration.
   ![cloudflare-login-providers](/assets/az-11-private-aks-expose-public-app-with-cloudflare-tunnel/cloudflare-login-providers.png)
@@ -134,12 +133,12 @@ Logging into the [Cloudflare Zero Trust](https://one.dash.cloudflare.com) dashbo
 
 ### Creating a New EntraID Group
 
-Log into the Azure Portal and create a new EntraID group named `DRUNK CF APPS` with the ID `f8863b0f-3376-4d14-85ba-b376a7d5aeca`. This group will be used to control access to the exposed application.
+Next, log into the Azure Portal and create a new EntraID group named `DRUNK CF APPS` with the ID `f8863b0f-3376-4d14-85ba-b376a7d5aeca`. This group will be used to control access to the exposed application.
 ![entra-drunk-app-group](/assets/az-11-private-aks-expose-public-app-with-cloudflare-tunnel/entra-drunk-app-group.png)
 
 ### The `hello` App Access Policy
 
-Return to the [Cloudflare Zero Trust](https://one.dash.cloudflare.com) dashboard and go to **Access** > **Applications**. Click "Add an Application" and select the `Self-hosted` type.
+Finally, return to the [Cloudflare Zero Trust](https://one.dash.cloudflare.com) dashboard and go to **Access** > **Applications**. Click "Add an Application" and select the `Self-hosted` type.
 
 1. **App Configuration**: Ensure the domain matches the application you wish to protect. In this example, we'll protect the `hello.st24.dev` application previously exposed.
     ![cf-app-config](/assets/az-11-private-aks-expose-public-app-with-cloudflare-tunnel/cf-app-config.png)
@@ -156,10 +155,10 @@ Return to the [Cloudflare Zero Trust](https://one.dash.cloudflare.com) dashboard
 
 ## Accessing the Protected App
 
-1. Visit `hello.st24.dev`, and you should encounter a login dialog requesting Azure AD authentication before accessing the application.
+1. Visit `hello.st24.dev`, and We should encounter a login dialog requesting Azure AD authentication before accessing the application.
   ![cf-apps-login-dialog](/assets/az-11-private-aks-expose-public-app-with-cloudflare-tunnel/cf-apps-login-dialog.png)
 
-2. With the correct permissions, users will gain normal access to the application.
+2. After logged in, users will gain normal access to the application.
   ![hello-app-with-st24](/assets/az-11-private-aks-expose-public-app-with-cloudflare-tunnel/hello-app-with-st24.png)
 
 ## Conclusion
