@@ -170,6 +170,14 @@ This approach not only maintains the security integrity of your infrastructure b
 - [Tunnel with firewall](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/deploy-tunnels/tunnel-with-firewall)
 - [Configure Cloudflare with Microsoft Entra ID](https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/cloudflare-integration)
 
+
+## Next
+
+**[Day 12: Exposing a Private AKS Application via Cloudflare Tunnel.](/posts/az-12-private-aks-enable-mdm-devices-cf-tunnel-warp)**
+
+In the next and final tutorial, We'll discover how to safely expose the private AKS cluster and applications to the internet with Cloudflare. 
+It'll delve into the benefits of using Cloudflare Tunnel and WARP, exploring alternative ways to provide secure access while maintaining the integrity of the corporate network.
+
 ## Thank You
 
 Thank you for taking the time to read this guide! We hope it has been helpful. Feel free to explore further, and happy coding! 🌟✨

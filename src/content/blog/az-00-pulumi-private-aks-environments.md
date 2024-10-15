@@ -109,7 +109,10 @@ In this tutorial, We demonstrate how to securely expose an application running o
 
 ## Microsoft Intune (MDM) Devices and Cloudflare Tunnel
 
-_tobe continue..._
+**[Day 12: Exposing a Private AKS Application via Cloudflare Tunnel.](/posts/az-12-private-aks-enable-mdm-devices-cf-tunnel-warp)**
+
+In this final tutorial, We'll discover how to safely expose the private AKS cluster and applications to the internet with Cloudflare.
+It'll delve into the benefits of using Cloudflare Tunnel and WARP, exploring alternative ways to provide secure access while maintaining the integrity of the corporate network.
 
 ## Conclusions
 
