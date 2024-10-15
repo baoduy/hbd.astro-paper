@@ -61,9 +61,9 @@ With the secure storage of the tunnel token in Key Vault, follow these refined s
    I crafted the [cloudflared Helm chart](https://github.com/baoduy/drunk-azure-pulumi-articles/tree/main/pipeline/cf-tunnel-helm), expanding upon the previous chart template. 
    This implementation establishes an AKS network policy that blocks inbound traffic to the namespace while allowing only the necessary outbound traffic to the internal Nginx Ingress using the private IP `192.168.31.250`.
 
-    <details><summary><em>Explore the <code>values-dev.yaml</code> configuration file</em></summary>
+    <details><summary><em>View the <code>values-dev.yaml</code> file</em></summary>
     
-    [Access File](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/cf-tunnel-helm/values-dev.yaml#1-1000)
+    [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/cf-tunnel-helm/values-dev.yaml#1-1000)
     
     </details>
 
@@ -71,9 +71,9 @@ With the secure storage of the tunnel token in Key Vault, follow these refined s
    
    This pipeline mirrors the previous setup, with an additional enhancement. It incorporates a step to directly retrieve secrets from the Key Vault, bypassing the need for a Variable Group.
 
-    <details><summary><em>Explore the <code>network-rule.yaml</code> configuration file</em></summary>
+    <details><summary><em>View the <code>network-rule.yaml</code> file</em></summary>
     
-    [Access File](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/cf-tunnel-helm/templates/network-rule.yaml#1-1000)
+    [inline](https://github.com/baoduy/drunk-azure-pulumi-articles/blob/main/pipeline/cf-tunnel-helm/templates/network-rule.yaml#1-1000)
     
     </details>
 

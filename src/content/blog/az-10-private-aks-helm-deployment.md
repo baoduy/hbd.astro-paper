@@ -54,7 +54,7 @@ Ensure this extension is installed in your Azure DevOps environment before proce
 
 ## Nginx and Cert Manager Helm Chart
 
-Our Helm chart is designed to deploy three essential components:
+Our Helm chart is designed to deploy three essential parts:
 
 1. **Nginx Ingress Controller**: This internal ingress controller will service traffic at the IP address `192.168.31.250`, using the internal domain `drunkcoding.net`.
 2. **Cert-Manager**: This component is responsible for generating SSL certificates for all internal subdomains. It also monitors certificate expiration and handles timely renewals.
