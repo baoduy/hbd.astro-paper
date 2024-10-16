@@ -128,7 +128,7 @@ Additionally, we delved into the integration of a private CloudPC environment an
 - Throughout this series, we developed a total of six Azure DevOps pipelines, as shown below:
    ![azure-devops-pipelines-overview](/assets/az-00-pulumi-private-aks-environments/azure-devops-pipelines-overview.png)
 
-- In terms of expenses, we incurred approximately $200 in Azure resource costs, detailed in the analytics below:
+- In terms of expenses, we incurred approximately $200 in Azure resource costs, with estimated around 500 USD monthly for the entire environment. Detailed in the analytics below:
     ![az-cost-analytics](/assets/az-00-pulumi-private-aks-environments/az-cost-analytics.png)
 
 ## Future Enhancements
