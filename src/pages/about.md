@@ -9,7 +9,7 @@ title: "About Me"
 
 A seasoned software developer and team leader with over 15 years of experience, I'm passionate about crafting high-quality, scalable solutions that make a difference. My expertise lies at the intersection of development, security, and cloud infrastructure, and I thrive on guiding teams through the full software development lifecycle to deliver exceptional results.
 
-### My Expertise
+## My Expertise
 
 Specializing in .NET and Microsoft technologies, I bring extensive technical expertise and practical experience to every project.
 
@@ -17,8 +17,6 @@ My dedication to DevOps, CloudOps, and Infrastructure as Code (IaC) enables me t
 Seamless multi-region deployments, and effective disaster recovery strategies, ensuring maximum uptime and operational excellence.
 
 Staying ahead of the curve is essential to me. I'm committed to continuous learning and regularly update my skills to incorporate the latest technological advancements, enabling me to deliver innovative and dependable solutions.
-
----
 
 ## Cloud Stack
 
@@ -30,8 +28,6 @@ Staying ahead of the curve is essential to me. I'm committed to continuous learn
 - **Cloud Databases**: Knowledgeable with AWS Aurora, Azure Cosmos DB, and other cloud-native databases.
 - **Hybrid Cloud Architectures**: Experienced in cloud migration strategies and hybrid setups.
 - **Troubleshooting**: Exceptional problem-solving skills in complex cloud and on-premise environments.
-
----
 
 ## Tech Stack
 
@@ -47,8 +43,6 @@ Staying ahead of the curve is essential to me. I'm committed to continuous learn
 - **React.js**: Building modern, responsive UIs using React.
 - **Next.js**: Crafting server-rendered applications with Next.js.
 
----
-
 ## Open Source Contributions
 
 Believing in the power of community and collaboration, I actively contribute to the open-source ecosystem, particularly in the areas of **Domain-Driven Design**, **event-driven architectures**, and **microservices**. My contributions aim to provide valuable resources and tools for developers worldwide:
@@ -58,8 +52,6 @@ Believing in the power of community and collaboration, I actively contribute to 
 - **[NuGet Packages](https://www.nuget.org/packages?q=HBD)** - Access over 74 packages available for the developer community.
 
 [![GitHub Streak](https://github-readme-streak-stats.herokuapp.com/?user=baoduy&theme=radical&hide_border=false)](https://github.com/baoduy)
-
----
 
 ### Let's Connect
 
