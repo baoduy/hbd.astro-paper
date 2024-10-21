@@ -5,6 +5,7 @@ export const SITE: Site = {
   author: "Steven (Hoang Bao Duy)",
   desc: "Drunkcoding.net is a blog page from Steven Hoang, a highly experienced professional with extensive knowledge in technology and software development.",
   title: "drunkcoding.net",
+  profile:'',
   //ogImage: "astropaper-og.jpg",
   lightAndDarkMode: true,
   postPerPage: 10,
