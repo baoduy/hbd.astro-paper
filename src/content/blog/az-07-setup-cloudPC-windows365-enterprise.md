@@ -44,7 +44,7 @@ Since Microsoft Intune is widely used for device management, we will not delve i
 
 ### Creating Provisioning Profiles
 
-Once we have the license ready and assigned to our Entra ID group, we can proceed to create a provisioning profile for Windows 365 Enterprise. 
+Once we have the license ready and assigned to our Entra ID group, we can proceed to create a provisioning profile for Windows 365 Enterprise.
 
 - Navigate to **Devices** within Microsoft Intune, and then select **Provisioning** > **Windows 365**.
 
@@ -56,7 +56,7 @@ Once we have the license ready and assigned to our Entra ID group, we can procee
 
 ### Provisioning CloudPC Devices
 
-With our profile ready, we can start provisioning CloudPC devices for users. To do this, we need to make sure the target users are part of the `MDM - IT Windows 365` group. 
+With our profile ready, we can start provisioning CloudPC devices for users. To do this, we need to make sure the target users are part of the `MDM - IT Windows 365` group.
 
 - After adding users, the provisioning process will automatically start, and the devices will be ready for use within 1 hour.
 
@@ -67,15 +67,15 @@ With our profile ready, we can start provisioning CloudPC devices for users. To 
 
 We can access our CloudPC in several ways:
 
-1. **Online Portal Access**: We can access Windows 365 through the [online portal](https://windows365.microsoft.com). 
-    
-    This allows us to log in and launch the remote desktop directly within our web browser.
+1. **Online Portal Access**: We can access Windows 365 through the [online portal](https://windows365.microsoft.com).
+
+   This allows us to log in and launch the remote desktop directly within our web browser.
 
    ![windows365-browser](/assets/az-07-pulumi-setup-cloudPC-windows365-enterprise/windows365-browser.png)
 
-2. **Windows App Access**: Microsoft provides a _Windows App_ that enables us to launch Windows 365 natively. 
+2. **Windows App Access**: Microsoft provides a _Windows App_ that enables us to launch Windows 365 natively.
 
-    This app is available for download from the Windows 365 online portal.
+   This app is available for download from the Windows 365 online portal.
 
    ![windows-app](/assets/az-07-pulumi-setup-cloudPC-windows365-enterprise/windows365-apps.png)
 
@@ -84,15 +84,18 @@ We can access our CloudPC in several ways:
    ![windows-app-dashboard](/assets/az-07-pulumi-setup-cloudPC-windows365-enterprise/windows-app-dashboard.png)
 
 3. **Private AKS Access**: with Windows 365 configured above, We can access to our private AKS cluster:
+
    - **Through Azure Portal**: This allows us to access and manage AKS resources, including namespaces, pods, and deployments, directly in the browser.
-    ![private-aks-access](/assets/az-07-pulumi-setup-cloudPC-windows365-enterprise/azure-portal-private-aks.png)
+     ![private-aks-access](/assets/az-07-pulumi-setup-cloudPC-windows365-enterprise/azure-portal-private-aks.png)
 
    - **Using Kubectl CLI**: To use the `kubectl` command locally, follow the Azure Portal instructions to set up our local environment. This setup requires the installation of `Azure CLI`, `kubectl`, and `kubelogin`.
-    ![private-aks-connection](/assets/az-07-pulumi-setup-cloudPC-windows365-enterprise/private-aks-connect.png)
-    
+     ![private-aks-connection](/assets/az-07-pulumi-setup-cloudPC-windows365-enterprise/private-aks-connect.png)
+
+   > To retrieve the AKS credentials with a public FQDN, execute the following command: `az aks get-credentials --resource-group YOUR_RESOURCE_GROUP --name YOUR_AKS_NAME --overwrite-existing --public-fqdn`. Ensure to replace `YOUR_RESOURCE_GROUP` and `YOUR_AKS_NAME` with the appropriate names for your setup.
+
    - **Using Lens**: Lens is my favourite tool for managing Kubernetes clusters alternately for boring `kubectl` commands. You should be able to download it [here](https://k8slens.dev/).
      ![k8s-lens](/assets/az-07-pulumi-setup-cloudPC-windows365-enterprise/k8s-lens.png)
-   
+
 ## Conclusion
 
 In this guide, we have successfully set up a CloudPC using Windows 365 Enterprise, configured the necessary provisioning profiles, and ensured secure access to our private AKS environment through a Virtual Desktop Infrastructure (VDI). This setup provides our teams with efficient, secure remote access that integrates seamlessly with our existing infrastructure.
