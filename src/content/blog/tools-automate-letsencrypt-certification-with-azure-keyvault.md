@@ -239,14 +239,10 @@ By incorporating this into your IaC pipelines, you ensure that any updates to th
 
 Give it a try and simplify your SSL certificate management process!
 
----
-
 **Resources**:
 
 - **GitHub Repository**: [az-keyvault-letsencrypt](https://github.com/baoduy/az-keyvault-letsencrypt)
 - **Docker Image**: [baoduy2412/keyvault-letsencrypt](https://hub.docker.com/r/baoduy2412/keyvault-letsencrypt)
-
----
 
 ## Thank You
 

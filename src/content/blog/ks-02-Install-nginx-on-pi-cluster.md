@@ -36,8 +36,6 @@ Here are my current router settings.
 
 <img src="/assets/ks-Install-nginx-on-pi-cluster/router-port-forwarding-config.png" width="550px"/>
 
----
-
 ### Nginx installation
 
 We're going to start by installing Nginx on our cluster. In the following guide, we will illustrate how to set up and run Nginx on K3s.
@@ -177,8 +175,6 @@ After all these configurations now we should be able to access your application 
 When accessing to `http://echo.drunkcoding.net` you able to see the JSON response from the echo pod as below.
 
 ![echo-app-response.png](/assets/ks-Install-nginx-on-pi-cluster/echo-app-response.png)
-
----
 
 ## Thank You
 

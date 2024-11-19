@@ -252,11 +252,9 @@ This approach ensures your messaging system remains reliable and efficient while
   - [Lifecycle Management Overview](https://docs.microsoft.com/azure/storage/blobs/lifecycle-management-overview)
   - [Optimize Costs by Automating Data Lifecycle Management](https://docs.microsoft.com/azure/storage/blobs/storage-lifecycle-management-concepts)
 
----
 
 By automating dead-letter queue management, you enhance the stability and maintainability of your messaging infrastructure, ensuring it continues to meet the demands of your applications.
 
----
 
 ## Thank You
 

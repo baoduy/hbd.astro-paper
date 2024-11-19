@@ -19,34 +19,8 @@ As software projects evolve, Git repositories can become cluttered with outdated
 
 In this guide, we'll walk through setting up a TypeScript script that automatically deletes old, unnecessary branches in Azure DevOps. We'll cover the essential steps, focusing on the implementation and automation of the cleanup process.
 
----
 
 ## Table of Contents
-
-- [Introduction](#introduction)
-- [Table of Contents](#table-of-contents)
-- [Why Automate Branch Cleanup?](#why-automate-branch-cleanup)
-- [Prerequisites](#prerequisites)
-- [Project Setup](#project-setup)
-- [Configuration File](#configuration-file)
-- [Implementing the TypeScript Script](#implementing-the-typescript-script)
-  - [1. Loading Environment Variables](#1-loading-environment-variables)
-  - [2. Defining the Configuration Interface](#2-defining-the-configuration-interface)
-  - [3. Setting Constants](#3-setting-constants)
-  - [4. Getting the Git API Client](#4-getting-the-git-api-client)
-  - [5. Loading the Configuration](#5-loading-the-configuration)
-  - [6. Retrieving Repositories and Branches](#6-retrieving-repositories-and-branches)
-  - [7. Determining the Last Commit Date](#7-determining-the-last-commit-date)
-  - [8. Checking if a Branch is Merged](#8-checking-if-a-branch-is-merged)
-  - [9. Deleting a Branch](#9-deleting-a-branch)
-  - [10. Compiling the Exclusion List](#10-compiling-the-exclusion-list)
-  - [11. Cleaning Up Branches](#11-cleaning-up-branches)
-- [Automating with Azure DevOps Pipeline](#automating-with-azure-devops-pipeline)
-- [Conclusion](#conclusion)
-- [Additional Resources](#additional-resources)
-- [Thank You](#thank-you)
-
----
 
 ## Why Automate Branch Cleanup?
 
@@ -56,8 +30,6 @@ Automating branch cleanup is essential for several reasons:
 - **Improve Performance**: Enhances CI/CD pipeline performance by reducing overhead.
 - **Prevent Confusion**: Minimizes the risk of developers working on or merging outdated branches.
 - **Enhance Security**: Removes obsolete branches that may contain vulnerabilities.
-
----
 
 ## Prerequisites
 
@@ -70,7 +42,6 @@ Ensure you have the following before starting:
 - **Azure DevOps Node API Package**: Install via `npm install azure-devops-node-api`.
 - **dotenv Package**: Install via `npm install dotenv`.
 
----
 
 ## Project Setup
 
@@ -89,7 +60,6 @@ Ensure you have the following before starting:
    npm install --save-dev typescript @types/node
    ```
 
----
 
 ## Configuration File
 
@@ -107,7 +77,6 @@ Create a `config.json` file in your project root to specify branches that should
 - **globalExcludes**: Branches excluded from deletion across all repositories.
 - **repositoryExcludes**: Specific branches to exclude in specific repositories.
 
----
 
 ## Implementing the TypeScript Script
 
@@ -395,8 +364,6 @@ cleanUpBranches().catch(err => {
 });
 ```
 
----
-
 ## Automating with Azure DevOps Pipeline
 
 To automate the script execution, set up an Azure DevOps Pipeline.
@@ -454,7 +421,6 @@ To automate the script execution, set up an Azure DevOps Pipeline.
      - Replace `cleanup.ts` with the path to your script.
      - Ensure the pipeline has access to the variable group.
 
----
 
 ## Conclusion
 
@@ -466,7 +432,6 @@ Automating branch cleanup ensures your repositories remain organized, improving 
 - **Consistency**: Maintains a consistent repository state.
 - **Scalability**: Easily extends to multiple projects and repositories.
 
----
 
 ## Additional Resources
 
@@ -474,11 +439,9 @@ Automating branch cleanup ensures your repositories remain organized, improving 
 - **Azure DevOps Node API Documentation**: [Git API Reference](https://github.com/microsoft/azure-devops-node-api/blob/master/api/GitApi.ts)
 - **Azure DevOps REST API Reference**: [Git Repositories](https://docs.microsoft.com/en-us/rest/api/azure/devops/git/repositories)
 
----
 
 **Note**: Always test scripts in a controlled environment before deploying them in production. Ensure compliance with your organization's policies and procedures.
 
----
 
 ## Thank You
 

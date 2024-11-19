@@ -6,7 +6,6 @@ import remarkCollapse from "remark-collapse";
 import remarkGfm from "remark-gfm";
 import remarkHint from 'remark-hint';
 import h2Reformat from './src/plugins/h2Reformat';
-import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
 import remarkInlineGithubCodeSnippet from "remark-inline-github-code-snippets";
 import sitemap from "@astrojs/sitemap";
