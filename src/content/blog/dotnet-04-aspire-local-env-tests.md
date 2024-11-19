@@ -459,9 +459,9 @@ To produce a more focused and insightful code coverage report, we can adjust the
 
 ### 1. Add the `coverlet.collector` NuGet Package
 
-Coverlet is a versatile, cross-platform library designed for code coverage analysis. It supports a variety of code coverage formats and allows for extensive customization options.
+  Coverlet is a versatile, cross-platform library designed for code coverage analysis. It supports a variety of code coverage formats and allows for extensive customization options.
 
-Ensure that the `coverlet.collector` package is added to every testing project in order to generate and compile comprehensive code coverage reports.
+  Ensure that the `coverlet.collector` package is added to every testing project in order to generate and compile comprehensive code coverage reports.
 
 ```bash
 dotnet add package coverlet.collector --version latest
