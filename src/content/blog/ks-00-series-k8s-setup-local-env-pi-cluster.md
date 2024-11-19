@@ -21,7 +21,6 @@ Additionally, we'll learn how to expose our services to the internet without a s
 
 By the end of this series, we'll have a fully functional Kubernetes environment capable of running and managing complex applications, all from our local setup. Let's dive in and start this exciting journey together!
 
----
 
 ## Series of Articles
 
@@ -62,8 +61,6 @@ In this article, we will explore how to deploy Longhorn, a cloud-native distribu
 Longhorn is known for its lightweight, reliable, and open-source nature, which simplifies the process of adding persistent storage to Kubernetes clusters, making it easier to run stateful applications.
 
 ### [Day 08: To be continue...](/posts/ks-00-series-k8s-setup-local-env-pi-cluster)
-
----
 
 ## Thank You
 

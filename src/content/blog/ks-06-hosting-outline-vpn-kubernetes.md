@@ -383,8 +383,6 @@ To get started with the VPN, follow the steps below:
 
 4. To verify the VPN server's capability, access [myip.info](https://www.myip.info). Upon successful connection, your public IP address should reflect the Kubernetes outbound public IP. This means the VPN server is functioning as expected.
 
----
-
 ## Thank You
 
 Thank you for taking the time to read this guide! I hope it has been helpful, feel free to explore further, and happy coding! 🌟✨

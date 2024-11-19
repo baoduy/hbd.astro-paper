@@ -32,8 +32,6 @@ The table below outlines the specific IP configuration for each of the nodes in 
 
 I will pick the Pi running at 192.168.1.85 as my master mode and start the installation as below instructions.
 
----
-
 ## K3s Installation
 
 ### Pi Os installation
@@ -162,8 +160,6 @@ curl -sfL https://get.k3s.io | K3S_URL=https://192.168.1.85:6443 \
 Congratulations, your K3s cluster is now ready to be utilized.
 
 ![k82-lend-pi-cluster.png](/assets/ks-Install-k3s-on-pi-cluster/k82-lend-pi-cluster.png)
-
----
 
 ## Thank You
 

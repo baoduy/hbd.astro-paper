@@ -29,8 +29,6 @@ In this comprehensive guide, we'll walk through how to automate the management o
 4. [Scheduling the Script with Azure DevOps](#4-scheduling-the-script-with-azure-devops)
 5. [Conclusion](#5-conclusion)
 
----
-
 ## 1. Understanding the Risks of Inactive Accounts
 
 Inactive accounts are user accounts that haven't been used for a significant period. They can accumulate due to employee turnover, role changes, or users simply forgetting about them. These accounts are risky because:
@@ -40,8 +38,6 @@ Inactive accounts are user accounts that haven't been used for a significant per
 - **Compliance Issues**: Regulations often require the timely removal or deactivation of unused accounts.
 
 Regularly auditing and managing these accounts helps mitigate these risks and ensures compliance with security best practices.
-
----
 
 ## 2. Creating an Azure Entra ID Application
 
@@ -115,8 +111,6 @@ You'll need the following information for your application:
 - **Tenant ID**: Found in **Azure Entra ID** > **Properties**.
 - **Client ID**: Found in your app registration's **Overview** page.
 - **Client Secret**: The value you just created.
-
----
 
 ## 3. Implementing the TypeScript Program
 
@@ -373,8 +367,6 @@ Compile and run the program:
 npx ts-node src/index.ts
 ```
 
----
-
 ## 4. Scheduling the Script with Azure DevOps
 
 To automate the execution of the script, we'll use Azure DevOps to schedule it as part of a pipeline.
@@ -464,8 +456,6 @@ steps:
 - **Permissions**: Ensure only authorized personnel can modify the pipeline and variable group.
 - **Secret Variables**: Keep your credentials secure by marking them as secrets and avoiding logging sensitive information.
 
----
-
 ## 5. Conclusion
 
 Automating the management of inactive Azure Entra ID accounts enhances your organization's security posture by reducing potential attack surfaces. By leveraging TypeScript and Azure DevOps, you can create a scalable and maintainable solution that integrates seamlessly with your existing workflows.
@@ -484,11 +474,7 @@ Automating the management of inactive Azure Entra ID accounts enhances your orga
 - **Logging**: Integrate logging mechanisms for better auditing and monitoring.
 - **Policy Compliance**: Ensure the solution complies with your organization's policies and any applicable regulations.
 
----
-
 > **Important**: Accessing certain Microsoft Graph API endpoints requires appropriate licensing. Ensure you have the necessary Microsoft Entra ID P2 or equivalent licenses to use the AuditLog API and other premium features.
-
----
 
 ## Thank You
 

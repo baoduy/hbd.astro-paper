@@ -26,8 +26,6 @@ In addition to simplifying environment setup, this guide walks us through writin
 - **Integrations**: NuGet packages for commonly used services, such as Redis or PostgreSQL, with standardized interfaces ensuring they connect consistently and seamlessly with the app.
 - **Tooling**: Project templates and tooling experiences for Visual Studio, Visual Studio Code, and the `dotnet` CLI to help to create and interact with .NET Aspire projects.
 
----
-
 ## Table of Contents
 
 1. [Why .NET Aspire?](#why-net-aspire)
@@ -36,8 +34,6 @@ In addition to simplifying environment setup, this guide walks us through writin
 4. [.NET Aspire for Testing](#net-aspire-for-testing)
 5. [Running Tests on Azure DevOps](#running-tests-on-azure-devops)
 6. [Conclusion](#conclusion)
-
----
 
 ## Setting Up the Local Environment
 
@@ -76,8 +72,6 @@ Aspire provides several project templates to help to get started quickly with di
 - **Test Project (xUnit)**: Sets up a project for unit testing using the xUnit framework.
 
 ![AspireTemplates](/assets/dotnet-04-aspire-local-env-tests/AspireTemplates.png)
-
----
 
 ## Hosting with Aspire
 
@@ -132,8 +126,6 @@ Automating database migrations is important when using EF Core to ensure consist
 Run the `Aspire.Host` project. The dashboard will display all running components.
 
 ![Dashboard](/assets/dotnet-04-aspire-local-env-tests/AspireDashboard.png)
-
----
 
 ## .NET Aspire for Testing
 
@@ -368,8 +360,6 @@ Here are the reports on Azure DevOps after the pipeline ran successfully.
 
   ![TestCoverageResults](/assets/dotnet-04-aspire-local-env-tests/TestCoverageResults.png)
 
----
-
 ## Running Tests on Azure DevOps
 
 ### Configuring the Pipeline
@@ -464,11 +454,20 @@ After the pipeline completes, the test results and code coverage reports should 
 
 > **Note**: The initial code coverage might be lower than expected. For example, you might see an overall coverage of 23.89%, even though the API component itself has 88.14% coverage. This discrepancy occurs because the coverage report includes all libraries, those not part of the API project.
 
-### Improving Code Coverage Reports
+## Improving Code Coverage Reports
+To produce a more focused and insightful code coverage report, we can adjust the settings to concentrate on the pertinent components of the project.
 
-To generate a more meaningful code coverage report, We can configure it to include only the relevant components of the project.
+### 1. Add the `coverlet.collector` NuGet Package
 
-1. **Creating the Coverage Filtering File**:
+Coverlet is a versatile, cross-platform library designed for code coverage analysis. It supports a variety of code coverage formats and allows for extensive customization options.
+
+Ensure that the `coverlet.collector` package is added to every testing project in order to generate and compile comprehensive code coverage reports.
+
+```bash
+dotnet add package coverlet.collector --version latest
+```
+
+2. **Creating the Coverage Filtering File**:
 
    Create a file named `coverage.runsettings` in the project root with the appropriate configuration.
 
@@ -496,7 +495,7 @@ To generate a more meaningful code coverage report, We can configure it to inclu
 - The `<Include>` section specifies which assemblies to include in the code coverage report. In this case, `[Api*]*` includes all assemblies starting with "Api".
 - The `<Exclude>` section can be used to exclude specific assemblies or classes.
 
-2. **Updating the Pipeline Configuration**:
+3. **Updating the Pipeline Configuration**:
 
    Modify the `azure-pipelines.yml` file to use the `coverage.runsettings` file and publish the code coverage results.
 
@@ -522,27 +521,21 @@ To generate a more meaningful code coverage report, We can configure it to inclu
 - **Run Tests with Coverage Filtering**: Executes tests using the `coverage.runsettings` file to filter the code coverage data.
 - **Publish Code Coverage Results**: Publishes the code coverage results to Azure DevOps for easy visualization.
 
-3. **Enhanced Coverage Report**:
+4. **Review the Enhanced Coverage Report**:
 
    After running the updated pipeline, We should see an improved code coverage report that focuses on the relevant parts of the project. The coverage results will now provide detailed insights at the class level using the XPlat format.
 
 ![devops-test-coverage-with-filter](/assets/dotnet-04-aspire-local-env-tests/az-devops-with-filter-test-coverage.png)
 
----
-
 ## Conclusion
 
 By utilizing .NET Aspire and Docker, we can create a consistent, isolated environment that streamlines not just Entity Framework integration testing but the entire development lifecycle. .NET Aspire offers a flexible to `config as code` and sharing `ready-to-run` environment to all the development teams.
-
----
 
 ## References
 
 - [Sample Code From DrunkCode](https://github.com/baoduy/sample-aspire-dotnet-unittests)
 - [.NET Aspire Documentation](https://learn.microsoft.com/en-us/dotnet/aspire/get-started/aspire-overview)
 - [EfCore Migration in .NET Aspire](https://learn.microsoft.com/en-us/dotnet/aspire/database/ef-core-migrations)
-
----
 
 ## Thank You
 
