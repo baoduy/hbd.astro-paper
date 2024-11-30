@@ -26,9 +26,6 @@ dependencies:
   lodash.kebabcase:
     specifier: ^4.1.1
     version: 4.1.1
-  mdast:
-    specifier: ^3.0.0
-    version: 3.0.0
   remark-collapse:
     specifier: ^0.1.2
     version: 0.1.2
@@ -3286,11 +3283,6 @@ packages:
       mdast-util-to-string: 4.0.0
       unist-util-is: 6.0.0
       unist-util-visit: 5.0.0
-    dev: false
-
-  /mdast@3.0.0:
-    resolution: {integrity: sha512-xySmf8g4fPKMeC07jXGz971EkLbWAJ83s4US2Tj9lEdnZ142UP5grN73H1Xd3HzrdbU5o9GYYP/y8F9ZSwLE9g==}
-    deprecated: '`mdast` was renamed to `remark`'
     dev: false
 
   /merge2@1.4.1:
