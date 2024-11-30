@@ -49,7 +49,7 @@ Let's start by creating a simple API project and hosting it with .NET Aspire.
   dotnet workload install aspire
   ```
 
-### Creating an API Project
+## Creating an API Project
 
 Assuming we already have a simple API that utilizes the following technologies:
 
@@ -61,7 +61,7 @@ This API has the following endpoints, as displayed in the Swagger UI:
 
 ![Api](/assets/dotnet-04-aspire-local-env-tests/api.png)
 
-### Aspire Templates Explanation
+## Aspire Templates Explanation
 
 Aspire provides several project templates to help to get started quickly with different aspects of application development and testing:
 
@@ -77,11 +77,11 @@ Aspire provides several project templates to help to get started quickly with di
 
 To host the API above with its dependencies with Aspire, follow these steps:
 
-### Create `Aspire.Host`
+### 1. Create `Aspire.Host`
 
 First, create a new project named `Aspire.Host` using the App Host template provided by .NET Aspire.
 
-### Add PostgreSQL Support
+### 2. Add PostgreSQL Support
 
 Next, install the Aspire PostgreSQL hosting package to add PostgreSQL support to this project.
 
@@ -91,7 +91,7 @@ dotnet add package Aspire.Hosting.PostgreSQL
 
 > **Note**: Refer to the [.NET Aspire GitHub repository](https://github.com/dotnet/aspire) for a full list of hosting components supported by Aspire.
 
-### Aspire Host with `Config as Code`
+### 3. Aspire Host with `Config as Code`
 
 Open `Program.cs` in the `Aspire.Host` project and configure the `DistributedApplication` as shown:
 
@@ -99,123 +99,61 @@ Open `Program.cs` in the `Aspire.Host` project and configure the `DistributedApp
 
 **Explanation**:
 
-- **AddPostgres("postgres")**: Adds a PostgreSQL service.
-- **PublishAsConnectionString()**: Makes the connection string available to other services.
-- **AddDatabase("Db")**: Sets up a database named "Db".
-- **AddProject**: Includes the API project in the Aspire host configuration.
-- **WithReference(db)**: Links the API project to the database.
+- **AddPostgres("postgres")**: This adds a PostgreSQL service to the Aspire hostwith named as "postgres".
+- **AddDatabase("Db")**: This sets up a database named "Db". This database will be used by the API.
+- **AddProject<Projects.Api>("api")**: This method adds our API project to the Aspire host named as "api".
+- **WithReference(postgres)**: This references the database service to the API project. It sets up the connection string configuration for the API to connect to the PostgreSQL database.
+- **WaitFor(postgres)**: This ensures that the PostgreSQL resource is fully up and running before the API project starts. This is a new functionality added in Aspire 9, ensuring that the API only starts after the database is ready.
 
-### EF Core Database Migration
+### 4. EF Core Database Migration
 
 Automating database migrations is important when using EF Core to ensure consistency across environments. While we won't discuss the details here, you can refer to the [EF Core Migrations guide](https://learn.microsoft.com/en-us/dotnet/aspire/database/ef-core-migrations) compatible with .NET Aspire.
 
-### Aspire Host Dashboard
+Here is a sample code to run the EfCore migration as a background job when the API started:
+
+<details><summary><em>Example <code>DbMigrationJob.cs</code></em></summary>
+
+[inline](https://github.com/baoduy/sample-aspire-dotnet-testing/blob/main/Api/Configs/DbMigrationJob.cs#1-100)
+
+</details>
+
+### 5. Aspire Host Dashboard
 
 Run the `Aspire.Host` project. The dashboard will display all running components.
 
 ![Dashboard](/assets/dotnet-04-aspire-local-env-tests/AspireDashboard.png)
 
+**Note:**
+If you are migrating from Aspire version 8 to version 9, ensure that the `<Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0"/>` element is added to the project file. This ensures compatibility and leverages the latest features and improvements in Aspire 9.
+
+<details><summary><em>Example <code>Aspire.Host.csproj</code></em></summary>
+
+[inline](https://github.com/baoduy/sample-aspire-dotnet-testing/blob/main/Aspire.Host/Aspire.Host.csproj#1-100)
+
+</details>
+
 ## .NET Aspire for Testing
 
 Integration tests ensure that different parts of the application work together correctly. However, writing and running them on CI/CD pipelines can be challenging and time-consuming. .NET Aspire simplifies this process by handling much of the setup for us.
 
-### Create `Aspire.Tests`
+### 1. Create `Aspire.Tests`
 
 Create a new test project named `Aspire.Tests` using the Test Project (xUnit) template provided by .NET Aspire. This template sets up the necessary scaffolding for integration tests using xUnit.
 
-### Add Reference to `Aspire.Host`
+**Note:**
+Similar to `Aspire.Host` project. Ensure that the `<Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0"/>` element is added to the project file.
 
-Instead of installing the same NuGet package dependencies in `Aspire.Tests`, add a project reference to `Aspire.Host`. This allows the test project to leverage the configurations and services defined in the host project.
+<details><summary><em>Example <code>Aspire.Tests.csproj</code></em></summary>
 
-Here is a reference graph:
+[inline](https://github.com/baoduy/sample-aspire-dotnet-testing/blob/main/Aspire.Tests/Aspire.Tests.csproj#1-100)
 
-![ProjectDependency](/assets/dotnet-04-aspire-local-env-tests/ProjectDependency.png)
+</details>
 
-### ApiFixture Class
+### 2. ApiFixture Class
 
 The `ApiFixture` class sets up the necessary environment for integration tests. It extends `WebApplicationFactory<Api.Program>` and implements `IAsyncLifetime` to manage the lifecycle of the test environment.
 
-```csharp
-public sealed class ApiFixture : WebApplicationFactory<Api.Program>, IAsyncLifetime
-{
-    private readonly IHost _app;
-    private readonly IResceBuilder<PostgresServerResce> _postgres;
-    private string? _postgresConnectionString;
-
-    /**
-     * Constructor for ApiFixture.
-     * Initializes the DistributedApplicationOptions and sets up the PostgreSQL server resce.
-     */
-    public ApiFixture()
-    {
-        var options = new DistributedApplicationOptions
-        {
-            AssemblyName = typeof(ApiFixture).Assembly.FullName,
-            DisableDashboard = true
-        };
-        var builder = DistributedApplication.CreateBuilder(options);
-
-        _postgres = builder.AddPostgres("postgres").PublishAsConnectionString();
-        _app = builder.Build();
-    }
-
-    /**
-     * Creates and configures the host for the application.
-     * Adds the PostgreSQL connection string to the host configuration.
-     * Ensures the database is created before returning the host.
-     *
-     * @param builder The IHostBuilder instance.
-     * @return The configured IHost instance.
-     */
-    protected override IHost CreateHost(IHostBuilder builder)
-    {
-        builder.ConfigureHostConfiguration(config =>
-        {
-            config.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                { "ConnectionStrings:Db", _postgresConnectionString },
-            }!);
-        });
-
-        //TODO: add logic for db migration and seeding data here.
-        var host = base.CreateHost(builder);
-        host.EnsureDbCreated().GetAwaiter().GetResult();
-        return host;
-    }
-
-    /**
-     * Disposes the resces used by the fixture asynchronously.
-     * Stops the application host and disposes of it.
-     */
-    public new async Task DisposeAsync()
-    {
-        await base.DisposeAsync();
-        await _app.StopAsync();
-        if (_app is IAsyncDisposable asyncDisposable)
-        {
-            await asyncDisposable.DisposeAsync().ConfigureAwait(false);
-        }
-        else
-        {
-            _app.Dispose();
-        }
-    }
-
-    /**
-     * Initializes the fixture asynchronously.
-     * Starts the application host and waits for the PostgreSQL resce to be in the running state.
-     * Retrieves the PostgreSQL connection string.
-     */
-    public async Task InitializeAsync()
-    {
-        var resceNotificationService = _app.Services.GetRequiredService<ResceNotificationService>();
-        await _app.StartAsync();
-
-        await resceNotificationService.WaitForResceAsync(_postgres.Resce.Name, KnownResceStates.Running);
-        _postgresConnectionString = await _postgres.Resce.GetConnectionStringAsync();
-    }
-}
-```
+[inline](https://github.com/baoduy/sample-aspire-dotnet-testing/blob/main/Aspire.Tests/Fixtures/ApiFixture.cs#1-100)
 
 **Explanation**:
 
@@ -227,99 +165,11 @@ The `ApiFixture` class is responsible for:
 - Starting and stopping the application host.
 - Cleaning up resources after tests are completed.
 
-### Test Cases Class
+### 3. Test Cases Class
 
 The `ProductEndpointsTests` class contains integration tests for the product endpoints of the API. It uses the `ApiFixture` to set up the test environment and `HttpClient` to make requests to the API.
 
-```csharp
-public class ProductEndpointsTests(ApiFixture fixture, ITestOutputHelper output) : IClassFixture<ApiFixture>
-{
-    private readonly HttpClient _client = fixture.CreateClient();
-
-    /**
-     * Tests the creation of a product.
-     * Ensures that the product is created successfully and returns a valid product ID.
-     */
-    [Fact]
-    public async Task CreateProduct_ReturnsCreatedProduct()
-    {
-        // Arrange
-        var command = new CreateProduct.Command { Name = "Test Product", Price = 10.99m };
-        // Act
-        var response = await _client.PostAsJsonAsync("/products", command);
-
-        // Assert
-        response.EnsureSuccessStatusCode();
-        var productId = await response.Content.ReadFromJsonAsync<int>();
-        Assert.True(productId > 0);
-    }
-
-    /**
-     * Tests the retrieval of a product.
-     * Ensures that the product is retrieved successfully and matches the expected values.
-     */
-    [Fact]
-    public async Task GetProduct_ReturnsProduct()
-    {
-        // Arrange
-        var command = new CreateProduct.Command { Name = "Test Product", Price = 10.99m };
-        var createResponse = await _client.PostAsJsonAsync("/products", command);
-        var productId = await createResponse.Content.ReadFromJsonAsync<int>();
-
-        // Act
-        var response = await _client.GetAsync($"/products/{productId}");
-
-        // Assert
-        response.EnsureSuccessStatusCode();
-        var product = await response.Content.ReadFromJsonAsync<Product>();
-        Assert.NotNull(product);
-        Assert.Equal("Test Product", product.Name);
-        Assert.Equal(10.99m, product.Price);
-    }
-
-    /**
-     * Tests the update of a product.
-     * Ensures that the product is updated successfully and returns a NoContent status.
-     */
-    [Fact]
-    public async Task UpdateProduct_ReturnsNoContent()
-    {
-        // Arrange
-        var command = new CreateProduct.Command { Name = "Test Product", Price = 10.99m };
-        var createResponse = await _client.PostAsJsonAsync("/products", command);
-        var productId = await createResponse.Content.ReadFromJsonAsync<int>();
-
-        var updateCommand = new UpdateProduct.Command { Id = productId, Name = "Updated Product", Price = 20.99m };
-
-        // Act
-        var response = await _client.PutAsJsonAsync($"/products/{productId}", updateCommand);
-
-        // Assert
-        response.EnsureSuccessStatusCode();
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-    }
-
-    /**
-     * Tests the deletion of a product.
-     * Ensures that the product is deleted successfully and returns a NoContent status.
-     */
-    [Fact]
-    public async Task DeleteProduct_ReturnsNoContent()
-    {
-        // Arrange
-        var command = new CreateProduct.Command { Name = "Test Product", Price = 10.99m };
-        var createResponse = await _client.PostAsJsonAsync("/products", command);
-        var productId = await createResponse.Content.ReadFromJsonAsync<int>();
-
-        // Act
-        var response = await _client.DeleteAsync($"/products/{productId}");
-
-        // Assert
-        response.EnsureSuccessStatusCode();
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-    }
-}
-```
+[inline](https://github.com/baoduy/sample-aspire-dotnet-testing/blob/main/Aspire.Tests/ProductEndpointsTests.cs#1-105)
 
 **Explanation**:
 
@@ -330,9 +180,7 @@ The `ProductEndpointsTests` class is responsible for testing the CRUD of the pro
 - **Updating a product** successfully applies the changes and returns the appropriate status.
 - **Deleting a product** removes it from the database and returns the correct status code.
 
-> **Note:** Postgres connection issues may arise when running multiple sets of test cases in parallel. In such cases, instead of using `IClassFixture<>`, consider using [`IAssemblyFixture`](https://github.com/JDCain/Xunit.Extensions.AssemblyFixture). This approach ensures that only a single instance of `DistributedApplication` is created for the entire test suite.
-
-### Testing Results
+### 4. Testing Results
 
 Here are the reports on Azure DevOps after the pipeline ran successfully.
 
@@ -350,7 +198,7 @@ Here are the reports on Azure DevOps after the pipeline ran successfully.
 
 ## Running Tests on Azure DevOps
 
-### Configuring the Pipeline
+### 1. Configuring the Pipeline
 
 To automate testing and code coverage collection, let's set up a continuous integration (CI) pipeline using Azure DevOps.
 
@@ -358,60 +206,7 @@ In the Azure DevOps project, create a new pipeline that builds the code, runs te
 
 Here is an example of what our `azure-pipelines.yml` file might look like.
 
-```yaml
-trigger:
-  - main
-
-resources:
-  - repo: self
-
-variables:
-  BuildConfiguration: Release
-  RestoreBuildProjects: "**/*.csproj"
-  TestProjects: "**/*[Tt]ests/*.csproj"
-
-  # Agent VM image name
-  vmImageName: "ubuntu-latest"
-
-stages:
-  - stage: Build
-    displayName: Build and Test Stage
-    jobs:
-      - job: Build
-        displayName: Build
-        pool:
-          vmImage: $(vmImageName)
-        steps:
-          # Use the correct .NET SDK version
-          - task: UseDotNet@2
-            displayName: "Use .NET SDK 8.x"
-            inputs:
-              packageType: "sdk"
-              version: "8.x"
-
-          # Install the necessary .NET workload
-          - task: Bash@3
-            displayName: "Install Aspire Workload"
-            inputs:
-              targetType: "inline"
-              script: "dotnet workload install aspire"
-
-          # Build the project
-          - task: DotNetCoreCLI@2
-            displayName: "Build Project"
-            inputs:
-              command: "build"
-              projects: $(RestoreBuildProjects)
-              arguments: -c $(BuildConfiguration)
-
-          # Run tests and collect code coverage
-          - task: DotNetCoreCLI@2
-            displayName: "Run Tests and Collect Coverage"
-            inputs:
-              command: "test"
-              projects: "$(TestProjects)"
-              arguments: '--configuration $(BuildConfiguration) --collect "Code Coverage"'
-```
+[inline](https://github.com/baoduy/sample-aspire-dotnet-testing/blob/main/pipelines/no-filter.azure-pipelines.yml#1-100)
 
 **Explanation**:
 
@@ -459,24 +254,7 @@ dotnet add package coverlet.collector --version latest
 
    Create a file named `coverage.runsettings` in the project root with the appropriate configuration.
 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<RunSettings>
-  <DataCollectionRunSettings>
-    <DataCollectors>
-      <DataCollector friendlyName="XPlat Code Coverage">
-        <Configuration>
-          <Include>
-            [Api*]*
-          </Include>
-          <Exclude>
-          </Exclude>
-        </Configuration>
-      </DataCollector>
-    </DataCollectors>
-  </DataCollectionRunSettings>
-</RunSettings>
-```
+  [inline](https://github.com/baoduy/sample-aspire-dotnet-testing/blob/main/coverage.runsettings#1-100)
 
 **Explanation**:
 

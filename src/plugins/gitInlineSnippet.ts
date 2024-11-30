@@ -108,54 +108,20 @@ type LanguageHandler = {
   comment: (comment: string) => string;
 };
 export const supportedLanguageExtensions: Record<string, LanguageHandler> = {
-  ".js": {
-    markdown: "javascript",
-    comment: (c) => `// ${c}\n`,
-  },
-  ".ts": {
-    markdown: "typescript",
-    comment: (c) => `// ${c}\n`,
-  },
-  ".py": {
-    markdown: "python",
-    comment: (c) => `# ${c}\n`,
-  },
-  ".sh": {
-    markdown: "bash",
-    comment: (c) => `# ${c}\n`,
-  },
-  ".json": {
-    markdown: "json",
-    comment: () => "",
-  },
-  ".yaml": {
-    markdown: "yaml",
-    comment: (c) => `# ${c}\n`,
-  },
-  ".yml": {
-    markdown: "yaml",
-    comment: (c) => `# ${c}\n`,
-  },
-  ".tf": {
-    markdown: "terraform",
-    comment: (c) => `# ${c}\n`,
-  },
-  ".hcl": {
-    markdown: "hcl",
-    comment: (c) => `# ${c}\n`,
-  },
-  ".tfstacks.hcl": {
-    markdown: "hcl",
-    comment: (c) => `# ${c}\n`,
-  },
-  ".go": {
-    markdown: "go",
-    comment: (c) => `// ${c}\n`,
-  },
-  ".cs": {
-    markdown: "csharp",
-    comment: (c) => `// ${c}\n`,
-  },
+  ".js": {    markdown: "javascript",    comment: (c) => `// ${c}\n`,  },
+  ".ts": {    markdown: "typescript",    comment: (c) => `// ${c}\n`,  },
+  ".py": {    markdown: "python",    comment: (c) => `# ${c}\n`,  },
+  ".sh": {    markdown: "bash",    comment: (c) => `# ${c}\n`,  },
+  ".json": {    markdown: "json",    comment: () => "",  },
+  ".yaml": {    markdown: "yaml",    comment: (c) => `# ${c}\n`,  },
+  ".yml": {    markdown: "yaml",    comment: (c) => `# ${c}\n`,  },
+  ".tf": {    markdown: "terraform",    comment: (c) => `# ${c}\n`,  },
+  ".hcl": {    markdown: "hcl",    comment: (c) => `# ${c}\n`,  },
+  ".tfstacks.hcl": {    markdown: "hcl",    comment: (c) => `# ${c}\n`,  },
+  ".go": {    markdown: "go",    comment: (c) => `// ${c}\n`,  },
+  ".cs": {    markdown: "csharp",    comment: (c) => `// ${c}\n`,  },
+  ".csproj": {    markdown: "xml",    comment: (c) => `// ${c}\n`,  },
+  ".runsettings": {    markdown: "xml",    comment: (c) => `// ${c}\n`,  },
 } as const;
 
 const defaultLanguageExtension: LanguageHandler = {
