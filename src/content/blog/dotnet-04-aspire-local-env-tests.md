@@ -95,19 +95,7 @@ dotnet add package Aspire.Hosting.PostgreSQL
 
 Open `Program.cs` in the `Aspire.Host` project and configure the `DistributedApplication` as shown:
 
-```csharp
-var builder = DistributedApplication.CreateBuilder(args);
-
-// Database
-var postgres = builder.AddPostgres("postgres").PublishAsConnectionString();
-var db = postgres.AddDatabase("Db");
-
-// Internal API
-builder.AddProject<Projects.Api>("api")
-    .WithReference(db);
-
-builder.Build().Run();
-```
+[inline](https://github.com/baoduy/sample-aspire-dotnet-testing/blob/main/Aspire.Host/Program.cs#1-100)
 
 **Explanation**:
 
