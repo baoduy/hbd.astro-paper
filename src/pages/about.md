@@ -58,5 +58,3 @@ Believing in the power of community and collaboration, I actively contribute to 
 I'm always enthusiastic about connecting with fellow professionals, exchanging ideas, and exploring new opportunities for collaboration.
 
 Don't hesitate to reach out!
-
-[Email Me](mailto:drunkcoding@outlook.com)
