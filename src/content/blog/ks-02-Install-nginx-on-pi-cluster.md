@@ -15,7 +15,7 @@ description:
   Detailed and step-by-step instructions will ensure a seamless installation process. Let's get started!
 ---
 
-In our [previous article](/posts/ks-install-k3s-on-raspberry-pi-cluster), we successfully set up a k3s Pi cluster. We will now build upon that foundation. Let's dive in!
+In our [previous article](/posts/ks-01-Install-k3s-on-pi-cluster), we successfully set up a k3s Pi cluster. We will now build upon that foundation. Let's dive in!
 
 <img src="/assets/ks-Install-k3s-on-pi-cluster/pi-cluster-diagram.png" width="600px">
 

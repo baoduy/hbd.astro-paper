@@ -17,7 +17,7 @@ description:
 
 In the previous articles we successfully:
 
-1. [Install kubernetes cluster](/posts/ks-install-k3s-on-raspberry-pi-cluster).
+1. [Install kubernetes cluster](/posts/ks-01-Install-k3s-on-pi-cluster).
 2. [Install Ngix on cluster](/posts/ks-02-Install-nginx-on-pi-cluster).
 3. [Install SSL for Ingress with Cert-Manager](/posts/ks-03-install-cert-manager-free-ssl-kubernetes-cluster) or with [Cloudflare SSL](/posts/ks-cert-manager-alternative-with-cloudflare).
 
