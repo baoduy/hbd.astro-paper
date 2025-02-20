@@ -18,7 +18,7 @@ description:
   Discover how this approach simplifies the process, and enhances the security of our Kubernetes clusters.
 ---
 
-In our [previous post](/posts/ks-install-cert-manager-free-ssl-kubernetes-cluster), we walked through the process of successfully installing Cert-Manager to handle SSL certificate assignments for all ingresses.
+In our [previous post](/posts/ks-03-install-cert-manager-free-ssl-kubernetes-cluster), we walked through the process of successfully installing Cert-Manager to handle SSL certificate assignments for all ingresses.
 While advantageous, this approach comes with a few noteworthy challenges:
 
 - **Limited validity period**: Certificates provided by Cert-Manager are valid for a short period (90 days), meaning any third-party systems utilizing the services may need to update their certificate whitelist every 90 days.

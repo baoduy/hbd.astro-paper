@@ -14,7 +14,7 @@ description: "Outline VPN, a comprehensive server and client software tool, is a
 In this article, we will delve into the process of hosting Outline VPN on Kubernetes and outlining the steps to expose connection ports via NGINX."
 ---
 
-In our [previous article]("posts/ks-install-nginx-on-k3s-raspberry-pi-cluster"),
+In our [previous article](/posts/ks-02-Install-nginx-on-pi-cluster),
 we were successfully installed NGINX on Kubernetes.Now, we're going to take NGINX for a spin and use it to host the Outline VPN on Kubernetes and open up our connection ports.
 
 You're probably aware that by default, Outline VPN changes the client port each time a new connection is made.
