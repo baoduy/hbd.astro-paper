@@ -19,7 +19,7 @@ Building a private AKS cluster offers enhanced network security and complete con
 
 This tutorial will guide you through the setup of a private AKS cluster with advanced networking capabilities, integrating it into a sophisticated network architecture using Pulumi.
 
-By the end of this guide, you'll know how to integrate the AKS cluster with a Hub VNet and apply firewall policies established in the [previous `az-02-hub-vnet` project](az-04-pulumi-private-aks-hub-vnet-development).
+By the end of this guide, you'll know how to integrate the AKS cluster with a Hub VNet and apply firewall policies established in the [previous `az-02-hub-vnet` project](/posts/az-04-pulumi-private-aks-hub-vnet-development).
 
 ## Table of Contents
 

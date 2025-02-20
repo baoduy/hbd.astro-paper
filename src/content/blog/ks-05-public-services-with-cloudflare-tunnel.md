@@ -18,8 +18,8 @@ description:
 In the previous articles we successfully:
 
 1. [Install kubernetes cluster](/posts/ks-install-k3s-on-raspberry-pi-cluster).
-2. [Install Ngix on cluster](/posts/ks-install-nginx-on-k3s-raspberry-pi-cluster).
-3. [Install SSL for Ingress with Cert-Manager](/posts/ks-install-cert-manager-free-ssl-kubernetes-cluster) or with [Cloudflare SSL](/posts/ks-cert-manager-alternative-with-cloudflare).
+2. [Install Ngix on cluster](/posts/ks-02-Install-nginx-on-pi-cluster).
+3. [Install SSL for Ingress with Cert-Manager](/posts/ks-03-install-cert-manager-free-ssl-kubernetes-cluster) or with [Cloudflare SSL](/posts/ks-cert-manager-alternative-with-cloudflare).
 
 However, to expose our services to the internet, it's essential to obtain a **Static Public IP Address** and configure the **router/firewall to open ports 80 and 443**.
 If for any reason we're unable to meet these requirements, we won't be able to expose our services online.
@@ -33,7 +33,7 @@ Let's delve into this topic further.
 
 ## Cloudflare Tunnel Configuration
 
-1. This guide assumes that we have followed the instructions from our [previous post](/posts/ks-install-cert-manager-free-ssl-kubernetes-cluster), and configured Cloudflare account with at least one onboarded domain.
+1. This guide assumes that we have followed the instructions from our [previous post](/posts/ks-03-install-cert-manager-free-ssl-kubernetes-cluster), and configured Cloudflare account with at least one onboarded domain.
 
 2. The next step is to create a [Cloudflare Zero Trust Account](https://one.dash.cloudflare.com). While creating this account might require adding a payment method, please note that there are no charges for the first 50 users. You can proceed to register without any hesitation.
 

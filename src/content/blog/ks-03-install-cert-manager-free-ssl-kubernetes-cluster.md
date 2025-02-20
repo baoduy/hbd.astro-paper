@@ -16,7 +16,7 @@ description:
   It is designed with step-by-step instructions to facilitate a seamless installation process. Dive in and let's begin this journey for enhanced security!
 ---
 
-Welcome back to our ongoing dialogue about Kubernetes. In the [previous article](/posts/ks-install-nginx-on-k3s-raspberry-pi-cluster/), we successfully executed the Nginx installation and made our applications internet-accessible.
+Welcome back to our ongoing dialogue about Kubernetes. In the [previous article](/posts/ks-02-Install-nginx-on-pi-cluster), we successfully executed the Nginx installation and made our applications internet-accessible.
 However, you might've observed that the applications are operating under the HTTP protocol, which is not secure at present.
 
 > As of July 2018, with the release of Chrome 68, Google started marking all non-HTTPS websites as 'Not secure' in the Chrome browser.
