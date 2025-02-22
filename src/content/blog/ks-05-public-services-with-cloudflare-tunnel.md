@@ -19,7 +19,7 @@ In the previous articles we successfully:
 
 1. [Install kubernetes cluster](/posts/ks-01-Install-k3s-on-pi-cluster).
 2. [Install Ngix on cluster](/posts/ks-02-Install-nginx-on-pi-cluster).
-3. [Install SSL for Ingress with Cert-Manager](/posts/ks-03-install-cert-manager-free-ssl-kubernetes-cluster) or with [Cloudflare SSL](/posts/ks-cert-manager-alternative-with-cloudflare).
+3. [Install SSL for Ingress with Cert-Manager](/posts/ks-03-install-cert-manager-free-ssl-kubernetes-cluster) or with [Cloudflare SSL](/posts/ks-04-cert-manager-alternative-with-cloudflare).
 
 However, to expose our services to the internet, it's essential to obtain a **Static Public IP Address** and configure the **router/firewall to open ports 80 and 443**.
 If for any reason we're unable to meet these requirements, we won't be able to expose our services online.
