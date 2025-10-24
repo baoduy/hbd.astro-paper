@@ -1,65 +1,21 @@
-import type { Site, SocialObjects } from "./types";
-
-export const SITE: Site = {
+export const SITE = {
   website: "https://drunkcoding.net/",
   author: "Steven (Hoang Bao Duy)",
   desc: "Drunkcoding.net is a blog page from Steven Hoang, a highly experienced professional with extensive knowledge in technology and software development.",
   title: "drunkcoding.net",
-  profile:'',
-  //ogImage: "astropaper-og.jpg",
+  ogImage: "favicon.svg",
   lightAndDarkMode: true,
-  postPerPage: 10,
   postPerIndex: 5,
+  postPerPage: 10,
   scheduledPostMargin: 15 * 60 * 1000, // 15 minutes
-};
-
-export const LOCALE = {
+  showArchives: false,
+  showBackButton: true, // show back button in post detail
+  editPost: {
+    enabled: false,
+    text: "Edit page",
+  },
+  dynamicOgImage: true,
+  dir: "ltr", // "rtl" | "auto"
   lang: "en", // html lang code. Set this empty and default will be "en"
-  langTag: ["en-EN"], // BCP 47 Language Tags. Set this empty [] to use the environment default
+  timezone: "Asia/Bangkok", // Default global timezone (IANA format) https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 } as const;
-
-export const LOGO_IMAGE = {
-  enable: false,
-  svg: true,
-  width: 216,
-  height: 46,
-};
-
-export const SOCIALS: SocialObjects = [
-  {
-    name: "Github",
-    href: "https://github.com/baoduy",
-    linkTitle: ` ${SITE.title} on Github`,
-    active: true,
-  },
-  {
-    name: "LinkedIn",
-    href: "https://www.linkedin.com/in/baoduy2412",
-    linkTitle: `${SITE.title} on LinkedIn`,
-    active: true,
-  },
-  {
-    name: "Mail",
-    href: "mailto:drunkcoding@outlook.com",
-    linkTitle: `Send an email to ${SITE.title}`,
-    active: true,
-  },
-  {
-    name: "Twitter",
-    href: "https://twitter.com/baoduy2412",
-    linkTitle: `${SITE.title} on Twitter`,
-    active: true,
-  },
-  {
-    name: "WhatsApp",
-    href: "",
-    linkTitle: `${SITE.title} on WhatsApp`,
-    active: false,
-  },
-  {
-    name: "Mastodon",
-    href: "",
-    linkTitle: `${SITE.title} on Mastodon`,
-    active: false,
-  },
-];
