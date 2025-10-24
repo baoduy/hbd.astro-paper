@@ -1,12 +1,12 @@
 import { visit } from 'unist-util-visit';
 
 export default function h2Reformat() {
-  return (tree) => {
-    const insertions = [];
+  return (tree: any) => {
+    const insertions: Array<{ parent: any; index: number }> = [];
 
     // First, collect all the positions where the hrNode should be inserted
-    visit(tree, 'heading', (node, index, parent) => {
-      if (node.depth === 2 && parent && Array.isArray(parent.children)) {
+    visit(tree, 'heading', (node: any, index: number | undefined, parent: any) => {
+      if (node.depth === 2 && parent && Array.isArray(parent.children) && index !== undefined) {
         insertions.push({ parent, index });
       }
     });
