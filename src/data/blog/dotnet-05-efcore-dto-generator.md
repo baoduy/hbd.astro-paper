@@ -198,13 +198,13 @@ That's it! The generator will automatically create `BalanceDto.g.cs` with:
 ```csharp
 // Convert entity to DTO
 var entity = await dbContext.MerchantBalances.FindAsync(id);
-var dto = BalanceDto.FromEntity(entity);
+var dto = mapper.Map<BalanceDto>(entity);
 
 // Convert DTO back to entity
-var newEntity = dto.ToEntity();
+var newEntity = mapper.Map<MerchantBalance>(dto);
 
 // Convert multiple entities
-var dtos = BalanceDto.FromEntities(dbContext.MerchantBalances);
+var dtos = mapper.Map<IEnumerable<BalanceDto>>(dbContext.MerchantBalances);
 ```
 
 ## Validation Attributes Support
