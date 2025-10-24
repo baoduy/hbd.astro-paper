@@ -109,7 +109,7 @@ DKNet.EfCore.DtoGenerator is a **Roslyn Incremental Source Generator** that solv
 
 Before using DKNet.EfCore.DtoGenerator, ensure you have:
 
-- **.NET 6.0 SDK** or later
+- **.NET 9.0 SDK** or later
 - A project using **Entity Framework Core**
 
 ### Installation
@@ -288,34 +288,6 @@ public partial record UserDto
 
     [Url]
     public string? Website { get; init; }
-
-    // Mapping methods...
-}
-```
-
-### Using Validation in ASP.NET Core
-
-The copied validation attributes work seamlessly with ASP.NET Core's model validation:
-
-```csharp
-[ApiController]
-[Route("api/[controller]")]
-public class UsersController : ControllerBase
-{
-    [HttpPost]
-    public IActionResult CreateUser([FromBody] UserDto userDto)
-    {
-        // ASP.NET Core automatically validates the DTO
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        var user = userDto.ToEntity();
-        // Save to database...
-
-        return Ok(UserDto.FromEntity(user));
-    }
 }
 ```
 
@@ -327,11 +299,11 @@ You can exclude specific properties from the generated DTO:
 
 ```csharp
 [GenerateDto(typeof(MerchantBalance),
-             Exclude = new[] { "LastUpdated", "Id" })]
+             Exclude = new[] { nameof(MerchantBalance.LastUpdated), "Id" })]
 public partial record BalanceSummaryDto;
 ```
 
-Generated DTO will only include `MerchantId` and `Balance` properties.
+Generated DTO will exclude `LastUpdated` and `Id` from Entity's properties.
 
 ### Including Only Specific Properties
 
@@ -339,11 +311,11 @@ Alternatively, specify only the properties you want:
 
 ```csharp
 [GenerateDto(typeof(MerchantBalance),
-             Include = new[] { "MerchantId", "Balance" })]
+             Include = new[] { nameof(MerchantBalance.MerchantId), "Balance" })]
 public partial record BalanceOnlyDto;
 ```
 
-**Note:** `Include` and `Exclude` are mutually exclusive. If both are specified, `Include` takes precedence, and a warning will be generated.
+> **Note:** `Include` and `Exclude` are mutually exclusive. If both are specified, `Include` takes precedence, and a warning will be generated.
 
 ### Custom Properties
 
@@ -436,38 +408,6 @@ var balances = await dbContext.MerchantBalances
 ```
 
 This translates the projection to SQL, avoiding loading unnecessary entity data.
-
-### Without Mapster
-
-If Mapster is not available, the generator creates property-by-property initialization:
-
-```csharp
-public partial record BalanceDto
-{
-    public static BalanceDto FromEntity(MerchantBalance entity) => new BalanceDto
-    {
-        Id = entity.Id,
-        MerchantId = entity.MerchantId,
-        Balance = entity.Balance,
-        LastUpdated = entity.LastUpdated
-    };
-
-    public MerchantBalance ToEntity() => new MerchantBalance
-    {
-        Id = this.Id,
-        MerchantId = this.MerchantId,
-        Balance = this.Balance,
-        LastUpdated = this.LastUpdated
-    };
-
-    public static IEnumerable<BalanceDto> FromEntities(
-        IEnumerable<MerchantBalance> entities)
-    {
-        foreach (var e in entities)
-            yield return FromEntity(e);
-    }
-}
-```
 
 ## Viewing Generated Code
 
