@@ -1,9 +1,7 @@
-import type socialIcons from "@assets/socialIcons";
-
 export type Site = {
   website: string;
   author: string;
-  profile: string;
+  profile?: string;
   desc: string;
   title: string;
   ogImage?: string;
@@ -11,10 +9,21 @@ export type Site = {
   postPerIndex: number;
   postPerPage: number;
   scheduledPostMargin: number;
+  showArchives?: boolean;
+  showBackButton?: boolean;
+  editPost?: {
+    enabled: boolean;
+    text: string;
+    url?: string;
+  };
+  dynamicOgImage?: boolean;
+  dir?: string;
+  lang?: string;
+  timezone?: string;
 };
 
 export type SocialObjects = {
-  name: keyof typeof socialIcons;
+  name: string;
   href: string;
   active: boolean;
   linkTitle: string;

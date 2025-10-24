@@ -1,5 +1,6 @@
 import { type Plugin } from "unified";
 import { visit } from "unist-util-visit";
+import type { Root } from "mdast";
 import * as Path from "path";
 //import fetch from "node-fetch";
 

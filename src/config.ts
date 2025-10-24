@@ -1,6 +1,7 @@
 export const SITE = {
   website: "https://drunkcoding.net/",
   author: "Steven (Hoang Bao Duy)",
+  profile: "https://drunkcoding.net/",
   desc: "Drunkcoding.net is a blog page from Steven Hoang, a highly experienced professional with extensive knowledge in technology and software development.",
   title: "drunkcoding.net",
   ogImage: "favicon.svg",
@@ -13,6 +14,7 @@ export const SITE = {
   editPost: {
     enabled: false,
     text: "Edit page",
+    url: "",
   },
   dynamicOgImage: true,
   dir: "ltr", // "rtl" | "auto"
