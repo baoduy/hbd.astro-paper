@@ -124,7 +124,7 @@ Or add it directly to your `.csproj` file:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="DKNet.EfCore.DtoGenerator" Version="1.0.0"
+  <PackageReference Include="DKNet.EfCore.DtoGenerator" Version="latest"
                     PrivateAssets="all"
                     OutputItemType="Analyzer" />
 </ItemGroup>
@@ -355,8 +355,8 @@ public partial record BalanceDto
     // Custom method
     public bool IsPositive() => Balance > 0;
 
-    // Override generated property (if needed)
-    public new decimal Balance { get; init; }
+    // Override generated property. The Balance property will be ignored from Entity.
+    public decimal Balance { get; init; }
 }
 ```
 

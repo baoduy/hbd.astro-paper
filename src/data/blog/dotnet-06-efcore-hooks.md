@@ -16,7 +16,7 @@ description: "Discover how DKNet.EfCore.Hooks revolutionizes Entity Framework Co
 
 Managing cross-cutting concerns in Entity Framework Core applications has always been a challenge. How do you cleanly implement auditing, validation, event publishing, or caching without cluttering your DbContext or business logic? Traditional approaches often lead to scattered code, tight coupling, and maintenance headaches. What if there was a better way to handle these concerns systematically?
 
-**DKNet.EfCore.Hooks** is a powerful lifecycle hooks system for Entity Framework Core that provides pre and post-save interceptors, enabling you to implement cross-cutting concerns in a clean, maintainable, and testable manner. It seamlessly integrates with .NET dependency injection and supports full async/await operations, making it perfect for modern cloud-native applications.
+**DKNet.EfCore.Hooks** is leveraging a powerful lifecycle interceptors of Entity Framework Core that provides pre and post-save hook, enabling you to implement cross-cutting concerns in a clean, maintainable, and testable manner. It seamlessly integrates with .NET dependency injection and supports full async/await operations, making it perfect for modern cloud-native applications.
 
 ## Table of Contents
 
@@ -127,7 +127,6 @@ Before using DKNet.EfCore.Hooks, ensure you have:
 
 - **.NET 9.0 SDK** or later
 - **Entity Framework Core 9.0+**
-- A project with **Microsoft.Extensions.DependencyInjection**
 
 ### Installation
 
@@ -141,7 +140,7 @@ Or add it directly to your `.csproj` file:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="DKNet.EfCore.Hooks" Version="1.0.0" />
+  <PackageReference Include="DKNet.EfCore.Hooks" Version="latest" />
 </ItemGroup>
 ```
 
