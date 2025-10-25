@@ -52,7 +52,7 @@ public class AppDbContext : DbContext
     private readonly ICurrentUserService _currentUserService;
     private readonly IEventPublisher _eventPublisher;
     private readonly ICacheManager _cacheManager;
-    
+
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         // Auditing logic
@@ -69,15 +69,15 @@ public class AppDbContext : DbContext
                 entry.Entity.UpdatedOn = DateTime.UtcNow;
             }
         }
-        
+
         // Validation logic
         foreach (var entry in ChangeTracker.Entries())
         {
             ValidateEntity(entry.Entity);
         }
-        
+
         var result = await base.SaveChangesAsync(cancellationToken);
-        
+
         // Event publishing logic
         foreach (var entry in ChangeTracker.Entries<IEventEntity>())
         {
@@ -87,10 +87,10 @@ public class AppDbContext : DbContext
                 await _eventPublisher.PublishAsync(evt, cancellationToken);
             }
         }
-        
+
         // Cache invalidation
         await _cacheManager.InvalidateAsync();
-        
+
         return result;
     }
 }
@@ -162,7 +162,7 @@ public class Startup
         services.AddHook<AppDbContext, AuditHook>();
         services.AddHook<AppDbContext, EventPublishingHook>();
         services.AddHook<AppDbContext, CacheInvalidationHook>();
-        
+
         // Configure DbContext with hook interceptor
         services.AddDbContext<AppDbContext>((provider, options) =>
         {
@@ -218,7 +218,7 @@ public class AuditHook : IBeforeSaveHookAsync
 
         foreach (var entry in context.Entries)
         {
-            if (entry.Entity is not IAuditedEntity auditedEntity) 
+            if (entry.Entity is not IAuditedEntity auditedEntity)
                 continue;
 
             switch (entry.State)
@@ -226,14 +226,14 @@ public class AuditHook : IBeforeSaveHookAsync
                 case EntityState.Added:
                     auditedEntity.CreatedBy = currentUser;
                     auditedEntity.CreatedOn = now;
-                    _logger.LogInformation("Entity {EntityType} created by {User}", 
+                    _logger.LogInformation("Entity {EntityType} created by {User}",
                         entry.Entity.GetType().Name, currentUser);
                     break;
 
                 case EntityState.Modified:
                     auditedEntity.UpdatedBy = currentUser;
                     auditedEntity.UpdatedOn = now;
-                    _logger.LogInformation("Entity {EntityType} updated by {User}", 
+                    _logger.LogInformation("Entity {EntityType} updated by {User}",
                         entry.Entity.GetType().Name, currentUser);
                     break;
             }
@@ -272,18 +272,18 @@ public class EventPublishingHook : IAfterSaveHookAsync
 
         foreach (var entry in context.Entries)
         {
-            if (entry.Entity is not IEventEntity eventEntity) 
+            if (entry.Entity is not IEventEntity eventEntity)
                 continue;
 
             var events = eventEntity.GetEvents();
             foreach (var domainEvent in events)
             {
-                _logger.LogInformation("Publishing event {EventType} for entity {EntityType}", 
+                _logger.LogInformation("Publishing event {EventType} for entity {EntityType}",
                     domainEvent.GetType().Name, entry.Entity.GetType().Name);
-                    
+
                 eventTasks.Add(_eventPublisher.PublishAsync(domainEvent, cancellationToken));
             }
-            
+
             eventEntity.ClearEvents();
         }
 
@@ -323,8 +323,8 @@ public class ValidationHook : IHookAsync
             if (!result.IsValid)
             {
                 _validationResults.AddRange(result.Errors);
-                _logger.LogWarning("Validation failed for {EntityType}: {Errors}", 
-                    entry.Entity.GetType().Name, 
+                _logger.LogWarning("Validation failed for {EntityType}: {Errors}",
+                    entry.Entity.GetType().Name,
                     string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
             }
         }
@@ -337,7 +337,7 @@ public class ValidationHook : IHookAsync
 
     public Task RunAfterSaveAsync(SnapshotContext context, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Validation completed successfully for {Count} entities", 
+        _logger.LogInformation("Validation completed successfully for {Count} entities",
             context.Entries.Count());
         return Task.CompletedTask;
     }
@@ -441,10 +441,10 @@ public class SoftDeleteHook : IBeforeSaveHookAsync
         foreach (var entry in deletedEntries)
         {
             var softDeletable = (ISoftDeletable)entry.Entity;
-            
+
             // Change state from Deleted to Modified
             entry.State = EntityState.Modified;
-            
+
             // Mark as soft deleted
             softDeletable.IsDeleted = true;
             softDeletable.DeletedOn = DateTimeOffset.UtcNow;
@@ -484,12 +484,12 @@ public class CacheInvalidationHook : IAfterSaveHookAsync
 
         foreach (var entry in context.Entries)
         {
-            if (entry.Entity is not ICacheable cacheable) 
+            if (entry.Entity is not ICacheable cacheable)
                 continue;
 
             // Add entity's own cache key
             cacheKeysToInvalidate.Add(cacheable.GetCacheKey());
-            
+
             // Add related cache keys
             foreach (var relatedKey in cacheable.GetRelatedCacheKeys())
             {
@@ -534,17 +534,17 @@ public class SearchIndexHook : IAfterSaveHookAsync
 
         foreach (var entry in context.Entries)
         {
-            if (entry.Entity is not ISearchable searchable) 
+            if (entry.Entity is not ISearchable searchable)
                 continue;
 
             var task = entry.State switch
             {
-                EntityState.Added or EntityState.Modified => 
+                EntityState.Added or EntityState.Modified =>
                     _searchService.IndexDocumentAsync(searchable.GetSearchDocument(), cancellationToken),
-                    
-                EntityState.Deleted => 
+
+                EntityState.Deleted =>
                     _searchService.DeleteDocumentAsync(searchable.Id, cancellationToken),
-                    
+
                 _ => Task.CompletedTask
             };
 
@@ -578,7 +578,7 @@ public class TenantHook : IBeforeSaveHookAsync
 
     public Task RunBeforeSaveAsync(SnapshotContext context, CancellationToken cancellationToken = default)
     {
-        var currentTenantId = _tenantContext.TenantId 
+        var currentTenantId = _tenantContext.TenantId
             ?? throw new InvalidOperationException("Tenant context not set");
 
         foreach (var entry in context.Entries.Where(e => e.State == EntityState.Added))
@@ -725,6 +725,7 @@ Understanding the hook execution flow is crucial for designing your hooks:
 ### Performance Considerations
 
 **Do's:**
+
 - ✅ Use async/await for I/O operations
 - ✅ Process entries in batches for large datasets
 - ✅ Use `Task.WhenAll` for concurrent operations
@@ -733,6 +734,7 @@ Understanding the hook execution flow is crucial for designing your hooks:
 - ✅ Cache expensive lookups
 
 **Don'ts:**
+
 - ❌ Make additional SaveChanges calls in before-save hooks (causes recursion)
 - ❌ Perform long-running synchronous operations
 - ❌ Load unnecessary related entities
@@ -768,7 +770,7 @@ public class PerformantHook : IAfterSaveHookAsync
     {
         // ✅ Good: Use cached configuration
         var config = _cache.GetOrCreate("PublishConfig", _ => LoadConfig());
-        
+
         return _messageBus.PublishAsync(entity.ToMessage(), cancellationToken);
     }
 
@@ -858,9 +860,9 @@ public class ResilientAfterSaveHook : IAfterSaveHookAsync
             catch (Exception ex)
             {
                 // Log error but don't re-throw
-                _logger.LogError(ex, 
-                    "Failed to send notification for {EntityType} {EntityId}. Data was saved successfully.", 
-                    entry.Entity.GetType().Name, 
+                _logger.LogError(ex,
+                    "Failed to send notification for {EntityType} {EntityId}. Data was saved successfully.",
+                    entry.Entity.GetType().Name,
                     GetEntityId(entry.Entity));
             }
         }
@@ -901,7 +903,7 @@ public class RetryableHook : IAfterSaveHookAsync
                 sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
                 onRetry: (exception, timeSpan, retryCount, context) =>
                 {
-                    _logger.LogWarning(exception, 
+                    _logger.LogWarning(exception,
                         "Retry {RetryCount} after {Delay}s", retryCount, timeSpan.TotalSeconds);
                 });
     }
@@ -972,8 +974,8 @@ public class AuditHookTests
         var mockLogger = new Mock<ILogger<AuditHook>>();
         var hook = new AuditHook(mockUserService.Object, mockLogger.Object);
 
-        var entity = new TestEntity 
-        { 
+        var entity = new TestEntity
+        {
             CreatedBy = "original-user",
             CreatedOn = DateTimeOffset.UtcNow.AddDays(-1)
         };
@@ -1026,7 +1028,7 @@ public class HookIntegrationTests : IDisposable
     public HookIntegrationTests()
     {
         var services = new ServiceCollection();
-        
+
         // Setup in-memory database
         services.AddDbContext<AppDbContext>((provider, options) =>
         {
@@ -1085,7 +1087,7 @@ public class AuditHook : IBeforeSaveHookAsync { /* ... */ }
 public class EventPublishingHook : IAfterSaveHookAsync { /* ... */ }
 
 // ❌ Avoid: Multiple responsibilities
-public class MegaHook : IHookAsync 
+public class MegaHook : IHookAsync
 {
     // Does auditing, validation, event publishing, caching...
 }
@@ -1156,7 +1158,7 @@ Leverage DI for testability and maintainability:
 public class MyHook : IBeforeSaveHookAsync
 {
     private readonly IService _service;
-    
+
     public MyHook(IService service) => _service = service;
 }
 
@@ -1193,7 +1195,7 @@ services.AddHook<AppDbContext, ValidationHook>();  // Then validate
 
 // ❌ Avoid: Illogical order
 services.AddHook<AppDbContext, ValidationHook>();  // Validates before tenant is set!
-services.AddHook<AppDbContext, TenantHook>();      
+services.AddHook<AppDbContext, TenantHook>();
 ```
 
 ## Conclusion
