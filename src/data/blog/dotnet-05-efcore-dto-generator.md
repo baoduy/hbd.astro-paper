@@ -305,6 +305,30 @@ public partial record BalanceSummaryDto;
 
 Generated DTO will exclude `LastUpdated` and `Id` from Entity's properties.
 
+### Global Properties Exclusions
+
+For projects with common audit properties across multiple entities (such as `CreatedBy`, `UpdatedBy`, `CreatedAt`, `UpdatedAt`), you can configure global exclusions that apply to all generated DTOs. This eliminates the need to specify these exclusions repeatedly for each DTO.
+
+Add the following configuration to your `.csproj` file:
+
+```xml
+<!-- Configure global exclusions for DTO generator -->
+<ItemGroup>
+    <CompilerVisibleProperty Include="DtoGeneratorExclusions"/>
+</ItemGroup>
+<PropertyGroup>
+    <DtoGeneratorExclusions>CreatedBy,UpdatedBy,CreatedAt,UpdatedAt</DtoGeneratorExclusions>
+</PropertyGroup>
+```
+
+With this configuration, all properties listed in `DtoGeneratorExclusions` will be automatically excluded from all generated DTOs throughout your project. This is particularly useful for:
+
+- **Audit Fields**: Automatically exclude common audit tracking properties
+- **Consistency**: Ensure the same properties are excluded across all DTOs
+- **Maintainability**: Change exclusions in one place instead of updating multiple DTO declarations
+
+You can still use the `Exclude` or `Include` parameters on individual DTOs to override or supplement the global exclusions for specific cases.
+
 ### Including Only Specific Properties
 
 Alternatively, specify only the properties you want:
