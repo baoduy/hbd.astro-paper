@@ -170,14 +170,13 @@ Testing domain events requires mocking the entire event infrastructure.
 
 ### Key Features
 
-- **Base Entity Class**: Inherit from `Entity` or `Entity<TKey>` - no manual IEventEntity implementation needed
-- **Simple Event API**: Just call `AddEvent(eventObject)` or `AddEvent<TEvent>()` on your entities
-- **Hook-Based Architecture**: Uses EF Core Hooks to automatically intercept SaveChanges
-- **Zero DbContext Modifications**: No need to override SaveChangesAsync or manually collect events
-- **Transaction Safety**: Events are published only after successful database commits
-- **Flexible Event Publishing**: Supports both direct event objects and event types (with Mapster mapping)
+- **Automatic Event Discovery**: Automatically collects domain events from tracked entities
+- **Transaction Integration**: Events are published only after successful database transactions
+- **Flexible Event Publishing**: Supports both pre-save and post-save event handlers
+- **Simple Entity Interface**: Single `IEventEntity` interface to implement
 - **DI-Friendly**: Seamless integration with .NET dependency injection
 - **Type-Safe**: Full compiler checking for events and handlers
+- **Minimal Boilerplate**: Get started with just a few lines of configuration
 - **Testing Support**: Easy to test with mock event publishers
 
 ### How It Works
@@ -187,21 +186,21 @@ Testing domain events requires mocking the entire event infrastructure.
 │   Entity    │
 │  (Domain)   │──┐
 └─────────────┘  │
-                 │ order.AddEvent()
+                 │ Raises Events
                  ▼
          ┌──────────────┐
-         │ Entity Base  │
-         │   (Queue)    │
+         │ IEventEntity │
+         │  Interface   │
          └──────────────┘
                  │
-                 │ SaveChanges Called
+                 │ Collected by
                  ▼
          ┌──────────────┐
-         │  EventHook   │
-         │  (Intercept) │
+         │  DbContext   │
+         │ SaveChanges  │
          └──────────────┘
                  │
-                 │ After Save
+                 │ Published via
                  ▼
         ┌────────────────┐
         │ EventPublisher │
@@ -214,8 +213,6 @@ Testing domain events requires mocking the entire event infrastructure.
         └────────────────┘
 ```
 
-The `EventHook` is a built-in hook that intercepts EF Core's `SaveChanges` lifecycle, automatically collecting and publishing events without any manual code in your DbContext.
-
 ## Getting Started
 
 ### Prerequisites
@@ -227,42 +224,34 @@ Before using DKNet.EfCore.Events, ensure you have:
 
 ### Installation
 
-Add the required NuGet packages to your project:
+Add the NuGet package to your project:
 
 ```bash
-dotnet add package DKNet.EfCore.Abstractions
 dotnet add package DKNet.EfCore.Events
-dotnet add package DKNet.EfCore.Hooks
 ```
 
-Or add them directly to your `.csproj` file:
+Or add it directly to your `.csproj` file:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="DKNet.EfCore.Abstractions" Version="9.0.*" />
   <PackageReference Include="DKNet.EfCore.Events" Version="9.0.*" />
-  <PackageReference Include="DKNet.EfCore.Hooks" Version="9.0.*" />
 </ItemGroup>
 ```
 
 ### Configuration
 
-Register the hooks and event publisher in your `Program.cs`:
+Register the event publisher in your `Program.cs` or `Startup.cs`:
 
 ```csharp
 using DKNet.EfCore.Events;
-using DKNet.EfCore.Hooks;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Register DbContext with Hooks support
-builder.Services.AddDbContext<AppDbContext>((sp, options) =>
-{
-    options.UseSqlServer(connectionString)
-           .UseHooks(sp); // Enable EF Core Hooks
-});
+// Register DbContext with event support
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(connectionString));
 
-// Register the Event Hook and publishers
+// Register event publisher and handlers
 builder.Services.AddEventPublisher<AppDbContext>();
 
 // Register your event handlers
@@ -272,7 +261,7 @@ builder.Services.AddScoped<IEventHandler<OrderPlacedEvent>, InventoryReservation
 var app = builder.Build();
 ```
 
-The `UseHooks(sp)` extension method enables the hooks system, and `AddEventPublisher<TContext>()` registers the `EventHook` that automatically handles domain events.
+That's all you need to get started!
 
 ## Basic Usage
 
@@ -290,34 +279,55 @@ public record OrderPlacedEvent(
 
 Domain events should be immutable (use `record` or readonly properties) to prevent modification after creation.
 
-### Step 2: Inherit from Entity Base Class
+### Step 2: Implement IEventEntity
 
-Instead of manually implementing `IEventEntity`, inherit from the `Entity` base class provided by `DKNet.EfCore.Abstractions`:
+Make your entity implement the `IEventEntity` interface:
 
 ```csharp
-using DKNet.EfCore.Abstractions.Entities;
+using DKNet.EfCore.Events;
 
-public class Order : Entity  // Entity base class already implements IEventEntity
+public class Order : IEventEntity
 {
+    private readonly List<object> _domainEvents = new();
+    
+    public Guid Id { get; private set; }
     public string OrderNumber { get; private set; } = string.Empty;
     public decimal Total { get; private set; }
     public OrderStatus Status { get; private set; }
     public DateTime PlacedAt { get; private set; }
+    
+    // IEventEntity implementation
+    public IReadOnlyCollection<object> DomainEvents => _domainEvents.AsReadOnly();
+    
+    public void AddDomainEvent(object eventItem)
+    {
+        _domainEvents.Add(eventItem);
+    }
+    
+    public void RemoveDomainEvent(object eventItem)
+    {
+        _domainEvents.Remove(eventItem);
+    }
+    
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
+    }
     
     // Business logic
     public static Order Create(string orderNumber, decimal total)
     {
         var order = new Order
         {
-            // Id is automatically generated by Entity base class
+            Id = Guid.NewGuid(),
             OrderNumber = orderNumber,
             Total = total,
             Status = OrderStatus.Pending,
             PlacedAt = DateTime.UtcNow
         };
         
-        // Add domain event using the built-in AddEvent method
-        order.AddEvent(new OrderPlacedEvent(
+        // Raise domain event
+        order.AddDomainEvent(new OrderPlacedEvent(
             order.Id,
             order.OrderNumber,
             order.Total,
@@ -328,37 +338,42 @@ public class Order : Entity  // Entity base class already implements IEventEntit
 }
 ```
 
-The `Entity` base class provides:
-- Automatic `Guid` ID generation
-- Built-in `AddEvent(object)` method for adding event instances
-- Built-in `AddEvent<TEvent>()` method for adding event types (to be mapped later)
-- Automatic event management and cleanup
+### Step 3: Configure DbContext
 
-### Step 3: Use Your DbContext Normally
-
-The beauty of DKNet.EfCore.Events is that **your DbContext requires no modifications**. The library uses the EF Core Hooks system to automatically intercept `SaveChanges` and handle event publishing:
+Update your `DbContext` to enable event publishing:
 
 ```csharp
 public class AppDbContext : DbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    private readonly IEventPublisher _eventPublisher;
+    
+    public AppDbContext(
+        DbContextOptions<AppDbContext> options,
+        IEventPublisher eventPublisher) : base(options)
     {
+        _eventPublisher = eventPublisher;
     }
     
     public DbSet<Order> Orders => Set<Order>();
     
-    // No event-specific code needed!
-    // The EventHook automatically handles event collection and publishing
+    public override async Task<int> SaveChangesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        // Collect events from entities
+        var events = this.GetDomainEvents();
+        
+        // Save changes
+        var result = await base.SaveChangesAsync(cancellationToken);
+        
+        // Publish events after successful save
+        await _eventPublisher.PublishAsync(events, cancellationToken);
+        
+        return result;
+    }
 }
 ```
 
-When you call `SaveChangesAsync()`, the `EventHook` automatically:
-1. Collects all events from entities implementing `IEventEntity`
-2. Saves the changes to the database
-3. Publishes the events after successful commit
-4. Clears the event queues from entities
-
-This happens transparently through the EF Core Hooks system registered during configuration.
+The `GetDomainEvents()` extension method automatically collects events from all tracked entities implementing `IEventEntity`.
 
 ## Event Handlers
 
@@ -477,12 +492,12 @@ public record OrderCancelledEvent(
 ### Order Entity
 
 ```csharp
-using DKNet.EfCore.Abstractions.Entities;
-
-public class Order : Entity  // Inherit from Entity base class
+public class Order : IEventEntity
 {
+    private readonly List<object> _domainEvents = new();
     private readonly List<OrderItem> _items = new();
     
+    public Guid Id { get; private set; }
     public Guid CustomerId { get; private set; }
     public string OrderNumber { get; private set; } = string.Empty;
     public OrderStatus Status { get; private set; }
@@ -494,12 +509,18 @@ public class Order : Entity  // Inherit from Entity base class
     public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
     public decimal Total => _items.Sum(i => i.Price * i.Quantity);
     
+    // IEventEntity implementation
+    public IReadOnlyCollection<object> DomainEvents => _domainEvents.AsReadOnly();
+    public void AddDomainEvent(object eventItem) => _domainEvents.Add(eventItem);
+    public void RemoveDomainEvent(object eventItem) => _domainEvents.Remove(eventItem);
+    public void ClearDomainEvents() => _domainEvents.Clear();
+    
     // Factory method
     public static Order Create(Guid customerId, string orderNumber, List<OrderItem> items)
     {
         var order = new Order
         {
-            // Id is auto-generated by Entity base class
+            Id = Guid.NewGuid(),
             CustomerId = customerId,
             OrderNumber = orderNumber,
             Status = OrderStatus.Pending,
@@ -508,8 +529,7 @@ public class Order : Entity  // Inherit from Entity base class
         
         order._items.AddRange(items);
         
-        // Add domain event using built-in AddEvent method
-        order.AddEvent(new OrderPlacedEvent(
+        order.AddDomainEvent(new OrderPlacedEvent(
             order.Id,
             order.CustomerId,
             order.OrderNumber,
@@ -528,7 +548,7 @@ public class Order : Entity  // Inherit from Entity base class
         Status = OrderStatus.Confirmed;
         ConfirmedAt = DateTime.UtcNow;
         
-        AddEvent(new OrderConfirmedEvent(Id, ConfirmedAt.Value));
+        AddDomainEvent(new OrderConfirmedEvent(Id, ConfirmedAt.Value));
     }
     
     public void Ship(string trackingNumber)
@@ -540,7 +560,7 @@ public class Order : Entity  // Inherit from Entity base class
         ShippedAt = DateTime.UtcNow;
         TrackingNumber = trackingNumber;
         
-        AddEvent(new OrderShippedEvent(Id, trackingNumber, ShippedAt.Value));
+        AddDomainEvent(new OrderShippedEvent(Id, trackingNumber, ShippedAt.Value));
     }
     
     public void Cancel(string reason)
@@ -550,7 +570,7 @@ public class Order : Entity  // Inherit from Entity base class
         
         Status = OrderStatus.Cancelled;
         
-        AddEvent(new OrderCancelledEvent(Id, reason, DateTime.UtcNow));
+        AddDomainEvent(new OrderCancelledEvent(Id, reason, DateTime.UtcNow));
     }
 }
 
@@ -788,61 +808,6 @@ User Request → Controller → Service → Entity (raises event) → DbContext.
 ```
 
 ## Advanced Features
-
-### Event Type Mapping with Mapster
-
-One unique feature of DKNet.EfCore.Events is the ability to add event _types_ rather than event _instances_. This is useful when you want to map entity state to events automatically:
-
-```csharp
-using DKNet.EfCore.Abstractions.Entities;
-
-public class Order : Entity
-{
-    public string OrderNumber { get; private set; } = string.Empty;
-    public decimal Total { get; private set; }
-    
-    public static Order Create(string orderNumber, decimal total)
-    {
-        var order = new Order
-        {
-            OrderNumber = orderNumber,
-            Total = total
-        };
-        
-        // Add event TYPE instead of event instance
-        // The entity will be mapped to OrderPlacedEvent automatically
-        order.AddEvent<OrderPlacedEvent>();
-        
-        return order;
-    }
-}
-```
-
-Configure Mapster to map your entity to the event:
-
-```csharp
-using Mapster;
-
-// Configure mapping from Order entity to OrderPlacedEvent
-TypeAdapterConfig.GlobalSettings.NewConfig<Order, OrderPlacedEvent>()
-    .Map(dest => dest.OrderId, src => src.Id)
-    .Map(dest => dest.OrderNumber, src => src.OrderNumber)
-    .Map(dest => dest.Total, src => src.Total)
-    .Map(dest => dest.PlacedAt, src => DateTime.UtcNow);
-
-// Register Mapster in DI
-builder.Services.AddMapster();
-```
-
-When `SaveChangesAsync()` is called, the `EventHook` will:
-1. Find entities with event types (not instances)
-2. Use Mapster to map the entity to the event type
-3. Publish the mapped event
-
-This approach is particularly useful when:
-- You want to reduce duplication between entity properties and event properties
-- The event naturally mirrors the entity state
-- You want automatic mapping of entity changes to events
 
 ### Pre-Save Events
 
@@ -1208,15 +1173,14 @@ public record OrderPlacedEvent(
 
 DKNet.EfCore.Events transforms how you implement domain events in .NET applications by:
 
-- **Simplifying Implementation**: Inherit from `Entity` base class, call `AddEvent()` - that's it!
-- **Hook-Based Architecture**: Uses EF Core Hooks system - no DbContext modifications needed
-- **Ensuring Consistency**: Events are automatically tied to database transactions via `EventHook`
+- **Simplifying Implementation**: No more boilerplate event infrastructure code
+- **Ensuring Consistency**: Events are automatically tied to database transactions
 - **Improving Maintainability**: Clean separation between business logic and side effects
 - **Enhancing Testability**: Event handlers are independently testable
 - **Enabling Scalability**: Easily add new event handlers without modifying existing code
-- **Supporting DDD**: First-class support for Domain-Driven Design principles with base entity classes
+- **Supporting DDD**: First-class support for Domain-Driven Design principles
 
-The library seamlessly integrates into your existing EF Core applications with minimal configuration. Through the powerful Hooks system, it automatically handles event collection, transaction coordination, and event publishing without requiring you to modify your DbContext.
+The library seamlessly integrates into your existing EF Core applications with minimal configuration. It handles all the complexity of event collection, transaction coordination, and event publishing, letting you focus on building robust domain models and event handlers.
 
 Whether you're building a simple application or a complex microservices architecture, DKNet.EfCore.Events provides the foundation for reliable, maintainable event-driven systems.
 
@@ -1234,17 +1198,11 @@ Whether you're building a simple application or a complex microservices architec
 ## References
 
 - [DKNet.EfCore.Events Source Code](https://github.com/baoduy/DKNet/tree/dev/src/EfCore/DKNet.EfCore.Events)
-- [DKNet.EfCore.Abstractions Source Code](https://github.com/baoduy/DKNet/tree/dev/src/EfCore/DKNet.EfCore.Abstractions)
-- [DKNet.EfCore.Hooks Source Code](https://github.com/baoduy/DKNet/tree/dev/src/EfCore/DKNet.EfCore.Hooks)
-- [Event Tests - See Real Usage Examples](https://github.com/baoduy/DKNet/tree/dev/src/EfCore/EfCore.Events.Tests)
-- [NuGet: DKNet.EfCore.Events](https://www.nuget.org/packages/DKNet.EfCore.Events)
-- [NuGet: DKNet.EfCore.Abstractions](https://www.nuget.org/packages/DKNet.EfCore.Abstractions)
-- [NuGet: DKNet.EfCore.Hooks](https://www.nuget.org/packages/DKNet.EfCore.Hooks)
+- [NuGet Package](https://www.nuget.org/packages/DKNet.EfCore.Events)
 - [Domain Events - Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/domain-events-design-implementation)
 - [Entity Framework Core Documentation](https://learn.microsoft.com/en-us/ef/core/)
 - [Domain-Driven Design by Eric Evans](https://www.domainlanguage.com/ddd/)
 - [DKNet Framework Documentation](https://baoduy.github.io/DKNet/EfCore/)
-- [Mapster - Object Mapping](https://github.com/MapsterMapper/Mapster)
 
 ## Thank You
 
