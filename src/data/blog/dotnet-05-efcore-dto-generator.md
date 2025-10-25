@@ -124,7 +124,7 @@ Or add it directly to your `.csproj` file:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="DKNet.EfCore.DtoGenerator" Version="1.0.0"
+  <PackageReference Include="DKNet.EfCore.DtoGenerator" Version="latest"
                     PrivateAssets="all"
                     OutputItemType="Analyzer" />
 </ItemGroup>
@@ -198,13 +198,13 @@ That's it! The generator will automatically create `BalanceDto.g.cs` with:
 ```csharp
 // Convert entity to DTO
 var entity = await dbContext.MerchantBalances.FindAsync(id);
-var dto = BalanceDto.FromEntity(entity);
+var dto = mapper.Map<BalanceDto>(entity);
 
 // Convert DTO back to entity
-var newEntity = dto.ToEntity();
+var newEntity = mapper.Map<MerchantBalance>(dto);
 
 // Convert multiple entities
-var dtos = BalanceDto.FromEntities(dbContext.MerchantBalances);
+var dtos = mapper.Map<IEnumerable<BalanceDto>>(dbContext.MerchantBalances);
 ```
 
 ## Validation Attributes Support
@@ -305,6 +305,30 @@ public partial record BalanceSummaryDto;
 
 Generated DTO will exclude `LastUpdated` and `Id` from Entity's properties.
 
+### Global Properties Exclusions
+
+For projects with common audit properties across multiple entities (such as `CreatedBy`, `UpdatedBy`, `CreatedAt`, `UpdatedAt`), you can configure global exclusions that apply to all generated DTOs. This eliminates the need to specify these exclusions repeatedly for each DTO.
+
+Add the following configuration to your `.csproj` file:
+
+```xml
+<!-- Configure global exclusions for DTO generator -->
+<ItemGroup>
+    <CompilerVisibleProperty Include="DtoGeneratorExclusions"/>
+</ItemGroup>
+<PropertyGroup>
+    <DtoGeneratorExclusions>CreatedBy,UpdatedBy,CreatedAt,UpdatedAt</DtoGeneratorExclusions>
+</PropertyGroup>
+```
+
+With this configuration, all properties listed in `DtoGeneratorExclusions` will be automatically excluded from all generated DTOs throughout your project. This is particularly useful for:
+
+- **Audit Fields**: Automatically exclude common audit tracking properties
+- **Consistency**: Ensure the same properties are excluded across all DTOs
+- **Maintainability**: Change exclusions in one place instead of updating multiple DTO declarations
+
+You can still use the `Exclude` or `Include` parameters on individual DTOs to override or supplement the global exclusions for specific cases.
+
 ### Including Only Specific Properties
 
 Alternatively, specify only the properties you want:
@@ -331,8 +355,8 @@ public partial record BalanceDto
     // Custom method
     public bool IsPositive() => Balance > 0;
 
-    // Override generated property (if needed)
-    public new decimal Balance { get; init; }
+    // Override generated property. The Balance property will be ignored from Entity.
+    public decimal Balance { get; init; }
 }
 ```
 
