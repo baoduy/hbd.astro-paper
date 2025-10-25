@@ -20,18 +20,36 @@ Managing cross-cutting concerns in Entity Framework Core applications has always
 
 ## Table of Contents
 
-1. [The Challenge with Cross-Cutting Concerns](#the-challenge-with-cross-cutting-concerns)
-2. [What is DKNet.EfCore.Hooks?](#what-is-dknetefcorehooks)
-3. [Getting Started](#getting-started)
-4. [Basic Hook Implementation](#basic-hook-implementation)
-5. [Understanding the Snapshot Context](#understanding-the-snapshot-context)
-6. [Real-World Use Cases](#real-world-use-cases)
-7. [Advanced Features](#advanced-features)
-8. [Hook Execution Order and Performance](#hook-execution-order-and-performance)
-9. [Error Handling and Resilience](#error-handling-and-resilience)
-10. [Testing Hooks](#testing-hooks)
-11. [Best Practices](#best-practices)
-12. [Conclusion](#conclusion)
+- [Table of Contents](#table-of-contents)
+- [The Challenge with Cross-Cutting Concerns](#the-challenge-with-cross-cutting-concerns)
+- [What is DKNet.EfCore.Hooks?](#what-is-dknetefcorehooks)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Basic Setup](#basic-setup)
+- [Basic Hook Implementation](#basic-hook-implementation)
+  - [Before Save Hook Example](#before-save-hook-example)
+  - [After Save Hook Example](#after-save-hook-example)
+  - [Combined Hook Example](#combined-hook-example)
+- [Understanding the Snapshot Context](#understanding-the-snapshot-context)
+  - [Using Snapshot Context](#using-snapshot-context)
+- [Real-World Use Cases](#real-world-use-cases)
+  - [Use Case 1: Automatic Change Tracking and Logging](#use-case-1-automatic-change-tracking-and-logging)
+  - [Use Case 2: Soft Delete with Cache Invalidation](#use-case-2-soft-delete-with-cache-invalidation)
+- [Hook Execution Order and Performance](#hook-execution-order-and-performance)
+  - [Execution Flow](#execution-flow)
+  - [Performance Considerations](#performance-considerations)
+  - [Performance Example](#performance-example)
+- [Best Practices](#best-practices)
+  - [1. Keep Hooks Focused](#1-keep-hooks-focused)
+  - [2. Use Appropriate Hook Types](#2-use-appropriate-hook-types)
+  - [3. Handle Errors Appropriately](#3-handle-errors-appropriately)
+  - [4. Optimize for Performance](#4-optimize-for-performance)
+  - [5. Use Dependency Injection](#5-use-dependency-injection)
+- [Conclusion](#conclusion)
+- [References](#references)
+- [Related Articles](#related-articles)
+- [Thank You](#thank-you)
 
 ## The Challenge with Cross-Cutting Concerns
 
@@ -411,9 +429,94 @@ public class ChangeTrackingHook : IHookAsync
 
 ## Real-World Use Cases
 
-### Use Case 1: Soft Delete Implementation
+### Use Case 1: Automatic Change Tracking and Logging
 
-Implement soft deletes where records are marked as deleted instead of physically removed:
+This example demonstrates how to automatically track and log all entity changes for compliance and debugging purposes:
+
+```csharp
+public interface IAuditedEntity
+{
+    string CreatedBy { get; set; }
+    DateTimeOffset CreatedOn { get; set; }
+    string? UpdatedBy { get; set; }
+    DateTimeOffset? UpdatedOn { get; set; }
+}
+
+public class AuditLoggingHook : IHookAsync
+{
+    private readonly ICurrentUserService _currentUserService;
+    private readonly ILogger<AuditLoggingHook> _logger;
+    private readonly List<string> _changeLog = new();
+
+    public AuditLoggingHook(ICurrentUserService currentUserService, ILogger<AuditLoggingHook> logger)
+    {
+        _currentUserService = currentUserService;
+        _logger = logger;
+    }
+
+    public Task RunBeforeSaveAsync(SnapshotContext context, CancellationToken cancellationToken = default)
+    {
+        var currentUser = _currentUserService.UserId;
+        var now = DateTimeOffset.UtcNow;
+        _changeLog.Clear();
+
+        foreach (var entry in context.Entries)
+        {
+            if (entry.Entity is not IAuditedEntity auditedEntity)
+                continue;
+
+            switch (entry.State)
+            {
+                case EntityState.Added:
+                    auditedEntity.CreatedBy = currentUser;
+                    auditedEntity.CreatedOn = now;
+                    _changeLog.Add($"Created {entry.Entity.GetType().Name}");
+                    break;
+
+                case EntityState.Modified:
+                    auditedEntity.UpdatedBy = currentUser;
+                    auditedEntity.UpdatedOn = now;
+
+                    // Track which properties changed
+                    var changedProperties = entry.Properties
+                        .Where(p => p.IsModified)
+                        .Select(p => p.Metadata.Name)
+                        .ToList();
+
+                    if (changedProperties.Any())
+                    {
+                        _changeLog.Add($"Modified {entry.Entity.GetType().Name}: {string.Join(", ", changedProperties)}");
+                    }
+                    break;
+
+                case EntityState.Deleted:
+                    _changeLog.Add($"Deleted {entry.Entity.GetType().Name}");
+                    break;
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task RunAfterSaveAsync(SnapshotContext context, CancellationToken cancellationToken = default)
+    {
+        // Log all changes after successful save
+        if (_changeLog.Any())
+        {
+            _logger.LogInformation("User {UserId} made {ChangeCount} changes: {Changes}",
+                _currentUserService.UserId,
+                _changeLog.Count,
+                string.Join("; ", _changeLog));
+        }
+
+        return Task.CompletedTask;
+    }
+}
+```
+
+### Use Case 2: Soft Delete with Cache Invalidation
+
+This example shows how to implement soft deletes while automatically invalidating related cache entries:
 
 ```csharp
 public interface ISoftDeletable
@@ -423,254 +526,122 @@ public interface ISoftDeletable
     string? DeletedBy { get; set; }
 }
 
-public class SoftDeleteHook : IBeforeSaveHookAsync
+public class SoftDeleteCacheHook : IHookAsync
 {
     private readonly ICurrentUserService _currentUserService;
+    private readonly IMemoryCache _cache;
+    private readonly ILogger<SoftDeleteCacheHook> _logger;
+    private readonly List<string> _invalidatedCacheKeys = new();
 
-    public SoftDeleteHook(ICurrentUserService currentUserService)
+    public SoftDeleteCacheHook(
+        ICurrentUserService currentUserService,
+        IMemoryCache cache,
+        ILogger<SoftDeleteCacheHook> logger)
     {
         _currentUserService = currentUserService;
+        _cache = cache;
+        _logger = logger;
     }
 
     public Task RunBeforeSaveAsync(SnapshotContext context, CancellationToken cancellationToken = default)
     {
-        var deletedEntries = context.Entries
-            .Where(e => e.State == EntityState.Deleted && e.Entity is ISoftDeletable);
-
-        foreach (var entry in deletedEntries)
-        {
-            var softDeletable = (ISoftDeletable)entry.Entity;
-
-            // Change state from Deleted to Modified
-            entry.State = EntityState.Modified;
-
-            // Mark as soft deleted
-            softDeletable.IsDeleted = true;
-            softDeletable.DeletedOn = DateTimeOffset.UtcNow;
-            softDeletable.DeletedBy = _currentUserService.UserId;
-        }
-
-        return Task.CompletedTask;
-    }
-}
-```
-
-### Use Case 2: Cache Invalidation
-
-Automatically invalidate caches when entities are modified:
-
-```csharp
-public interface ICacheable
-{
-    string GetCacheKey();
-    string[] GetRelatedCacheKeys();
-}
-
-public class CacheInvalidationHook : IAfterSaveHookAsync
-{
-    private readonly ICacheManager _cacheManager;
-    private readonly ILogger<CacheInvalidationHook> _logger;
-
-    public CacheInvalidationHook(ICacheManager cacheManager, ILogger<CacheInvalidationHook> logger)
-    {
-        _cacheManager = cacheManager;
-        _logger = logger;
-    }
-
-    public async Task RunAfterSaveAsync(SnapshotContext context, CancellationToken cancellationToken = default)
-    {
-        var cacheKeysToInvalidate = new HashSet<string>();
+        _invalidatedCacheKeys.Clear();
 
         foreach (var entry in context.Entries)
         {
-            if (entry.Entity is not ICacheable cacheable)
-                continue;
-
-            // Add entity's own cache key
-            cacheKeysToInvalidate.Add(cacheable.GetCacheKey());
-
-            // Add related cache keys
-            foreach (var relatedKey in cacheable.GetRelatedCacheKeys())
+            // Convert physical deletes to soft deletes
+            if (entry.State == EntityState.Deleted && entry.Entity is ISoftDeletable softDeletable)
             {
-                cacheKeysToInvalidate.Add(relatedKey);
+                entry.State = EntityState.Modified;
+                softDeletable.IsDeleted = true;
+                softDeletable.DeletedOn = DateTimeOffset.UtcNow;
+                softDeletable.DeletedBy = _currentUserService.UserId;
+
+                _logger.LogInformation("Soft deleting {EntityType} by user {UserId}",
+                    entry.Entity.GetType().Name, _currentUserService.UserId);
             }
-        }
 
-        if (cacheKeysToInvalidate.Any())
-        {
-            _logger.LogInformation("Invalidating {Count} cache keys", cacheKeysToInvalidate.Count);
-            await _cacheManager.RemoveAsync(cacheKeysToInvalidate, cancellationToken);
-        }
-    }
-}
-```
-
-### Use Case 3: Search Index Synchronization
-
-Keep external search indexes synchronized with database changes:
-
-```csharp
-public interface ISearchable
-{
-    string Id { get; }
-    string GetSearchDocument();
-}
-
-public class SearchIndexHook : IAfterSaveHookAsync
-{
-    private readonly ISearchService _searchService;
-    private readonly ILogger<SearchIndexHook> _logger;
-
-    public SearchIndexHook(ISearchService searchService, ILogger<SearchIndexHook> logger)
-    {
-        _searchService = searchService;
-        _logger = logger;
-    }
-
-    public async Task RunAfterSaveAsync(SnapshotContext context, CancellationToken cancellationToken = default)
-    {
-        var indexingTasks = new List<Task>();
-
-        foreach (var entry in context.Entries)
-        {
-            if (entry.Entity is not ISearchable searchable)
-                continue;
-
-            var task = entry.State switch
+            // Track cache keys to invalidate for any changed entity
+            if (entry.State is EntityState.Added or EntityState.Modified or EntityState.Deleted)
             {
-                EntityState.Added or EntityState.Modified =>
-                    _searchService.IndexDocumentAsync(searchable.GetSearchDocument(), cancellationToken),
-
-                EntityState.Deleted =>
-                    _searchService.DeleteDocumentAsync(searchable.Id, cancellationToken),
-
-                _ => Task.CompletedTask
-            };
-
-            indexingTasks.Add(task);
-        }
-
-        await Task.WhenAll(indexingTasks);
-        _logger.LogInformation("Synchronized {Count} documents with search index", indexingTasks.Count);
-    }
-}
-```
-
-### Use Case 4: Multi-Tenant Data Isolation
-
-Automatically set tenant information on entities:
-
-```csharp
-public interface ITenantEntity
-{
-    string TenantId { get; set; }
-}
-
-public class TenantHook : IBeforeSaveHookAsync
-{
-    private readonly ITenantContext _tenantContext;
-
-    public TenantHook(ITenantContext tenantContext)
-    {
-        _tenantContext = tenantContext;
-    }
-
-    public Task RunBeforeSaveAsync(SnapshotContext context, CancellationToken cancellationToken = default)
-    {
-        var currentTenantId = _tenantContext.TenantId
-            ?? throw new InvalidOperationException("Tenant context not set");
-
-        foreach (var entry in context.Entries.Where(e => e.State == EntityState.Added))
-        {
-            if (entry.Entity is ITenantEntity tenantEntity)
-            {
-                tenantEntity.TenantId = currentTenantId;
+                var entityType = entry.Entity.GetType().Name;
+                var cacheKey = $"{entityType}_{GetEntityId(entry.Entity)}";
+                _invalidatedCacheKeys.Add(cacheKey);
             }
         }
 
         return Task.CompletedTask;
     }
-}
-```
 
-## Advanced Features
-
-### Multiple Hooks Registration
-
-You can register multiple hooks for the same DbContext. They will execute in the order they were registered:
-
-```csharp
-services.AddHook<AppDbContext, TenantHook>();        // Executes first
-services.AddHook<AppDbContext, AuditHook>();          // Executes second
-services.AddHook<AppDbContext, ValidationHook>();     // Executes third
-services.AddHook<AppDbContext, EventPublishingHook>(); // Executes fourth (after save)
-services.AddHook<AppDbContext, CacheInvalidationHook>(); // Executes fifth (after save)
-```
-
-### Conditional Hook Execution
-
-Implement conditional logic to skip unnecessary processing:
-
-```csharp
-public class ConditionalHook : IBeforeSaveHookAsync
-{
-    private readonly IFeatureManager _featureManager;
-
-    public ConditionalHook(IFeatureManager featureManager)
+    public Task RunAfterSaveAsync(SnapshotContext context, CancellationToken cancellationToken = default)
     {
-        _featureManager = featureManager;
-    }
-
-    public async Task RunBeforeSaveAsync(SnapshotContext context, CancellationToken cancellationToken = default)
-    {
-        // Only execute if feature is enabled
-        if (!await _featureManager.IsEnabledAsync("AuditingFeature"))
-            return;
-
-        // Only process specific entity types
-        var relevantEntries = context.Entries
-            .Where(e => e.Entity is Product || e.Entity is Order);
-
-        foreach (var entry in relevantEntries)
+        // Invalidate cache after successful save
+        foreach (var cacheKey in _invalidatedCacheKeys)
         {
-            // Process entry
+            _cache.Remove(cacheKey);
         }
+
+        if (_invalidatedCacheKeys.Any())
+        {
+            _logger.LogInformation("Invalidated {Count} cache entries after save",
+                _invalidatedCacheKeys.Count);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private static object? GetEntityId(object entity)
+    {
+        return entity.GetType().GetProperty("Id")?.GetValue(entity);
     }
 }
 ```
 
-### Batch Operations Optimization
-
-Optimize hooks for better performance with batch operations:
+**Registration Example:**
 
 ```csharp
-public class BatchOptimizedHook : IAfterSaveHookAsync
+public class Startup
 {
-    private readonly INotificationService _notificationService;
-    private readonly int _batchSize = 100;
-
-    public BatchOptimizedHook(INotificationService notificationService)
+    public void ConfigureServices(IServiceCollection services)
     {
-        _notificationService = notificationService;
-    }
+        // Register the hooks
+        services.AddHook<AppDbContext, AuditLoggingHook>();
+        services.AddHook<AppDbContext, SoftDeleteCacheHook>();
 
-    public async Task RunAfterSaveAsync(SnapshotContext context, CancellationToken cancellationToken = default)
-    {
-        var entities = context.Entries
-            .Where(e => e.State == EntityState.Added && e.Entity is INotifiable)
-            .Select(e => e.Entity)
-            .Cast<INotifiable>()
-            .ToList();
-
-        // Process in batches for better performance
-        for (int i = 0; i < entities.Count; i += _batchSize)
+        // Configure DbContext
+        services.AddDbContext<AppDbContext>((provider, options) =>
         {
-            var batch = entities.Skip(i).Take(_batchSize);
-            await _notificationService.SendBatchNotificationsAsync(batch, cancellationToken);
-        }
+            options.UseSqlServer(connectionString)
+                   .UseHooks(provider);
+        });
+
+        // Register dependencies
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddMemoryCache();
     }
 }
+
+// Example entity
+public class Product : IAuditedEntity, ISoftDeletable
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+
+    // IAuditedEntity
+    public string CreatedBy { get; set; } = string.Empty;
+    public DateTimeOffset CreatedOn { get; set; }
+    public string? UpdatedBy { get; set; }
+    public DateTimeOffset? UpdatedOn { get; set; }
+
+    // ISoftDeletable
+    public bool IsDeleted { get; set; }
+    public DateTimeOffset? DeletedOn { get; set; }
+    public string? DeletedBy { get; set; }
+}
 ```
+
+These examples demonstrate practical, focused use cases for hooks that handle common requirements like auditing, logging, soft deletes, and cache management without unnecessary complexity.
 
 ## Hook Execution Order and Performance
 
@@ -781,299 +752,6 @@ public class PerformantHook : IAfterSaveHookAsync
 }
 ```
 
-## Error Handling and Resilience
-
-Proper error handling is critical for maintaining data integrity and system reliability.
-
-### Before Save Hook Error Handling
-
-Errors in before-save hooks should **abort** the save operation:
-
-```csharp
-public class CriticalValidationHook : IBeforeSaveHookAsync
-{
-    private readonly ILogger<CriticalValidationHook> _logger;
-
-    public CriticalValidationHook(ILogger<CriticalValidationHook> logger)
-    {
-        _logger = logger;
-    }
-
-    public async Task RunBeforeSaveAsync(SnapshotContext context, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            // Critical validation that must pass
-            foreach (var entry in context.Entries)
-            {
-                await ValidateCriticalRulesAsync(entry.Entity, cancellationToken);
-            }
-        }
-        catch (ValidationException ex)
-        {
-            _logger.LogError(ex, "Critical validation failed. Aborting save operation.");
-            throw; // Re-throw to abort save
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Unexpected error in pre-save validation.");
-            throw; // Re-throw to abort save
-        }
-    }
-
-    private Task ValidateCriticalRulesAsync(object entity, CancellationToken cancellationToken)
-    {
-        // Validation logic
-        return Task.CompletedTask;
-    }
-}
-```
-
-### After Save Hook Error Handling
-
-Errors in after-save hooks should **NOT** abort the transaction (data is already saved):
-
-```csharp
-public class ResilientAfterSaveHook : IAfterSaveHookAsync
-{
-    private readonly ILogger<ResilientAfterSaveHook> _logger;
-    private readonly INotificationService _notificationService;
-
-    public ResilientAfterSaveHook(
-        ILogger<ResilientAfterSaveHook> logger,
-        INotificationService notificationService)
-    {
-        _logger = logger;
-        _notificationService = notificationService;
-    }
-
-    public async Task RunAfterSaveAsync(SnapshotContext context, CancellationToken cancellationToken = default)
-    {
-        foreach (var entry in context.Entries)
-        {
-            try
-            {
-                // Non-critical operations that shouldn't fail the save
-                await _notificationService.NotifyAsync(entry.Entity, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                // Log error but don't re-throw
-                _logger.LogError(ex,
-                    "Failed to send notification for {EntityType} {EntityId}. Data was saved successfully.",
-                    entry.Entity.GetType().Name,
-                    GetEntityId(entry.Entity));
-            }
-        }
-    }
-
-    private static object? GetEntityId(object entity)
-    {
-        return entity.GetType().GetProperty("Id")?.GetValue(entity);
-    }
-}
-```
-
-### Retry Logic with Polly
-
-Implement retry logic for transient failures:
-
-```csharp
-using Polly;
-using Polly.Retry;
-
-public class RetryableHook : IAfterSaveHookAsync
-{
-    private readonly IExternalService _externalService;
-    private readonly ILogger<RetryableHook> _logger;
-    private readonly AsyncRetryPolicy _retryPolicy;
-
-    public RetryableHook(IExternalService externalService, ILogger<RetryableHook> logger)
-    {
-        _externalService = externalService;
-        _logger = logger;
-
-        // Configure retry policy
-        _retryPolicy = Policy
-            .Handle<HttpRequestException>()
-            .Or<TimeoutException>()
-            .WaitAndRetryAsync(
-                retryCount: 3,
-                sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                onRetry: (exception, timeSpan, retryCount, context) =>
-                {
-                    _logger.LogWarning(exception,
-                        "Retry {RetryCount} after {Delay}s", retryCount, timeSpan.TotalSeconds);
-                });
-    }
-
-    public async Task RunAfterSaveAsync(SnapshotContext context, CancellationToken cancellationToken = default)
-    {
-        foreach (var entry in context.Entries)
-        {
-            try
-            {
-                await _retryPolicy.ExecuteAsync(async () =>
-                {
-                    await _externalService.SyncAsync(entry.Entity, cancellationToken);
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to sync entity after retries");
-                // Handle failure appropriately (e.g., queue for later retry)
-            }
-        }
-    }
-}
-```
-
-## Testing Hooks
-
-Hooks are easy to test in isolation since they're just regular classes with dependencies.
-
-### Unit Testing Example
-
-```csharp
-using Xunit;
-using Moq;
-using Microsoft.EntityFrameworkCore;
-
-public class AuditHookTests
-{
-    [Fact]
-    public async Task RunBeforeSaveAsync_SetsCreatedByForNewEntities()
-    {
-        // Arrange
-        var mockUserService = new Mock<ICurrentUserService>();
-        mockUserService.Setup(x => x.UserId).Returns("test-user");
-
-        var mockLogger = new Mock<ILogger<AuditHook>>();
-        var hook = new AuditHook(mockUserService.Object, mockLogger.Object);
-
-        var entity = new TestEntity();
-        var mockEntry = CreateMockEntry(entity, EntityState.Added);
-        var context = CreateSnapshotContext(mockEntry);
-
-        // Act
-        await hook.RunBeforeSaveAsync(context);
-
-        // Assert
-        Assert.Equal("test-user", entity.CreatedBy);
-        Assert.NotEqual(default, entity.CreatedOn);
-    }
-
-    [Fact]
-    public async Task RunBeforeSaveAsync_SetsUpdatedByForModifiedEntities()
-    {
-        // Arrange
-        var mockUserService = new Mock<ICurrentUserService>();
-        mockUserService.Setup(x => x.UserId).Returns("test-user");
-
-        var mockLogger = new Mock<ILogger<AuditHook>>();
-        var hook = new AuditHook(mockUserService.Object, mockLogger.Object);
-
-        var entity = new TestEntity
-        {
-            CreatedBy = "original-user",
-            CreatedOn = DateTimeOffset.UtcNow.AddDays(-1)
-        };
-        var mockEntry = CreateMockEntry(entity, EntityState.Modified);
-        var context = CreateSnapshotContext(mockEntry);
-
-        // Act
-        await hook.RunBeforeSaveAsync(context);
-
-        // Assert
-        Assert.Equal("test-user", entity.UpdatedBy);
-        Assert.NotNull(entity.UpdatedOn);
-    }
-
-    private SnapshotEntry CreateMockEntry(object entity, EntityState state)
-    {
-        // Create mock entry
-        // Implementation depends on your test infrastructure
-        throw new NotImplementedException();
-    }
-
-    private SnapshotContext CreateSnapshotContext(params SnapshotEntry[] entries)
-    {
-        // Create mock snapshot context
-        // Implementation depends on your test infrastructure
-        throw new NotImplementedException();
-    }
-
-    private class TestEntity : IAuditedEntity
-    {
-        public string CreatedBy { get; set; } = string.Empty;
-        public DateTimeOffset CreatedOn { get; set; }
-        public string? UpdatedBy { get; set; }
-        public DateTimeOffset? UpdatedOn { get; set; }
-    }
-}
-```
-
-### Integration Testing Example
-
-```csharp
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-
-public class HookIntegrationTests : IDisposable
-{
-    private readonly ServiceProvider _serviceProvider;
-    private readonly AppDbContext _dbContext;
-
-    public HookIntegrationTests()
-    {
-        var services = new ServiceCollection();
-
-        // Setup in-memory database
-        services.AddDbContext<AppDbContext>((provider, options) =>
-        {
-            options.UseInMemoryDatabase("TestDb")
-                   .AddHookInterceptor<AppDbContext>(provider);
-        });
-
-        // Register hooks and dependencies
-        services.AddHook<AppDbContext, AuditHook>();
-        services.AddSingleton<ICurrentUserService, TestUserService>();
-        services.AddLogging();
-
-        _serviceProvider = services.BuildServiceProvider();
-        _dbContext = _serviceProvider.GetRequiredService<AppDbContext>();
-    }
-
-    [Fact]
-    public async Task SaveChanges_ExecutesAuditHook()
-    {
-        // Arrange
-        var product = new Product { Name = "Test Product", Price = 99.99m };
-
-        // Act
-        _dbContext.Products.Add(product);
-        await _dbContext.SaveChangesAsync();
-
-        // Assert
-        var savedProduct = await _dbContext.Products.FindAsync(product.Id);
-        Assert.NotNull(savedProduct);
-        Assert.Equal("test-user", savedProduct.CreatedBy);
-        Assert.NotEqual(default, savedProduct.CreatedOn);
-    }
-
-    public void Dispose()
-    {
-        _dbContext?.Dispose();
-        _serviceProvider?.Dispose();
-    }
-
-    private class TestUserService : ICurrentUserService
-    {
-        public string UserId => "test-user";
-    }
-}
-```
-
 ## Best Practices
 
 ### 1. Keep Hooks Focused
@@ -1166,35 +844,6 @@ public class MyHook : IBeforeSaveHookAsync
 {
     private readonly IService _service = new ServiceImplementation();
 }
-```
-
-### 6. Document Hook Behavior
-
-```csharp
-/// <summary>
-/// Automatically sets audit fields (CreatedBy, CreatedOn, UpdatedBy, UpdatedOn)
-/// for entities implementing IAuditedEntity.
-/// Executes before SaveChanges to ensure audit data is included in the save.
-/// </summary>
-public class AuditHook : IBeforeSaveHookAsync
-{
-    // Implementation
-}
-```
-
-### 7. Consider Hook Order
-
-Register hooks in the order they should execute:
-
-```csharp
-// ✅ Good: Logical order
-services.AddHook<AppDbContext, TenantHook>();      // Set tenant first
-services.AddHook<AppDbContext, AuditHook>();       // Then audit
-services.AddHook<AppDbContext, ValidationHook>();  // Then validate
-
-// ❌ Avoid: Illogical order
-services.AddHook<AppDbContext, ValidationHook>();  // Validates before tenant is set!
-services.AddHook<AppDbContext, TenantHook>();
 ```
 
 ## Conclusion
