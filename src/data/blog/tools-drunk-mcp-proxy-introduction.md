@@ -1,6 +1,6 @@
 ---
 author: Steven Hoang
-pubDatetime: 2026-02-17T13:00:00Z
+pubDatetime: 2026-02-19T13:00:00Z
 title: "Introducing drunk-mcp-proxy: A Production-Ready Dynamic Proxy for Model Context Protocol"
 postSlug: tools-drunk-mcp-proxy-introduction
 featured: true
@@ -13,304 +13,162 @@ tags:
   - openapi
   - authentication
   - docker
-description: "Discover drunk-mcp-proxy, a powerful production-ready dynamic proxy server for the Model Context Protocol (MCP) that enables unified access to multiple backend MCP servers and OpenAPI services with enterprise authentication, CORS support, and namespace isolation."
+description: "Discover drunk-mcp-proxy, a production-ready dynamic proxy server for the Model Context Protocol (MCP). Deploy instantly from Docker Hub (baoduy2412/mcp-proxy) to unify multiple MCP backends, convert OpenAPI specs to MCP tools, and secure everything with enterprise authentication."
 ---
 
-The Model Context Protocol (MCP) has revolutionized how AI applications interact with external tools and services. However, as your infrastructure grows with multiple MCP servers and REST APIs, managing connections, authentication, and namespacing becomes increasingly complex. How do you provide a unified interface while maintaining security, isolation, and scalability?
+As AI tooling matures, teams inevitably end up running multiple MCP servers — one for internal docs, another for finance data, a third wrapping a REST API. Each needs its own connection, its own auth, its own client config. It doesn't scale.
 
-**drunk-mcp-proxy** is a sophisticated, production-ready dynamic proxy server built with Python and FastMCP that solves these challenges. It acts as a central gateway for MCP services, providing a unified interface for multiple backend MCP servers and automatic conversion of OpenAPI specifications to MCP tools, all with enterprise-grade authentication and monitoring capabilities.
+I built **drunk-mcp-proxy** to solve this. It's a single gateway that sits in front of all your MCP backends and OpenAPI services, giving clients one endpoint to talk to. No more juggling connections. No more tool-name collisions. No more auth headaches.
 
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
-- [The Challenge with Multiple MCP Services](#the-challenge-with-multiple-mcp-services)
-- [What is drunk-mcp-proxy?](#what-is-drunk-mcp-proxy)
-- [Key Features](#key-features)
-- [Quick Start](#quick-start)
-  - [Using Docker Compose (Recommended)](#using-docker-compose-recommended)
-  - [Using Docker](#using-docker)
-  - [Local Development](#local-development)
-- [Architecture Overview](#architecture-overview)
-  - [High-Level Architecture](#high-level-architecture)
-  - [Component Architecture](#component-architecture)
-- [Feature 1: Dynamic MCP Service Management](#feature-1-dynamic-mcp-service-management)
-  - [Root Path Aggregation](#root-path-aggregation)
-  - [Namespaced Services](#namespaced-services)
-  - [Configuration Example](#configuration-example)
-- [Feature 2: OpenAPI to MCP Conversion](#feature-2-openapi-to-mcp-conversion)
-  - [Automatic Tool Generation](#automatic-tool-generation)
-  - [Route Filtering](#route-filtering)
-  - [Configuration Example](#configuration-example-1)
-- [Feature 3: Enterprise Authentication](#feature-3-enterprise-authentication)
-  - [Supported Authentication Methods](#supported-authentication-methods)
-  - [Pass-Through Authentication](#pass-through-authentication)
-  - [Azure OAuth2 Integration](#azure-oauth2-integration)
-- [Skills Directory Provider](#skills-directory-provider)
-  - [Configuration](#configuration)
-  - [Use Cases](#use-cases)
-- [Production Deployment](#production-deployment)
-  - [Docker Deployment](#docker-deployment)
-  - [Health Monitoring](#health-monitoring)
-  - [Environment Configuration](#environment-configuration)
-- [Real-World Use Cases](#real-world-use-cases)
-  - [Use Case 1: Unified Gateway for Multiple Internal Services](#use-case-1-unified-gateway-for-multiple-internal-services)
-  - [Use Case 2: Secure API Gateway with Azure AD](#use-case-2-secure-api-gateway-with-azure-ad)
-  - [Use Case 3: Multi-Tenant SaaS Architecture](#use-case-3-multi-tenant-saas-architecture)
-- [Best Practices](#best-practices)
-- [Conclusion](#conclusion)
-- [References](#references)
+## Why You Need an MCP Gateway
 
-## The Challenge with Multiple MCP Services
+As organizations adopt MCP, several pain points emerge:
 
-As organizations adopt MCP, several challenges emerge:
+1. **Service Sprawl** — Multiple MCP servers serving different domains (finance, docs, internal tools) each requiring separate client connections
+2. **Tool Name Conflicts** — Different services exposing tools with identical names, causing confusion and errors
+3. **Authentication Complexity** — Each backend may require different auth methods (JWT, OAuth, API keys)
+4. **Client Configuration Overhead** — Every MCP client needs to know about every backend endpoint
+5. **REST API Integration** — Existing REST APIs need manual wrapping to become MCP-compatible
+6. **Operational Blind Spots** — No centralized health monitoring or logging across services
 
-1. **Service Proliferation**: Multiple backend MCP servers serving different domains (finance, documentation, internal tools)
-2. **Tool Name Conflicts**: Different services may expose tools with identical names
-3. **Authentication Complexity**: Each service may require different authentication methods
-4. **Client Configuration**: MCP clients need to manage connections to multiple endpoints
-5. **API Integration**: REST APIs need to be wrapped or converted to MCP-compatible tools
-6. **Monitoring & Observability**: Tracking health and performance across distributed services
-
-Traditional approaches require clients to maintain complex configurations and handle each service independently, leading to maintenance overhead and potential security gaps.
+drunk-mcp-proxy addresses all of these with a clean, config-driven approach.
 
 ## What is drunk-mcp-proxy?
 
-drunk-mcp-proxy is a sophisticated proxy server that acts as a central gateway for Model Context Protocol services. Built with Python and FastMCP, it provides:
+A production-ready proxy server built with Python and [FastMCP](https://github.com/jlowin/fastmcp) that acts as a central gateway for MCP services. Think of it as an API gateway, but purpose-built for the Model Context Protocol.
 
-- **Unified Interface**: Single endpoint for multiple backend MCP servers
-- **Dynamic Routing**: Automatic routing to configured backend services
-- **Namespace Isolation**: Prevent tool name conflicts with per-server namespaces
-- **OpenAPI Integration**: Automatic conversion of OpenAPI specs to MCP tools
-- **Enterprise Authentication**: Pluggable auth providers (JWT, OAuth, GitHub, etc.)
-- **Production Ready**: Health checks, CORS, structured logging, Docker support
+**Core capabilities:**
 
-The project is open-source and available at: [github.com/baoduy/drunk-mcp-proxy](https://github.com/baoduy/drunk-mcp-proxy)
+- **Unified Interface** — Single HTTP endpoint for multiple backend MCP servers
+- **Dynamic Routing** — Path-based routing to configured backends (`/stock/mcp`, `/wiki/mcp`, etc.)
+- **Namespace Isolation** — Per-server namespaces prevent tool name conflicts
+- **OpenAPI → MCP Conversion** — Automatically convert any OpenAPI 3.0 spec into MCP tools
+- **Enterprise Authentication** — Pluggable auth providers (JWT, GitHub, Google, Azure AD, and more)
+- **Production Ready** — Health checks, CORS, structured logging, token caching, Docker support
 
-## Key Features
+The project is open-source and available at [github.com/baoduy/drunk-mcp-proxy](https://github.com/baoduy/drunk-mcp-proxy).
 
-### 🚀 Dynamic Proxy Management
+## Quick Start with Docker Hub
 
-Configure multiple MCP and OpenAPI services via JSON with hot-reloading support and environment variable resolution.
+The fastest way to get started — no building from source required. The image is published on Docker Hub as **baoduy2412/mcp-proxy**.
 
-### 🐳 Docker Support
+### Docker Run
 
-Multi-stage production Docker image with health checks and optimized runtime.
+```bash
+docker run -d \
+  --name mcp-proxy \
+  -p 9123:9123 \
+  -v $(pwd)/data:/mcp_proxy/data \
+  -e FASTMCP_CONFIG_DIR=/mcp_proxy/data \
+  baoduy2412/mcp-proxy
+```
 
-### 🔌 Multiple Transports
+### Docker Compose (Recommended)
 
-Supports HTTP, SSE, and stdio transport protocols for maximum flexibility.
+Create a `docker-compose.yml`:
 
-### 🔐 Enterprise Authentication
+```yaml
+version: "3"
+services:
+  mcp-proxy:
+    image: baoduy2412/mcp-proxy:latest
+    ports:
+      - "9123:9123"
+    volumes:
+      - ./data:/mcp_proxy/data
+    environment:
+      - FASTMCP_CONFIG_DIR=/mcp_proxy/data
+      - FASTMCP_LOG_LEVEL=INFO
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9123/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+```
 
-Built-in support for JWT, GitHub, Google, Discord, Azure AD, and custom auth providers with token caching.
+Then start it:
 
-### 🌐 CORS Ready
+```bash
+docker-compose up -d
+curl http://localhost:9123/health
+# Response: {"status": "healthy"}
+```
 
-Full CORS middleware for web client integration with configurable origins and methods.
+That's it. Point your MCP clients at `http://localhost:9123/mcp` and you're connected.
 
-### 🎨 OpenAPI Support
+### Building from Source (Optional)
 
-Automatically convert OpenAPI 3.0 specifications to MCP tools with route filtering and authentication.
-
-### 🔍 Health Monitoring
-
-Built-in health check endpoint for container orchestration and monitoring systems.
-
-### 📊 Structured Logging
-
-Configurable log levels with comprehensive logging for debugging and production monitoring.
-
-### 🛡️ JSON Schema Validation
-
-Automatic configuration validation against schemas to catch errors early.
-
-## Quick Start
-
-### Using Docker Compose (Recommended)
-
-1. **Clone the repository**:
+If you prefer to build locally:
 
 ```bash
 git clone https://github.com/baoduy/drunk-mcp-proxy.git
 cd drunk-mcp-proxy
-```
 
-2. **Configure your services** in `data/config.json`:
-
-```json
-[
-  {
-    "path": "/",
-    "spec_file": "mcp/mcp.json",
-    "spec_type": "mcp",
-    "base_url": null
-  }
-]
-```
-
-3. **Start the services**:
-
-```bash
-docker-compose up -d
-```
-
-4. **Verify it's running**:
-
-```bash
-curl http://localhost:9123/health
-```
-
-### Using Docker
-
-```bash
-# Build the image
+# Using Docker
 docker build -t drunk-mcp-proxy .
+docker run -d -p 9123:9123 -v $(pwd)/data:/mcp_proxy/data drunk-mcp-proxy
 
-# Run the container
-docker run -d \
-  -p 9123:9123 \
-  -v $(pwd)/data:/mcp_proxy/data \
-  --name mcp-proxy \
-  drunk-mcp-proxy
-```
-
-### Local Development
-
-```bash
-# Create virtual environment
+# Or local development
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# Install dependencies
+source venv/bin/activate
 pip install -r requirements.txt
-
-# Set environment variables (optional)
 export FASTMCP_CONFIG_DIR=./data
-export FASTMCP_LOG_LEVEL=DEBUG
-
-# Run the server
 python src/main.py
 ```
 
-The server will start on `http://0.0.0.0:9123` by default.
-
 ## Architecture Overview
-
-### High-Level Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                           MCP Client (e.g., Claude Desktop)             │
-│                    HTTP/SSE Request with Authorization Header           │
+│                    MCP Client (e.g., Claude Desktop)                     │
+│                 HTTP/SSE Request with Authorization Header               │
 └────────────────────────────────┬────────────────────────────────────────┘
                                  │
                                  v
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                        drunk-mcp-proxy Server                           │
-│  ┌────────────────────────────────────────────────────────────────┐    │
-│  │              Starlette ASGI Application                         │    │
-│  │  ┌──────────────────────────────────────────────────────┐     │    │
-│  │  │           CORS Middleware (Optional)                  │     │    │
-│  │  └──────────────────────────────────────────────────────┘     │    │
-│  │  ┌──────────────────────────────────────────────────────┐     │    │
-│  │  │            Health Check Endpoint                      │     │    │
-│  │  │              GET /health                              │     │    │
-│  │  └──────────────────────────────────────────────────────┘     │    │
-│  │  ┌──────────────────────────────────────────────────────┐     │    │
-│  │  │           Root MCP Server (/)                         │     │    │
-│  │  │         POST /mcp (Mounted Services)                  │     │    │
-│  │  └──────────────────────────────────────────────────────┘     │    │
-│  │  ┌──────────────────────────────────────────────────────┐     │    │
-│  │  │      Namespaced MCP Services                          │     │    │
-│  │  │      POST /stock/mcp                                  │     │    │
-│  │  │      POST /wiki/mcp                                   │     │    │
-│  │  │      POST /api/mcp (OpenAPI)                          │     │    │
-│  │  └──────────────────────────────────────────────────────┘     │    │
-│  └────────────────────────────────────────────────────────────────┘    │
-└──────────────────────┬──────────────────┬──────────────────────────────┘
-                       │                  │
-        ┌──────────────┼──────────────────┼────────────────┐
-        v              v                  v                v
-┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
-│  MCP Server  │ │  MCP Server  │ │   OpenAPI    │ │   OpenAPI    │
-│   (HTTP)     │ │   (stdio)    │ │   Service    │ │   Service    │
-│  Stock API   │ │  Wiki Docs   │ │  + Azure     │ │  + Pass-     │
-│              │ │              │ │    OAuth     │ │    Through   │
-└──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘
+│                        drunk-mcp-proxy Server                            │
+│                                                                          │
+│   ┌─────────────┐  ┌──────────────┐  ┌───────────────────────────┐     │
+│   │ CORS        │  │ Health Check │  │ Auth Provider             │     │
+│   │ Middleware   │  │ GET /health  │  │ (JWT/GitHub/Google/Azure) │     │
+│   └─────────────┘  └──────────────┘  └───────────────────────────┘     │
+│                                                                          │
+│   ┌──────────────────────────────────────────────────────────────┐     │
+│   │  Root MCP Server (/)           POST /mcp                      │     │
+│   │  ├── Wiki MCP Proxy                                           │     │
+│   │  ├── Memory MCP Proxy                                         │     │
+│   │  └── Skills Directory Provider                                │     │
+│   └──────────────────────────────────────────────────────────────┘     │
+│   ┌──────────────────────────────────────────────────────────────┐     │
+│   │  Namespaced MCP Services                                      │     │
+│   │  ├── POST /stock/mcp  → Stock MCP Server (HTTP)              │     │
+│   │  ├── POST /wiki/mcp   → Wiki MCP Server (HTTP)               │     │
+│   │  └── POST /api/mcp    → OpenAPI Service (converted)          │     │
+│   └──────────────────────────────────────────────────────────────┘     │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Component Architecture
+The proxy is built on **Starlette** (ASGI) with **Uvicorn** as the server. Each configured service gets its own FastMCP instance, either mounted on the root path or under a dedicated namespace.
 
-The proxy is built with a modular architecture:
+### Key Components
 
-```
-src/
-├── main.py                          # Application entry point
-├── app/
-│   ├── server.py                    # MCPProxyServer - Server orchestration
-│   ├── starlette_app.py             # StarletteApp - ASGI app factory
-│   ├── lifespan.py                  # Lifecycle management
-│   ├── auth_provider.py             # GlobalAuthProvider - Auth factory
-│   └── middleware/
-│       └── cros_middleware.py       # CORS middleware
-├── proxies/
-│   ├── config_provider.py           # ProxyConfigProvider - Config loader
-│   ├── mcp_proxy_provider.py        # McpProxyProvider - MCP proxy
-│   └── openapi_mcp_provider.py      # OpenApiMcpProvider - OpenAPI converter
-├── auth_providers/
-│   ├── azure_oauth.py               # AzureOauth - Azure AD OAuth2
-│   └── auth_pass_through.py         # AuthPassThrough - Token forwarding
-└── tools/
-    ├── spec_config.py               # Configuration models
-    ├── auth_config.py               # Auth configuration models
-    └── env_resolver.py              # Environment variable substitution
-```
+| Component | Purpose |
+|-----------|---------|
+| **MCPProxyServer** | Main orchestrator — loads config, creates proxy instances, starts uvicorn |
+| **StarletteApp** | ASGI app factory — mounts MCP services, adds middleware |
+| **McpProxyProvider** | Creates FastMCP proxies from MCP spec files |
+| **OpenApiMcpProvider** | Converts OpenAPI specs into MCP tools |
+| **GlobalAuthProvider** | Manages client-to-proxy authentication |
+| **AppLifespanManager** | Handles startup/shutdown of all mounted MCP apps |
+| **CacheProvider** | Token caching (memory, SQLite, or Redis) |
 
-## Feature 1: Dynamic MCP Service Management
+## Configuration
 
-drunk-mcp-proxy provides comprehensive management for proxying MCP services, aggregating multiple MCP servers into a unified interface with namespace isolation to prevent tool name conflicts.
+All configuration is driven by JSON files in the `data/` directory.
 
-### Root Path Aggregation
-
-Services configured with `path="/"` are mounted on a single root MCP server, allowing clients to access all tools via a single endpoint:
-
-```json
-{
-  "path": "/",
-  "spec_file": "mcp/root-services.json",
-  "spec_type": "mcp"
-}
-```
-
-**Benefits:**
-
-- Single endpoint for multiple services
-- Simplified client configuration
-- Automatic tool aggregation
-- Centralized authentication
-
-### Namespaced Services
-
-Services configured with specific paths (e.g., `path="/stock"`) get their own isolated MCP server instance:
-
-```json
-{
-  "path": "/stock",
-  "spec_file": "mcp/stock.mcp.json",
-  "spec_type": "mcp"
-}
-```
-
-**Benefits:**
-
-- Prevent tool name conflicts
-- Independent lifecycle management
-- Service-specific authentication
-- Logical service grouping
-
-### Configuration Example
-
-**config.json:**
+### Service Configuration (`data/config.json`)
 
 ```json
 [
@@ -318,7 +176,7 @@ Services configured with specific paths (e.g., `path="/stock"`) get their own is
     "path": "/",
     "spec_file": "mcp/mcp.json",
     "spec_type": "mcp",
-    "base_url": null
+    "skill_dir": "skills"
   },
   {
     "path": "/stock",
@@ -330,12 +188,29 @@ Services configured with specific paths (e.g., `path="/stock"`) get their own is
     "path": "/wiki",
     "spec_file": "mcp/wiki.mcp.json",
     "spec_type": "mcp",
-    "tags": ["documentation", "internal"]
+    "tags": ["documentation"]
+  },
+  {
+    "path": "/api",
+    "spec_file": "openapi/api.openapi.json",
+    "spec_type": "openapi",
+    "base_url": "https://api.example.com",
+    "filters": {
+      "methods": ["GET", "POST"],
+      "tags": ["public"]
+    },
+    "auth": {
+      "pass_through": true
+    }
   }
 ]
 ```
 
-**mcp/stock.mcp.json:**
+### MCP Spec Files
+
+Each MCP service references a spec file that defines how to connect to the backend:
+
+**`data/mcp/stock.mcp.json`:**
 
 ```json
 {
@@ -348,88 +223,103 @@ Services configured with specific paths (e.g., `path="/stock"`) get their own is
 }
 ```
 
-## Feature 2: OpenAPI to MCP Conversion
-
-One of the most powerful features of drunk-mcp-proxy is its ability to automatically convert OpenAPI 3.0 specifications into MCP tools, enabling seamless integration of RESTful APIs into the MCP ecosystem.
-
-### Automatic Tool Generation
-
-Each OpenAPI endpoint is automatically converted to an MCP tool:
-
-- Tool names derived from `operationId` or auto-generated
-- Tool descriptions from OpenAPI `summary` or `description`
-- Parameters automatically mapped from query params, path params, and request body
-- HTTP methods and content types handled automatically
-
-### Route Filtering
-
-Control which endpoints are exposed as MCP tools:
-
-**By HTTP Method:**
+**`data/mcp/wiki.mcp.json`:**
 
 ```json
 {
-  "filters": {
-    "methods": ["GET", "POST", "PUT"]
+  "mcpServers": {
+    "wiki": {
+      "url": "https://mcp.deepwiki.com/mcp",
+      "transport": "http"
+    }
   }
 }
 ```
 
-**By Tags:**
+### Environment Variable Resolution
+
+Configuration values support `$VAR` and `${VAR}` syntax for environment variable substitution — keep secrets out of config files:
 
 ```json
 {
-  "filters": {
-    "tags": ["public", "v1"]
+  "auth": {
+    "azure": {
+      "client_id": "$AZURE_CLIENT_ID",
+      "client_secret": "$AZURE_CLIENT_SECRET",
+      "tenant_id": "$AZURE_TENANT_ID"
+    }
   }
 }
 ```
 
-This reduces tool clutter and improves security by limiting exposed endpoints.
+## Dynamic MCP Service Management
 
-### Configuration Example
+### Root Path Aggregation
+
+Services with `path="/"` are mounted on a single root MCP server. Clients access all tools through one endpoint (`POST /mcp`):
+
+- Single endpoint for multiple services
+- Simplified client configuration
+- Automatic tool aggregation
+- Centralized authentication
+
+### Namespaced Services
+
+Services with specific paths (e.g., `/stock`, `/wiki`) get isolated MCP server instances at their own endpoints (`POST /stock/mcp`, `POST /wiki/mcp`):
+
+- **No tool name conflicts** — each namespace is independent
+- **Independent lifecycle** — update one service without affecting others
+- **Service-specific auth** — different authentication per namespace
+- **Logical grouping** — organize services by domain
+
+## OpenAPI to MCP Conversion
+
+One of the most powerful features: automatically convert any OpenAPI 3.0 specification into MCP tools. No code changes to your existing REST APIs.
+
+**How it works:**
+
+1. Point to an OpenAPI spec file in your config
+2. The proxy reads every endpoint and creates an MCP tool for it
+3. Tool names come from `operationId` (or are auto-generated)
+4. Parameters are mapped from query params, path params, and request body
+5. HTTP methods and content types are handled automatically
+
+**Route filtering** lets you control which endpoints are exposed:
 
 ```json
 {
   "path": "/api",
-  "spec_file": "openapi/api.openapi.json",
   "spec_type": "openapi",
-  "base_url": "http://api.example.com",
+  "spec_file": "openapi/api.json",
+  "base_url": "https://api.example.com",
   "filters": {
     "methods": ["GET", "POST"],
-    "tags": ["public"]
-  },
-  "auth": {
-    "pass_through": true
+    "tags": ["public", "v2"]
   }
 }
 ```
 
-**Request Flow:**
+This reduces tool clutter and limits the attack surface by only exposing the endpoints you choose.
 
-1. MCP client calls tool (e.g., `getCurrencyPairs`)
-2. Proxy converts MCP call to HTTP request
-3. Authentication is applied (pass-through or Azure OAuth)
-4. HTTP request sent to backend API
-5. Response converted back to MCP format
-6. Result returned to client
+## Enterprise Authentication
 
-## Feature 3: Enterprise Authentication
+The proxy supports two layers of authentication:
 
-drunk-mcp-proxy provides flexible authentication mechanisms for both client-to-proxy and proxy-to-backend authentication.
+### Client → Proxy Authentication
 
-### Supported Authentication Methods
+Control who can access the proxy. Configured via `FASTMCP_SERVER_AUTH` environment variable. Supported providers:
 
-1. **JWT**: Token-based authentication with JWKS validation
-2. **GitHub OAuth**: GitHub user authentication
-3. **Google OAuth**: Google user authentication
-4. **Discord OAuth**: Discord user authentication
-5. **Azure AD OAuth2**: Enterprise SSO with Azure Active Directory
-6. **Custom Providers**: Extensible authentication framework
+- **JWT** with JWKS validation
+- **GitHub OAuth**
+- **Google OAuth**
+- **Discord OAuth**
+- **Custom providers** via the extensible auth framework
 
-### Pass-Through Authentication
+### Proxy → Backend Authentication
 
-The simplest authentication method where the client's token is forwarded to backend services:
+#### Pass-Through
+
+The simplest approach — forward the client's token directly to the backend:
 
 ```json
 {
@@ -439,22 +329,11 @@ The simplest authentication method where the client's token is forwarded to back
 }
 ```
 
-**How it works:**
+Use when backends handle their own auth validation. Zero-trust friendly.
 
-1. Client sends request with `Authorization: Bearer <token>`
-2. Proxy validates token (if configured)
-3. Token is forwarded to backend API
-4. No token management or caching required
+#### Azure AD OAuth2
 
-**Use cases:**
-
-- Backend services handle their own authentication
-- Zero-trust architecture
-- Multi-tenant applications
-
-### Azure OAuth2 Integration
-
-For services protected by Azure AD, the proxy can automatically obtain and manage access tokens:
+For services protected by Azure AD, the proxy handles the entire OAuth2 client credentials flow automatically:
 
 ```json
 {
@@ -470,49 +349,30 @@ For services protected by Azure AD, the proxy can automatically obtain and manag
 }
 ```
 
-**Features:**
-
-- Automatic token acquisition using client credentials flow
-- In-memory token caching with expiry detection
+Features:
+- Automatic token acquisition via client credentials flow
+- In-memory token caching with expiry detection (also supports SQLite and Redis)
 - Automatic token refresh
-- Transparent to MCP clients
-
-**Use cases:**
-
-- Internal services protected by Azure AD
-- Enterprise applications with Azure SSO
-- Services requiring application-level authentication
+- Completely transparent to MCP clients
 
 ## Skills Directory Provider
 
-The Skills Directory Provider allows you to expose Markdown-based skill documentation as MCP resources, providing LLMs with structured knowledge about code patterns and best practices.
-
-### Configuration
+Expose Markdown-based skill documentation as MCP resources. This gives LLMs structured knowledge about your code patterns, best practices, and domain-specific information.
 
 ```json
 {
   "path": "/",
   "spec_type": "mcp",
-  "skill_dir": "skills",
-  "mcpServers": {
-    "memory": {
-      "enabled": true,
-      "command": "npx",
-      "args": ["@modelcontextprotocol/server-memory"],
-      "transport": "stdio"
-    }
-  }
+  "skill_dir": "skills"
 }
 ```
 
-**Directory Structure:**
+Directory structure:
 
 ```
 data/skills/
 ├── architecture/
-│   ├── patterns/
-│   │   └── SKILL.md
-│   └── guidelines/
+│   └── patterns/
 │       └── SKILL.md
 └── dknet/
     ├── efcore-repos/
@@ -521,225 +381,122 @@ data/skills/
         └── SKILL.md
 ```
 
-### Use Cases
-
-1. **Code Patterns**: Document common patterns and best practices
-2. **Domain Knowledge**: Provide context about business logic
-3. **API Documentation**: Expose internal API documentation
-4. **Troubleshooting Guides**: Help AI assistants solve common issues
+Each `SKILL.md` becomes an MCP resource that AI assistants can read and use as context.
 
 ## Production Deployment
 
-### Docker Deployment
+### Environment Variables
 
-The project includes a multi-stage Dockerfile optimized for production:
+```bash
+# Server
+FASTMCP_PORT=9123
+FASTMCP_HOST=0.0.0.0
+FASTMCP_LOG_LEVEL=INFO
+FASTMCP_CONFIG_DIR=./data
 
-```dockerfile
-# Build stage
-FROM python:3.12-slim as builder
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --user --no-cache-dir -r requirements.txt
+# CORS
+CORS_ALLOW_ORIGINS=https://app.example.com
+CORS_ALLOW_METHODS=GET,POST
+CORS_ALLOW_HEADERS=*
 
-# Runtime stage
-FROM python:3.12-slim
-WORKDIR /mcp_proxy
-COPY --from=builder /root/.local /root/.local
-COPY src/ ./src/
-COPY data/ ./data/
+# Auth (Azure AD example)
+AZURE_CLIENT_ID=your-client-id
+AZURE_CLIENT_SECRET=your-client-secret
+AZURE_TENANT_ID=your-tenant-id
 
-ENV PATH=/root/.local/bin:$PATH
-ENV FASTMCP_CONFIG_DIR=/mcp_proxy/data
-EXPOSE 9123
-
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:9123/health || exit 1
-
-CMD ["python", "src/main.py"]
+# Token caching
+OAUTH_STORAGE_TYPE=memory  # or sqlite, redis
 ```
 
 ### Health Monitoring
 
-The proxy exposes a health check endpoint at `/health`:
+The `/health` endpoint returns `{"status": "healthy"}` — use it for:
 
-```bash
-curl http://localhost:9123/health
-# Response: {"status": "healthy"}
-```
-
-**Use for:**
-
-- Docker/Kubernetes health checks
-- Load balancer health probes
+- Docker/Kubernetes readiness and liveness probes
+- Load balancer health checks
 - Monitoring system integrations
 
-### Environment Configuration
+### Kubernetes
 
-Key environment variables:
+The Docker Hub image (`baoduy2412/mcp-proxy`) works directly in Kubernetes deployments:
 
-```bash
-# Server Configuration
-FASTMCP_PORT=9123
-FASTMCP_HOST=0.0.0.0
-FASTMCP_LOG_LEVEL=INFO
-
-# Config Directory
-FASTMCP_CONFIG_DIR=./data
-
-# CORS Configuration
-CORS_ALLOW_ORIGINS=http://localhost:3000,https://app.example.com
-CORS_ALLOW_METHODS=GET,POST,PUT,DELETE
-CORS_ALLOW_HEADERS=*
-
-# Authentication (for Azure OAuth)
-AZURE_CLIENT_ID=your-client-id
-AZURE_CLIENT_SECRET=your-client-secret
-AZURE_TENANT_ID=your-tenant-id
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-proxy
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+        - name: mcp-proxy
+          image: baoduy2412/mcp-proxy:latest
+          ports:
+            - containerPort: 9123
+          env:
+            - name: FASTMCP_CONFIG_DIR
+              value: /mcp_proxy/data
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9123
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9123
+          volumeMounts:
+            - name: config
+              mountPath: /mcp_proxy/data
+      volumes:
+        - name: config
+          configMap:
+            name: mcp-proxy-config
 ```
 
 ## Real-World Use Cases
 
-### Use Case 1: Unified Gateway for Multiple Internal Services
+### Unified Gateway for Internal Services
 
-**Scenario**: Organization has multiple internal MCP services (HR, Finance, Documentation) that need to be accessible through a single endpoint.
+Multiple internal MCP services (HR, Finance, Documentation) accessible through one endpoint. Clients configure a single URL instead of managing N connections.
 
-**Solution**:
+### Secure API Gateway with Azure AD
 
-```json
-[
-  {
-    "path": "/",
-    "spec_type": "mcp",
-    "spec_file": "mcp/root.json"
-  }
-]
-```
+Expose an internal REST API (protected by Azure AD) as MCP tools. The proxy handles token acquisition and refresh — MCP clients never need Azure credentials.
 
-**Benefits**:
+### Multi-Tenant SaaS
 
-- Single endpoint for all services
-- Centralized authentication
-- Simplified client configuration
-- Reduced network complexity
+Namespace isolation per tenant (`/tenant-a/mcp`, `/tenant-b/mcp`). Each tenant gets independent configuration, authentication, and tool sets.
 
-### Use Case 2: Secure API Gateway with Azure AD
+### Legacy API Integration
 
-**Scenario**: External REST API protected by Azure AD needs to be exposed as MCP tools.
-
-**Solution**:
-
-```json
-{
-  "path": "/api",
-  "spec_type": "openapi",
-  "spec_file": "openapi/api.json",
-  "base_url": "https://api.internal.com",
-  "auth": {
-    "azure": {
-      "client_id": "$AZURE_CLIENT_ID",
-      "client_secret": "$AZURE_CLIENT_SECRET",
-      "tenant_id": "$AZURE_TENANT_ID",
-      "scopes": ["api://api-id/.default"]
-    }
-  }
-}
-```
-
-**Benefits**:
-
-- Automatic token management
-- No client-side Azure integration needed
-- Token caching for performance
-- Transparent authentication
-
-### Use Case 3: Multi-Tenant SaaS Architecture
-
-**Scenario**: SaaS application with tenant-specific MCP services.
-
-**Solution**:
-
-```json
-[
-  {
-    "path": "/tenant-a",
-    "spec_type": "mcp",
-    "spec_file": "mcp/tenant-a.json"
-  },
-  {
-    "path": "/tenant-b",
-    "spec_type": "mcp",
-    "spec_file": "mcp/tenant-b.json"
-  }
-]
-```
-
-**Benefits**:
-
-- Namespace isolation per tenant
-- Independent configuration
-- Simplified routing
-- Enhanced security
+Wrap existing REST/OpenAPI services as MCP tools without modifying the original APIs. The proxy handles protocol translation automatically.
 
 ## Best Practices
 
-1. **Use Namespace Isolation**:
-   - Use separate paths for logically distinct services
-   - Prevents tool name conflicts
-   - Enables independent lifecycle management
-
-2. **Implement Health Checks**:
-   - Always configure health check endpoints
-   - Monitor proxy and backend service health
-   - Set up alerting for failures
-
-3. **Secure with Authentication**:
-   - Always use authentication in production
-   - Prefer pass-through auth for zero-trust architectures
-   - Use Azure OAuth for enterprise integrations
-
-4. **Filter OpenAPI Routes**:
-   - Use method and tag filters to limit exposed endpoints
-   - Reduces attack surface
-   - Improves performance
-
-5. **Enable CORS Properly**:
-   - Configure specific allowed origins
-   - Avoid wildcard origins in production
-   - Set appropriate allowed methods
-
-6. **Use Environment Variables**:
-   - Never commit secrets in config files
-   - Use environment variable substitution
-   - Leverage secret management systems
-
-7. **Monitor and Log**:
-   - Configure appropriate log levels
-   - Use structured logging
-   - Integrate with monitoring systems
-
-8. **Container Best Practices**:
-   - Use multi-stage Docker builds
-   - Set resource limits
-   - Configure proper health checks
+1. **Use namespace isolation** for logically distinct services — prevents conflicts and enables independent updates
+2. **Filter OpenAPI routes** with method and tag filters — reduces attack surface and tool clutter
+3. **Never commit secrets** — use environment variable substitution (`$VAR`) in all config files
+4. **Configure specific CORS origins** — avoid wildcards in production
+5. **Enable health checks** — critical for container orchestration and monitoring
+6. **Use token caching** — Redis or SQLite for distributed deployments to avoid token storms
+7. **Set appropriate log levels** — `INFO` for production, `DEBUG` for troubleshooting
+8. **Use the Docker Hub image** (`baoduy2412/mcp-proxy`) for consistent, reproducible deployments
 
 ## Conclusion
 
-drunk-mcp-proxy solves the complexity of managing multiple MCP services and integrating REST APIs into the MCP ecosystem. With its powerful features including dynamic routing, namespace isolation, OpenAPI conversion, and enterprise authentication, it provides a production-ready solution for organizations building AI-powered applications.
+drunk-mcp-proxy simplifies the complexity of managing multiple MCP services and integrating REST APIs into the MCP ecosystem. With dynamic routing, namespace isolation, automatic OpenAPI conversion, and enterprise authentication, it provides a solid foundation for organizations building AI-powered applications at scale.
 
-Key takeaways:
+Whether you're connecting internal tools, exposing external APIs, or building a multi-tenant platform — pull the image from Docker Hub and have a production-ready MCP gateway running in minutes:
 
-- **Unified Interface**: Single gateway for multiple backend services
-- **OpenAPI Integration**: Automatic conversion of REST APIs to MCP tools
-- **Enterprise Ready**: Production-grade authentication, monitoring, and deployment
-- **Flexible Architecture**: Support for multiple transports and authentication methods
-- **Easy to Deploy**: Docker support with comprehensive documentation
-
-Whether you're building internal tools, integrating external APIs, or creating a multi-tenant SaaS platform, drunk-mcp-proxy provides the foundation for scalable, secure, and maintainable MCP infrastructure.
+```bash
+docker run -d -p 9123:9123 -v $(pwd)/data:/mcp_proxy/data baoduy2412/mcp-proxy
+```
 
 ## References
 
 - **GitHub Repository**: [github.com/baoduy/drunk-mcp-proxy](https://github.com/baoduy/drunk-mcp-proxy)
-- **Docker Hub**: Available via GitHub Container Registry
+- **Docker Hub**: [baoduy2412/mcp-proxy](https://hub.docker.com/r/baoduy2412/mcp-proxy)
+- **Technical Documentation**: [deepwiki.com/baoduy/drunk-mcp-proxy](https://deepwiki.com/baoduy/drunk-mcp-proxy)
 - **Model Context Protocol**: [modelcontextprotocol.io](https://modelcontextprotocol.io)
-- **FastMCP**: Python framework for building MCP servers
-- **Documentation**: See README.md in the repository for detailed configuration options
+- **FastMCP**: [github.com/jlowin/fastmcp](https://github.com/jlowin/fastmcp)
