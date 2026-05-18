@@ -4,7 +4,7 @@ pubDatetime: 2026-02-17T13:00:00Z
 title: "Introducing drunk-mcp-proxy: A Production-Ready Dynamic Proxy for Model Context Protocol"
 postSlug: tools-drunk-mcp-proxy-introduction
 featured: true
-draft: false
+draft: true
 tags:
   - mcp
   - proxy
