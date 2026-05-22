@@ -118,9 +118,9 @@ DKNet is modular — install only what you need:
 | `DKNet.Fw.Extensions` | Core | Type/property/enum utilities |
 | `DKNet.EfCore.Abstractions` | Domain | Entity interfaces (`IEntity<TKey>`, `IAuditedEntity`) |
 | `DKNet.EfCore.Extensions` | Infrastructure | EF Core enhancements (`SnapshotContext`, navigation helpers) |
-| `DKNet.EfCore.Repos` | Infrastructure | `Repository<T>`, `RepositorySpec<T>`, `RepositoryFactory` |
-| `DKNet.EfCore.Repos.Abstractions` | Infrastructure | `IRepository<T>`, `IRepositorySpec` interfaces |
-| `DKNet.EfCore.Specifications` | Infrastructure | `Specification<T>`, `PredicateBuilder`, composable queries |
+| `DKNet.EfCore.Repos` | Infrastructure | `Repository<T>`, `RepositorySpec<TDbContext>`, `RepositoryFactory` |
+| `DKNet.EfCore.Repos.Abstractions` | Infrastructure | `IRepository<T>` (strongly-typed CRUD) |
+| `DKNet.EfCore.Specifications` | Infrastructure | `IRepositorySpec` (non-generic, spec-driven), `Specification<T>`, `ModelSpecification<T,M>` |
 | `DKNet.EfCore.Hooks` | Infrastructure | `IBeforeSaveHookAsync`, `IAfterSaveHookAsync` |
 | `DKNet.EfCore.Events` | Domain/Infrastructure | `IEventEntity`, `EventHook`, `IEventPublisher` |
 | `DKNet.SlimBus.Extensions` | Application | CQRS via SlimMessageBus, auto-save interceptor |
@@ -219,40 +219,54 @@ public class OrderLine : Entity<Guid>
 
 ### Using Repositories
 
-The recommended interface is `IRepositorySpec<T>`, which combines full CRUD with first-class `Specification<T>` support. It extends the base read/write split:
+DKNet ships two complementary repository abstractions. `IRepository<T>` (from `DKNet.EfCore.Repos.Abstractions`) is the strongly-typed per-entity repository — useful when a service really does work in a single aggregate. `IRepositorySpec` (from `DKNet.EfCore.Specifications`) is **non-generic** and is the one you reach for when you want to query through `Specification<T>` objects across any entity in the same `DbContext`:
 
 ```csharp
-// Read operations — always returns detached, non-tracked entities
-public interface IReadRepository<T> where T : class
+// Strongly-typed, single-aggregate CRUD (DKNet.EfCore.Repos.Abstractions)
+public interface IRepository<TEntity> : IReadRepository<TEntity>, IWriteRepository<TEntity>
+    where TEntity : class;
+
+public interface IReadRepository<TEntity> where TEntity : class
 {
-    IQueryable<T> Query();
-    Task<T?> FindAsync(object id, CancellationToken cancellationToken = default);
-    Task<T?> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
+    ValueTask<TEntity?> FindAsync(object keyValue, CancellationToken cancellationToken = default);
+    Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken = default);
+    Task<int> CountAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken = default);
+    Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken = default);
+    IQueryable<TEntity> Query();
+    IQueryable<TEntity> Query(Expression<Func<TEntity, bool>> filter);
+    IQueryable<TModel> Query<TModel>(Expression<Func<TEntity, bool>> filter) where TModel : class;
 }
 
-// Write operations
-public interface IWriteRepository<T> where T : class
+public interface IWriteRepository<TEntity> where TEntity : class
 {
-    Task AddAsync(T entity, CancellationToken cancellationToken = default);
-    Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default);
-    Task UpdateAsync(T entity, CancellationToken cancellationToken = default);
-    void Delete(T entity);
+    ValueTask AddAsync(TEntity entity, CancellationToken cancellationToken = default);
+    ValueTask AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
+    Task<int> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
+    void Delete(TEntity entity);
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
 
-// Preferred: full CRUD + specification queries
-public interface IRepositorySpec<T> : IReadRepository<T>, IWriteRepository<T> where T : class
+// Specification-driven, multi-entity (DKNet.EfCore.Specifications)
+public interface IRepositorySpec
 {
-    Task<T?> FindAsync(Specification<T> spec, CancellationToken cancellationToken = default);
-    Task<IList<T>> ListAsync(Specification<T> spec, CancellationToken cancellationToken = default);
-    Task<int> CountAsync(Specification<T> spec, CancellationToken cancellationToken = default);
+    ValueTask AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default) where TEntity : class;
+    Task<int> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default) where TEntity : class;
+    void Delete<TEntity>(TEntity entity) where TEntity : class;
+
+    IQueryable<TEntity> Query<TEntity>(ISpecification<TEntity> spec) where TEntity : class;
+    IQueryable<TModel> Query<TEntity, TModel>(ISpecification<TEntity> spec)
+        where TEntity : class where TModel : class;
+
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
 ```
+
+The async helpers — `FirstAsync`, `FirstOrDefaultAsync`, `ToListAsync`, `AnyAsync`, `CountAsync`, `ToPagedListAsync` — live as **extension methods** on `IRepositorySpec` in `DKNet.EfCore.Specifications.Extensions`, both for raw entities and for projected models. That keeps the interface tiny (just `Query`) while the call sites read naturally.
 
 In your application service or CQRS handler:
 
 ```csharp
-public class OrderService(IRepositorySpec<Order> orders)
+public sealed class OrderService(IRepository<Order> orders)
 {
     public async Task<Order> PlaceOrderAsync(string customerId, string createdBy)
     {
@@ -262,69 +276,125 @@ public class OrderService(IRepositorySpec<Order> orders)
         return order;
     }
 
-    public async Task<Order?> GetOrderAsync(Guid id)
-        => await orders.FindAsync(id);
+    public ValueTask<Order?> GetOrderAsync(Guid id) => orders.FindAsync(id);
 
     public IQueryable<Order> GetPendingOrders()
-        => orders.Query().Where(o => o.Status == OrderStatus.Pending);
+        => orders.Query(o => o.Status == OrderStatus.Pending);
 }
 ```
 
 ### Building Specifications
 
-`DKNet.EfCore.Specifications` leverages LinqKit to compose complex queries cleanly:
+`Specification<T>` is an abstract base class that exposes a small set of protected builder methods you call from the constructor. The shape that appears throughout the `DKNet.Templates` reference solution — and that you should mirror — is `internal sealed`, constructor-only configuration, and a single `WithFilter(predicator)` call at the end:
 
 ```csharp
-public class ActiveOrdersForCustomerSpec : Specification<Order>
+using DKNet.EfCore.Specifications;
+using LinqKit;
+
+namespace OrderApp.AppServices.Orders.V1.Specs;
+
+internal sealed class SpecGetOrder : Specification<Order>
 {
-    public ActiveOrdersForCustomerSpec(string customerId)
+    public SpecGetOrder(Guid? byId = null, string? byCustomerId = null)
     {
-        // Composable predicate — translated to SQL by LinqKit
-        AddCriteria(o => o.CustomerId == customerId
-                      && o.Status != OrderStatus.Cancelled);
+        // CreatePredicate() returns a LinqKit ExpressionStarter<Order>
+        // seeded with `true`, so subsequent .And(...) calls compose cleanly.
+        var predicator = CreatePredicate();
 
-        // Include related data
-        AddInclude(o => o.Lines);
+        if (byId is not null)
+        {
+            predicator = predicator.And(o => o.Id == byId);
+        }
 
-        // Default ordering
-        ApplyOrderBy(o => o.CreatedOn);
-    }
-}
+        if (!string.IsNullOrEmpty(byCustomerId))
+        {
+            predicator = predicator.And(o => o.CustomerId == byCustomerId);
+        }
 
-// Using the specification with IRepositorySpec
-public class OrderQueryService(IRepositorySpec<Order> orders)
-{
-    public async Task<IList<Order>> GetActiveOrdersAsync(string customerId)
-    {
-        var spec = new ActiveOrdersForCustomerSpec(customerId);
-        return await orders.ListAsync(spec);
+        WithFilter(predicator);
     }
 }
 ```
 
-Specifications are composable using `PredicateBuilder`:
+The protected surface on `Specification<T>` is intentionally small:
+
+| Method | Purpose |
+| --- | --- |
+| `CreatePredicate(expression?)` | Returns a LinqKit `ExpressionStarter<T>` to compose with `.And(...)` / `.Or(...)` |
+| `WithFilter(expression)` | Sets the final filter predicate |
+| `AddInclude(expression)` | Adds an `Include(...)` for a navigation property |
+| `AddOrderBy(expression)` / `AddOrderBy(string, ListSortDirection)` | Ascending order |
+| `AddOrderByDescending(expression)` | Descending order |
+| `IgnoreQueryFilters()` | Bypasses EF global filters (soft delete, multi-tenancy) for this query |
+
+A richer spec with includes and ordering looks like this:
 
 ```csharp
-public class OrderSearchSpec : Specification<Order>
+internal sealed class SpecActiveOrdersForCustomer : Specification<Order>
 {
-    public OrderSearchSpec(OrderSearchFilter filter)
+    public SpecActiveOrdersForCustomer(string customerId)
     {
-        var predicate = PredicateBuilder.New<Order>(true);
+        var predicator = CreatePredicate()
+            .And(o => o.CustomerId == customerId)
+            .And(o => o.Status != OrderStatus.Cancelled);
+
+        WithFilter(predicator);
+        AddInclude(o => o.Lines);
+        AddOrderBy(o => o.CreatedOn);
+    }
+}
+```
+
+And the handler that uses it — note the **non-generic** `IRepositorySpec` and the extension methods from `DKNet.EfCore.Specifications.Extensions`:
+
+```csharp
+using DKNet.EfCore.Specifications;
+using DKNet.EfCore.Specifications.Extensions;
+
+internal sealed class OrderQueryService(IRepositorySpec repo)
+{
+    public Task<IList<Order>> GetActiveOrdersAsync(string customerId, CancellationToken ct = default)
+        => repo.ToListAsync(new SpecActiveOrdersForCustomer(customerId), ct);
+}
+```
+
+The same `CreatePredicate()` pattern handles dynamic search criteria — there is no need to reach for `PredicateBuilder.New<T>(true)` directly:
+
+```csharp
+internal sealed class SpecOrderSearch : Specification<Order>
+{
+    public SpecOrderSearch(OrderSearchFilter filter)
+    {
+        var predicator = CreatePredicate();
 
         if (!string.IsNullOrEmpty(filter.CustomerId))
-            predicate = predicate.And(o => o.CustomerId == filter.CustomerId);
+        {
+            predicator = predicator.And(o => o.CustomerId == filter.CustomerId);
+        }
 
         if (filter.Status.HasValue)
-            predicate = predicate.And(o => o.Status == filter.Status.Value);
+        {
+            predicator = predicator.And(o => o.Status == filter.Status.Value);
+        }
 
         if (filter.CreatedAfter.HasValue)
-            predicate = predicate.And(o => o.CreatedOn >= filter.CreatedAfter.Value);
+        {
+            predicator = predicator.And(o => o.CreatedOn >= filter.CreatedAfter.Value);
+        }
 
-        AddCriteria(predicate);
+        WithFilter(predicator);
         AddInclude(o => o.Lines);
+        AddOrderByDescending(o => o.CreatedOn);
     }
 }
 ```
+
+A few conventions worth copying from the reference template:
+
+1. **`internal sealed`** — specs are an implementation detail of the application module; nothing outside the module should new them up.
+2. **Configure in the constructor** — no fluent post-construction mutation. The spec is immutable once built.
+3. **Name with a `Spec` prefix** (`SpecGetOrder`, `SpecOrderSearch`) and keep each spec in its own file under a `Specs/` folder. This makes them easy to discover and grep for.
+4. **One predicate, one `WithFilter` call** — keep all filtering through the `predicator` so the SQL stays composable.
 
 ---
 
@@ -437,7 +507,7 @@ The `EventHook` (an `IAfterSaveHookAsync`) automatically collects events from al
 // Command — no response
 public record ConfirmOrderCommand(Guid OrderId) : ICommand;
 
-public class ConfirmOrderHandler(IRepositorySpec<Order> orders)
+public sealed class ConfirmOrderHandler(IRepository<Order> orders)
     : ICommandHandler<ConfirmOrderCommand>
 {
     public async Task OnHandle(ConfirmOrderCommand command)
@@ -453,7 +523,7 @@ public class ConfirmOrderHandler(IRepositorySpec<Order> orders)
 // Query with response
 public record GetOrderQuery(Guid OrderId) : IQuery<OrderDto>;
 
-public class GetOrderHandler(IReadRepository<Order> orders)
+public sealed class GetOrderHandler(IReadRepository<Order> orders)
     : IQueryHandler<GetOrderQuery, OrderDto>
 {
     public async Task<OrderDto> OnHandle(GetOrderQuery query)
@@ -640,7 +710,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
-builder.Services.AddDKNetRepositories<AppDbContext>();  // registers IRepositorySpec<T>, IReadRepository<T>
+builder.Services.AddDKNetRepositories<AppDbContext>();  // registers IRepository<T>, IReadRepository<T>, IRepositorySpec
 builder.Services.AddDKNetHooks<AppDbContext>();         // registers HookRunnerInterceptor
 builder.Services.AddDKNetEvents<AppDbContext>();        // registers EventHook + EventContext
 
@@ -707,7 +777,7 @@ public class Order : AuditedEntity<Guid>, IEventEntity
 // 2. Command + handler
 public record ConfirmOrderCommand(Guid OrderId, string UserId) : ICommand;
 
-public class ConfirmOrderHandler(IRepositorySpec<Order> orders)
+public sealed class ConfirmOrderHandler(IRepository<Order> orders)
     : ICommandHandler<ConfirmOrderCommand>
 {
     public async Task OnHandle(ConfirmOrderCommand command)
@@ -757,9 +827,10 @@ All of this with zero manual wiring in the handler itself.
 
 ## Projecting with ModelSpecification
 
-A pet peeve of the classic Repository pattern is over-fetching: you load full aggregates just to return a flat DTO. `DKNet.EfCore.Specifications` solves this with `ModelSpecification<T, TModel>` — a specification that carries its projection alongside its filter, so EF Core can translate the whole thing into a narrow `SELECT`:
+A pet peeve of the classic Repository pattern is over-fetching: you load full aggregates just to return a flat DTO. `DKNet.EfCore.Specifications` solves this with `ModelSpecification<TEntity, TModel>` — a specification that signals "this query is for projecting an entity to a model". The repository then routes it through Mapster's `ProjectToType<TModel>`, so EF Core emits a narrow `SELECT` and no entity tracking is done:
 
 ```csharp
+// 1. Define the DTO and the Mapster mapping
 public sealed record OrderListItem(
     Guid Id,
     string CustomerId,
@@ -767,49 +838,56 @@ public sealed record OrderListItem(
     int LineCount,
     decimal Total);
 
-public class OrderListItemSpec : ModelSpecification<Order, OrderListItem>
+internal sealed class OrderListItemMapping : IRegister
 {
-    public OrderListItemSpec(OrderStatus? status)
+    public void Register(TypeAdapterConfig config) =>
+        config.NewConfig<Order, OrderListItem>()
+              .Map(d => d.LineCount, s => s.Lines.Count)
+              .Map(d => d.Total, s => s.Lines.Sum(l => l.Quantity * l.UnitPrice));
+}
+
+// 2. Define a spec that targets that projection
+internal sealed class SpecListOrders : ModelSpecification<Order, OrderListItem>
+{
+    public SpecListOrders(OrderStatus? status)
     {
+        var predicator = CreatePredicate();
+
         if (status.HasValue)
-            AddCriteria(o => o.Status == status.Value);
+        {
+            predicator = predicator.And(o => o.Status == status.Value);
+        }
 
-        ApplyOrderByDescending(o => o.CreatedOn);
-
-        // Projection — translated to SQL, no entity tracking
-        SetProjection(o => new OrderListItem(
-            o.Id,
-            o.CustomerId,
-            o.Status,
-            o.Lines.Count,
-            o.Lines.Sum(l => l.Quantity * l.UnitPrice)));
+        WithFilter(predicator);
+        AddOrderByDescending(o => o.CreatedOn);
     }
 }
 
-public class OrderQueryService(IRepositorySpec<Order> orders)
+// 3. Call it through IRepositorySpec — the second generic arg picks the projecting overload
+internal sealed class OrderQueryService(IRepositorySpec repo)
 {
-    public Task<IList<OrderListItem>> ListAsync(OrderStatus? status)
-        => orders.ListAsync(new OrderListItemSpec(status));
+    public Task<IList<OrderListItem>> ListAsync(OrderStatus? status, CancellationToken ct = default)
+        => repo.ToListAsync<Order, OrderListItem>(new SpecListOrders(status), ct);
 }
 ```
 
-The generated SQL fetches only the projected columns plus the aggregate counts — no `Include`, no eager-loaded line entities sitting unused in the change tracker. This pattern is the single biggest performance win for read-heavy CQRS queries.
+Under the hood the repository pipes the query through `AsNoTracking().ProjectToType<TModel>(_mapper.Config)`, so EF Core fetches only the columns Mapster needs to build the DTO — no `Include`, no eager-loaded line entities sitting unused in the change tracker. This pattern is the single biggest performance win for read-heavy CQRS queries.
 
 ---
 
 ## Working with Multiple Aggregates: RepositoryFactory
 
-`IRepositorySpec<T>` is great when a handler owns a single aggregate, but command handlers occasionally need to touch two or three. Rather than injecting four separate `IRepositorySpec<...>` instances, `DKNet.EfCore.Repos` provides `IRepositoryFactory`:
+`IRepositorySpec` already lets a handler touch any entity in the `DbContext`, which usually removes the need for multiple `IRepository<T>` injections. But when you prefer the strongly-typed per-aggregate API, `DKNet.EfCore.Repos` provides `IRepositoryFactory` so you can resolve `IRepository<T>` instances on demand without injecting four of them:
 
 ```csharp
-public class TransferStockHandler(IRepositoryFactory factory)
+public sealed class TransferStockHandler(IRepositoryFactory factory)
     : ICommandHandler<TransferStockCommand>
 {
     public async Task OnHandle(TransferStockCommand cmd)
     {
-        var products  = factory.For<Product>();
-        var movements = factory.For<StockMovement>();
-        var audit     = factory.For<AuditLog>();
+        var products  = factory.Create<Product>();
+        var movements = factory.Create<StockMovement>();
+        var audit     = factory.Create<AuditLog>();
 
         var product = await products.FindAsync(cmd.ProductId)
             ?? throw new NotFoundException(cmd.ProductId);
@@ -911,7 +989,7 @@ public class OrderServiceTests : IAsyncLifetime
     public async Task PlaceOrder_PersistsAndRaisesEvent()
     {
         await using var scope = _services.CreateAsyncScope();
-        var orders = scope.ServiceProvider.GetRequiredService<IRepositorySpec<Order>>();
+        var orders = scope.ServiceProvider.GetRequiredService<IRepository<Order>>();
 
         var order = new Order("tester") { CustomerId = "cust-42" };
         await orders.AddAsync(order);
