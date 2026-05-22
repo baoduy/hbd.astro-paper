@@ -212,7 +212,7 @@ public class OrderLine : Entity<Guid>
 
 ### Using Repositories
 
-`IRepository<T>` is split into read and write concerns:
+The recommended interface is `IRepositorySpec<T>`, which combines full CRUD with first-class `Specification<T>` support. It extends the base read/write split:
 
 ```csharp
 // Read operations — always returns detached, non-tracked entities
@@ -232,12 +232,20 @@ public interface IWriteRepository<T> where T : class
     void Delete(T entity);
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
+
+// Preferred: full CRUD + specification queries
+public interface IRepositorySpec<T> : IReadRepository<T>, IWriteRepository<T> where T : class
+{
+    Task<T?> FindAsync(Specification<T> spec, CancellationToken cancellationToken = default);
+    Task<IList<T>> ListAsync(Specification<T> spec, CancellationToken cancellationToken = default);
+    Task<int> CountAsync(Specification<T> spec, CancellationToken cancellationToken = default);
+}
 ```
 
 In your application service or CQRS handler:
 
 ```csharp
-public class OrderService(IRepository<Order> orders)
+public class OrderService(IRepositorySpec<Order> orders)
 {
     public async Task<Order> PlaceOrderAsync(string customerId, string createdBy)
     {
@@ -423,18 +431,7 @@ The `EventHook` (an `IAfterSaveHookAsync`) automatically collects events from al
 public record ConfirmOrderCommand(Guid OrderId) : ICommand;
 
 // Handler
-public class ConfirmOrderHandler(IRepository<Order> orders) 
-    : ICommandHandler<ConfirmOrderCommand>
-{
-    public async Task OnHandle(ConfirmOrderCommand command)
-    {
-        var order = await orders.FindAsync(command.OrderId)
-            ?? throw new NotFoundException($"Order {command.OrderId} not found");
-
-        order.Confirm();
-        // No SaveChangesAsync needed — EfAutoSavePostInterceptor handles it
-    }
-}
+public class ConfirmOrderHandler(IRepositorySpec<Order> orders) 
 
 // Query with response
 public record GetOrderQuery(Guid OrderId) : IQuery<OrderDto>;
@@ -625,7 +622,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
-builder.Services.AddDKNetRepositories<AppDbContext>();  // registers IRepository<T>, IReadRepository<T>
+builder.Services.AddDKNetRepositories<AppDbContext>();  // registers IRepositorySpec<T>, IReadRepository<T>
 builder.Services.AddDKNetHooks<AppDbContext>();         // registers HookRunnerInterceptor
 builder.Services.AddDKNetEvents<AppDbContext>();        // registers EventHook + EventContext
 
@@ -692,7 +689,7 @@ public class Order : AuditedEntity<Guid>, IEventEntity
 // 2. Command + handler
 public record ConfirmOrderCommand(Guid OrderId, string UserId) : ICommand;
 
-public class ConfirmOrderHandler(IRepository<Order> orders)
+public class ConfirmOrderHandler(IRepositorySpec<Order> orders)
     : ICommandHandler<ConfirmOrderCommand>
 {
     public async Task OnHandle(ConfirmOrderCommand command)
