@@ -47,7 +47,14 @@ This post walks through what DKNet is, the problems it solves, how its packages 
   - [Wire Up Your DbContext](#wire-up-your-dbcontext)
   - [Register Services](#register-services)
 - [Real-World Example: An Order Service](#real-world-example-an-order-service)
+- [Projecting with ModelSpecification](#projecting-with-modelspecification)
+- [Working with Multiple Aggregates: RepositoryFactory](#working-with-multiple-aggregates-repositoryfactory)
+- [Validation Hooks with FluentValidation](#validation-hooks-with-fluentvalidation)
+- [Testing with TestContainers](#testing-with-testcontainers)
+- [When DKNet Might Not Be the Right Fit](#when-dknet-might-not-be-the-right-fit)
 - [Summary](#summary)
+- [References](#references)
+- [Related Articles](#related-articles)
 
 ---
 
@@ -430,8 +437,18 @@ The `EventHook` (an `IAfterSaveHookAsync`) automatically collects events from al
 // Command — no response
 public record ConfirmOrderCommand(Guid OrderId) : ICommand;
 
-// Handler
-public class ConfirmOrderHandler(IRepositorySpec<Order> orders) 
+public class ConfirmOrderHandler(IRepositorySpec<Order> orders)
+    : ICommandHandler<ConfirmOrderCommand>
+{
+    public async Task OnHandle(ConfirmOrderCommand command)
+    {
+        var order = await orders.FindAsync(command.OrderId)
+            ?? throw new NotFoundException($"Order {command.OrderId} not found");
+
+        order.Confirm();
+        // No explicit SaveChangesAsync — the auto-save interceptor handles it.
+    }
+}
 
 // Query with response
 public record GetOrderQuery(Guid OrderId) : IQuery<OrderDto>;
@@ -538,11 +555,12 @@ app.MapPost("/api/orders", async (PlaceOrderRequest req, IMessageBus bus) =>
 .AddEndpointFilter<IdempotencyEndpointFilter>();
 ```
 
-The filter stores processed request keys in either:
-- **`IdempotencyDistributedCacheStore`** — backed by `IDistributedCache` (Redis or in-memory)
-- **`IdempotencyDistributedCacheStore`** — backed by SQL Server via EF Core, with unique constraints
+The filter stores processed request keys in one of the built-in `IIdempotencyKeyStore` implementations:
 
-Duplicate requests with the same key return the cached response immediately, without re-executing the handler.
+- **`IdempotencyDistributedCacheStore`** — backed by `IDistributedCache` (Redis or in-memory)
+- **`IdempotencySqlServerStore`** — backed by SQL Server via EF Core with a unique index on the key column for cross-instance safety
+
+Duplicate requests with the same key return the cached response immediately, without re-executing the handler. Implement `IIdempotencyKeyStore` yourself if you need a different backing store (Cosmos DB, DynamoDB, etc.).
 
 ---
 
@@ -737,6 +755,194 @@ All of this with zero manual wiring in the handler itself.
 
 ---
 
+## Projecting with ModelSpecification
+
+A pet peeve of the classic Repository pattern is over-fetching: you load full aggregates just to return a flat DTO. `DKNet.EfCore.Specifications` solves this with `ModelSpecification<T, TModel>` — a specification that carries its projection alongside its filter, so EF Core can translate the whole thing into a narrow `SELECT`:
+
+```csharp
+public sealed record OrderListItem(
+    Guid Id,
+    string CustomerId,
+    OrderStatus Status,
+    int LineCount,
+    decimal Total);
+
+public class OrderListItemSpec : ModelSpecification<Order, OrderListItem>
+{
+    public OrderListItemSpec(OrderStatus? status)
+    {
+        if (status.HasValue)
+            AddCriteria(o => o.Status == status.Value);
+
+        ApplyOrderByDescending(o => o.CreatedOn);
+
+        // Projection — translated to SQL, no entity tracking
+        SetProjection(o => new OrderListItem(
+            o.Id,
+            o.CustomerId,
+            o.Status,
+            o.Lines.Count,
+            o.Lines.Sum(l => l.Quantity * l.UnitPrice)));
+    }
+}
+
+public class OrderQueryService(IRepositorySpec<Order> orders)
+{
+    public Task<IList<OrderListItem>> ListAsync(OrderStatus? status)
+        => orders.ListAsync(new OrderListItemSpec(status));
+}
+```
+
+The generated SQL fetches only the projected columns plus the aggregate counts — no `Include`, no eager-loaded line entities sitting unused in the change tracker. This pattern is the single biggest performance win for read-heavy CQRS queries.
+
+---
+
+## Working with Multiple Aggregates: RepositoryFactory
+
+`IRepositorySpec<T>` is great when a handler owns a single aggregate, but command handlers occasionally need to touch two or three. Rather than injecting four separate `IRepositorySpec<...>` instances, `DKNet.EfCore.Repos` provides `IRepositoryFactory`:
+
+```csharp
+public class TransferStockHandler(IRepositoryFactory factory)
+    : ICommandHandler<TransferStockCommand>
+{
+    public async Task OnHandle(TransferStockCommand cmd)
+    {
+        var products  = factory.For<Product>();
+        var movements = factory.For<StockMovement>();
+        var audit     = factory.For<AuditLog>();
+
+        var product = await products.FindAsync(cmd.ProductId)
+            ?? throw new NotFoundException(cmd.ProductId);
+
+        product.AdjustStock(-cmd.Quantity);
+
+        await movements.AddAsync(new StockMovement(product.Id, -cmd.Quantity, cmd.Reason));
+        await audit.AddAsync(new AuditLog($"Transferred {cmd.Quantity} of {product.Id}"));
+
+        // Auto-save interceptor commits all three in one transaction.
+    }
+}
+```
+
+Use it sparingly — if a handler routinely touches more than three aggregates, that is usually a hint that you have a missing aggregate boundary, not that you need a bigger factory.
+
+---
+
+## Validation Hooks with FluentValidation
+
+DKNet does not ship its own validator, but the `IBeforeSaveHookAsync` pipeline is the perfect place to plug in [FluentValidation 12](https://docs.fluentvalidation.net/) — every entity is validated **once** at the persistence boundary, not scattered across every command handler:
+
+```csharp
+public class OrderValidator : AbstractValidator<Order>
+{
+    public OrderValidator()
+    {
+        RuleFor(o => o.CustomerId).NotEmpty();
+        RuleFor(o => o.Lines).NotEmpty().WithMessage("Order must have at least one line.");
+        RuleForEach(o => o.Lines).ChildRules(line =>
+        {
+            line.RuleFor(l => l.Quantity).GreaterThan(0);
+            line.RuleFor(l => l.UnitPrice).GreaterThanOrEqualTo(0);
+        });
+    }
+}
+
+public class FluentValidationHook(IServiceProvider services) : IBeforeSaveHookAsync
+{
+    public async Task ExecuteAsync(DbContext context, IEnumerable<EntityEntry> entries,
+                                   CancellationToken cancellationToken = default)
+    {
+        foreach (var entry in entries.Where(e => e.State is EntityState.Added or EntityState.Modified))
+        {
+            var validatorType = typeof(IValidator<>).MakeGenericType(entry.Entity.GetType());
+            if (services.GetService(validatorType) is not IValidator validator)
+                continue;
+
+            var ctx    = new ValidationContext<object>(entry.Entity);
+            var result = await validator.ValidateAsync(ctx, cancellationToken);
+            if (!result.IsValid)
+                throw new ValidationException(result.Errors);
+        }
+    }
+}
+```
+
+Register it once and every aggregate gets validated transparently:
+
+```csharp
+services.AddValidatorsFromAssemblyContaining<OrderValidator>();
+services.AddScoped<IBeforeSaveHookAsync, FluentValidationHook>();
+```
+
+---
+
+## Testing with TestContainers
+
+DKNet itself is tested against a real SQL Server instance using **TestContainers.MsSql**, and the same pattern works beautifully for your application code. The integration suite spins up a SQL Server container per fixture, runs migrations, and tears it down at the end:
+
+```csharp
+public class OrderServiceTests : IAsyncLifetime
+{
+    private readonly MsSqlContainer _sql = new MsSqlBuilder()
+        .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+        .WithPassword("Y0urStrong!Pwd")
+        .Build();
+
+    private ServiceProvider _services = default!;
+
+    public async Task InitializeAsync()
+    {
+        await _sql.StartAsync();
+
+        var services = new ServiceCollection();
+        services.AddDbContext<AppDbContext>(o => o.UseSqlServer(_sql.GetConnectionString()));
+        services.AddDKNetRepositories<AppDbContext>();
+        services.AddDKNetHooks<AppDbContext>();
+        services.AddDKNetEvents<AppDbContext>();
+
+        _services = services.BuildServiceProvider();
+
+        await using var scope = _services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await db.Database.MigrateAsync();
+    }
+
+    [Fact]
+    public async Task PlaceOrder_PersistsAndRaisesEvent()
+    {
+        await using var scope = _services.CreateAsyncScope();
+        var orders = scope.ServiceProvider.GetRequiredService<IRepositorySpec<Order>>();
+
+        var order = new Order("tester") { CustomerId = "cust-42" };
+        await orders.AddAsync(order);
+        await orders.SaveChangesAsync();
+
+        var stored = await orders.FindAsync(order.Id);
+        stored.ShouldNotBeNull();
+        stored!.CreatedBy.ShouldBe("tester"); // AuditHook ran
+    }
+
+    public Task DisposeAsync() => _sql.DisposeAsync().AsTask();
+}
+```
+
+This is the model DKNet uses internally — no in-memory provider, no SQLite stand-in, just the real database. The container spins up in ~2 seconds and catches the dialect-specific bugs that in-memory providers happily silence.
+
+---
+
+## When DKNet Might Not Be the Right Fit
+
+DKNet is opinionated, and that is mostly a good thing — but it is honest about its scope:
+
+- **Tiny CRUD apps.** If your service is genuinely "API → EF Core → database" with no business rules, the abstractions cost more than they save. Use `DbContext` directly.
+- **Non-EF data stores.** The repository, hooks, and events packages are designed around EF Core's change tracker. If you are on Dapper, Cosmos DB SDK, or Marten, DKNet's EF Core layers do not apply (the `DKNet.Svc.*` and `DKNet.AspCore.Idempotency` packages are still useful, though).
+- **Event sourcing.** DKNet's domain events are "post-commit notification" events, not an event-sourced write model. If you are storing events as the source of truth, look at [Marten](https://martendb.io/) or [EventStoreDB](https://eventstore.com/).
+- **Pre-.NET 10 codebases.** The 1.x line targets `net10.0` and uses C# 14 features. There is no plan to backport to LTS .NET 8.
+
+In short: DKNet is for teams that have already converged on DDD + Onion + EF Core + CQRS and want to stop hand-rolling the plumbing.
+
+---
+
 ## Summary
 
 DKNet gives .NET 10 teams a consistent, high-quality foundation for enterprise applications:
@@ -753,9 +959,31 @@ DKNet gives .NET 10 teams a consistent, high-quality foundation for enterprise a
 
 The library is opinionated about architecture but modular about adoption — start with just `DKNet.EfCore.Repos` in an existing project and add packages as you need them.
 
-**GitHub**: [https://github.com/baoduy/DKNet](https://github.com/baoduy/DKNet)  
-**Documentation**: [https://deepwiki.com/baoduy/DKNet](https://deepwiki.com/baoduy/DKNet)
+---
+
+## References
+
+- **DKNet GitHub repository**: [https://github.com/baoduy/DKNet](https://github.com/baoduy/DKNet)
+- **DKNet DeepWiki (architecture & package docs)**: [https://deepwiki.com/baoduy/DKNet](https://deepwiki.com/baoduy/DKNet)
+- **DKNet on NuGet** (search prefix): [https://www.nuget.org/packages?q=DKNet](https://www.nuget.org/packages?q=DKNet)
+- **SlimMessageBus** (CQRS bus used by `DKNet.SlimBus.Extensions`): [https://github.com/zarusz/SlimMessageBus](https://github.com/zarusz/SlimMessageBus)
+- **LinqKit** (predicate composition used by `DKNet.EfCore.Specifications`): [https://github.com/scottksmith95/LINQKit](https://github.com/scottksmith95/LINQKit)
+- **FluentValidation 12**: [https://docs.fluentvalidation.net/](https://docs.fluentvalidation.net/)
+- **TestContainers for .NET**: [https://dotnet.testcontainers.org/](https://dotnet.testcontainers.org/)
+- **Onion Architecture (Jeffrey Palermo, 2008)**: [https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/](https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/)
 
 ---
 
-> 💡 **Prior art**: If you have used the individual packages for EF Core hooks ([dotnet-06-efcore-hooks](/posts/dotnet-06-efcore-hooks)) or domain events ([dotnet-07-efcore-domain-events](/posts/dotnet-07-efcore-domain-events)), this post shows how they all fit together as a coherent framework.
+## Related Articles
+
+If you want to go deeper on the patterns DKNet packages up, these earlier drunkcoding.net posts are good companions:
+
+- [Day 06 — Cleaner EF Core Side Effects with Save-Time Hooks](/posts/dotnet-06-efcore-hooks) — the standalone story behind `DKNet.EfCore.Hooks`.
+- [Day 07 — Simplify Domain Events with DKNet.EfCore.Events](/posts/dotnet-07-efcore-domain-events) — the post-commit event pipeline this post integrates with CQRS.
+- [Day 05 — Generating DTOs from EF Core Entities](/posts/dotnet-05-efcore-dto-generator) — pairs nicely with `ModelSpecification` for read-side projections.
+
+---
+
+## Thank You
+
+Thanks for reading — and for sticking with the longer format. If you try DKNet on a real project, I would love to hear which packages fit and which ones got in your way; the friction reports are the most useful contribution you can make. Steven.
