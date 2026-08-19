@@ -3,7 +3,7 @@ author: Steven Hoang
 pubDatetime: 2026-08-18T12:00:00Z
 title: "[Tools] website-hook: A Disposable Webhook Capture API for Developers and Testers"
 featured: false
-draft: true
+draft: false
 tags:
   - tools
   - webhook
@@ -313,13 +313,3 @@ docker run -p 3000:3000 -v website-hook-data:/data ghcr.io/baoduy/website-hook:l
 Thanks for reading. If website-hook saves us from one more round of "can you paste what you actually sent?", it has paid for itself. Issues and pull requests are welcome on the [GitHub repo](https://github.com/baoduy/website-hook).
 
 **Steven** | _[GitHub](https://github.com/baoduy)_
-
----
-
-### Reviewer checklist
-
-1. The README's API section states the 20/min/IP creation limit as if it were active by default. The code (`src/webhook/lib/constants.ts`) and `docs/technical-architecture.md` both say the limit and the quota are **off** unless `DISABLE_RATE_LIMIT` / `DISABLE_WEBHOOK_QUOTA` are set to `"false"`. This post follows the code — worth fixing the README to match.
-2. The example `id`, `createdAt`, and captured-request JSON are illustrative placeholders, not a real capture. Confirm the field names still match `/openapi.json` at publish time.
-3. Related-article slugs were checked against published (`draft: false`) posts at the time of writing: `dotnet-04-aspire-local-env-tests`, `dotnet-08-dknet-introduction`, `tools-drunk-helm-charts-library`. Re-confirm if any of them changed.
-4. Consider an `ogImage` — the capture-flow diagram or a screenshot of the inspector would both work.
-5. Update `pubDatetime` to the real publish time and flip `draft: false` when happy.
