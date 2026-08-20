@@ -3,7 +3,7 @@ author: Steven Hoang
 pubDatetime: 2025-10-25T09:30:00Z
 title: "[.NET] Simplify Domain Events with DKNet.EfCore.Events"
 postSlug: dotnet-07-efcore-domain-events
-featured: true
+featured: false
 draft: false
 tags:
   - dotnet
