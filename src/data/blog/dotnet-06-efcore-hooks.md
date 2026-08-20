@@ -3,7 +3,7 @@ author: Steven Hoang
 pubDatetime: 2025-10-25T04:46:00Z
 title: "[.NET] Simplify EF Core Lifecycle Management with DKNet.EfCore.Hooks"
 postSlug: dotnet-06-efcore-hooks
-featured: true
+featured: false
 draft: false
 tags:
   - dotnet
