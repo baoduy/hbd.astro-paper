@@ -47,19 +47,30 @@ const still = asciiLogo()(0);
   import { mount } from "ascii.rest";
   import * as asciiLogo from "@/utils/asciiLogo";
 
+  const still = matchMedia("(prefers-reduced-motion: reduce)");
   let stop: (() => void) | undefined;
 
-  document.addEventListener("astro:page-load", () => {
+  const end = () => {
+    stop?.();
+    stop = undefined;
+  };
+
+  // The canvas plays only without reduced motion; removing it shows the still <pre> again.
+  const start = () => {
+    end();
     const box = document.querySelector<HTMLElement>("[data-ascii-logo]");
-    if (!box || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!box || still.matches) return;
     const canvas = document.createElement("canvas");
     canvas.setAttribute("aria-hidden", "true");
     box.append(canvas);
-    stop = mount(canvas, asciiLogo);
-  });
+    const unmount = mount(canvas, asciiLogo);
+    stop = () => {
+      unmount();
+      canvas.remove();
+    };
+  };
 
-  document.addEventListener("astro:before-swap", () => {
-    stop?.();
-    stop = undefined;
-  });
+  document.addEventListener("astro:page-load", start);
+  document.addEventListener("astro:before-swap", end);
+  still.addEventListener("change", start);
 </script>
