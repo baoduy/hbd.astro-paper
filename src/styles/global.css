@@ -48,11 +48,11 @@ html[data-theme="dark"] {
     @apply overflow-y-scroll scroll-smooth;
   }
   body {
-    @apply bg-background text-foreground selection:bg-accent/75 selection:text-background flex min-h-svh flex-col font-mono;
+    @apply flex min-h-svh flex-col bg-background font-mono text-foreground selection:bg-accent/75 selection:text-background;
   }
   a,
   button {
-    @apply outline-accent outline-offset-1 focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-dashed;
+    @apply outline-offset-1 outline-accent focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-dashed;
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {
@@ -60,7 +60,7 @@ html[data-theme="dark"] {
   }
   section,
   footer {
-    @apply max-w-app mx-auto px-4;
+    @apply mx-auto max-w-app px-4;
   }
 }
 
