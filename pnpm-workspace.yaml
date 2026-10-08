@@ -1,3 +1,4 @@
 allowBuilds:
   esbuild: true
   sharp: true
+  "ascii.rest@https://codeload.github.com/bas3line/ascii/tar.gz/1a495cc5321e9fc995b83b4279cc0c342393ea38": true

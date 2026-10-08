@@ -2,6 +2,7 @@
   "name": "astro-paper",
   "type": "module",
   "version": "5.5.0",
+  "packageManager": "pnpm@12.10.1",
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build && pagefind --site dist && cp -r dist/pagefind public/",
@@ -18,6 +19,7 @@
     "@astrojs/sitemap": "^3.7.3",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/vite": "^4.3.3",
+    "ascii.rest": "github:bas3line/ascii#1a495cc5321e9fc995b83b4279cc0c342393ea38",
     "astro": "^7.2.2",
     "dayjs": "^1.11.22",
     "lodash.kebabcase": "^4.1.1",
