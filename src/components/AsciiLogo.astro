@@ -1,0 +1,65 @@
+---
+import asciiLogo from "@/utils/asciiLogo";
+
+// The still logo, shown before any script runs, with no scripts and with reduced motion.
+const still = asciiLogo()(0);
+---
+
+<div role="img" aria-label="drunkcoding" class="my-4 sm:my-8">
+  <div class="ascii-logo" data-ascii-logo>
+    <pre aria-hidden="true">{still}</pre>
+  </div>
+</div>
+
+<style>
+  /* 66 columns by 8 rows of cells two widths tall; the canvas and the still <pre> share this box. */
+  .ascii-logo {
+    position: relative;
+    aspect-ratio: 66 / 16;
+    container-type: inline-size;
+  }
+  pre {
+    margin: 0;
+    overflow: hidden;
+    color: var(--logo-ink);
+    font-family:
+      ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+      "ascii.rest mono", monospace;
+    /* A monospace cell is 0.6em wide: 66 of them fill the box, and 1.2em rows fill its height. */
+    font-size: calc(100cqi / 66 / 0.6);
+    line-height: 1.2;
+    letter-spacing: 0;
+    white-space: pre;
+    font-variant-ligatures: none;
+  }
+  .ascii-logo :global(canvas) {
+    position: absolute;
+    inset: 0;
+    /* mount reads light or dark from this colour; the palette holds the orange. */
+    color: var(--foreground);
+  }
+  .ascii-logo:has(canvas) pre {
+    visibility: hidden;
+  }
+</style>
+
+<script>
+  import { mount } from "ascii.rest";
+  import * as asciiLogo from "@/utils/asciiLogo";
+
+  let stop: (() => void) | undefined;
+
+  document.addEventListener("astro:page-load", () => {
+    const box = document.querySelector<HTMLElement>("[data-ascii-logo]");
+    if (!box || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const canvas = document.createElement("canvas");
+    canvas.setAttribute("aria-hidden", "true");
+    box.append(canvas);
+    stop = mount(canvas, asciiLogo);
+  });
+
+  document.addEventListener("astro:before-swap", () => {
+    stop?.();
+    stop = undefined;
+  });
+</script>
